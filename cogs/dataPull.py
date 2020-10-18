@@ -98,7 +98,7 @@ class CheckPlayer(commands.Cog):
             await ctx.send("Player not found.")
         playerFound = False    
     
-    @commands.command(aliases = [""], brief = "Add player to spreadsheet in UTC time.")
+    @commands.command(aliases = ["addplayer"], brief = "Add player to spreadsheet in UTC time.")
     async def addPlayer(self,ctx, server, playerName, customTime = None, customDate = None, *extraArgs):
         #Update Spreadsheet
         #updateSpreadsheet()
