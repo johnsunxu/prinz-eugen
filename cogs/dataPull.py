@@ -2,6 +2,7 @@ import discord
 import gspread
 import pytz
 from datetime import datetime
+from datetime import timedelta
 from oauth2client.service_account import ServiceAccountCredentials
 from discord.ext import commands 
 
@@ -52,7 +53,7 @@ class CheckPlayer(commands.Cog):
     #     updateTime()
     #     print(time, "\n", date)
 
-    @commands.command(aliases = ["test"], brief = "Call for reports on the player.")
+    @commands.command(aliases = [], brief = "Call for reports on the player.")
     async def analyze(self, ctx, server, playerName, *extraArgs):
         #Check if user entered correct servers
         if checkServerInput(server)[0] != True:
@@ -99,10 +100,11 @@ class CheckPlayer(commands.Cog):
         playerFound = False    
     
     @commands.command(aliases = ["addplayer"], brief = "Add player to spreadsheet in UTC time.")
-    async def addPlayer(self,ctx, server, playerName, customTime = None, customDate = None, *extraArgs):
+    async def addPlayer(self,ctx, server, playerName, customTime = 0, customDate = 0, *extraArgs):
         #Update Spreadsheet
         #updateSpreadsheet()
         updateTime()
+
         #Check if player has entered too many arguments
         if len(extraArgs) != 0 and customTime == None and customDate == None:
             print(extraArgs)
@@ -117,13 +119,12 @@ class CheckPlayer(commands.Cog):
             server = checkServerInput(server)[1]
 
         #Create list of player data
-        global time, date
-        if customTime != None and customDate != None: 
-            dataEntry = [server, playerName, customTime, customDate, "Prinz Eugen"]
-        else:
-            dataEntry = [server, playerName, time, date, "Prinz Eugen"]
+        deltaTime = timedelta(days=customDate, minutes=customTime)
+        global serverTime
+        temp = serverTime-deltaTime
+        dataEntry = [server, playerName, temp.strftime("%H:%M:%S"), temp.strftime("%d/%m/%Y"), ctx.message.author.name]
+        #Add to sheet
         sendData(server, dataEntry)
-        # #Add to sheet
         # sheet.append_row(dataEntry, value_input_option="USER_ENTERED")
         await ctx.send("Data entry successful!")
         #updateSpreadsheet()

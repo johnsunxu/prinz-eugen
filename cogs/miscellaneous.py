@@ -20,5 +20,10 @@ class Miscellaneous(commands.Cog):
         reply = ["Heads", "Tails"]
         await ctx.send("%s" %(random.choice(reply)))
 
+    @commands.command()
+    async def test(self, ctx):
+        await ctx.send("%s" %(ctx.message.author))
+        
+
 def setup(client):
     client.add_cog(Miscellaneous(client))
