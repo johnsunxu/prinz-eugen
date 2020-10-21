@@ -141,7 +141,7 @@ class CheckPlayer(commands.Cog):
         for i in range(4):
             #Check if player isn't found
             if len(playerOutput[i]) == 0: 
-                str+= playerInput[i]+"not found. \n"
+                str+= playerInput[i]+" not found. \n"
                 continue
             str+= playerInput[i]+":```+\n"
             for report in playerOutput[i]: 
