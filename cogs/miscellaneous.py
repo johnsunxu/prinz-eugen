@@ -33,6 +33,11 @@ class Miscellaneous(commands.Cog):
         embed.add_field(name = "** **", value = "```;analyze [server] [player]```")
         embed.add_field(name = "** **", value = "Displays reports on a player.", inline = False)
         embed.add_field(name = "** **", value = "Example: ```;analyze test123```", inline = False)
+
+        embed.add_field(name = ";analyzeMulti", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "```;analyzeMulti [server] [player1] [player2] [player3] [player4]```")
+        embed.add_field(name = "** **", value = "Displays report for four players", inline = False)
+        embed.add_field(name = "** **", value = "Example: ```;analyzeMulti Avrora \"Test one\" test2 test3 test4```")
         
         embed.add_field(name = ";flipcoin", value = "** **", inline = False)
         embed.add_field(name = "** **", value = "```;flipcoin```", inline = False)
@@ -47,9 +52,8 @@ class Miscellaneous(commands.Cog):
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx): 
         embed = discord.Embed(title = "Patch Notes - October 21st 2020") 
-        embed.add_field(name ="Version 1.2A", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "Updated help message", inline = False)
-        embed.add_field(name = "** **", value = "Created patch notes command", inline = False)
+        embed.add_field(name ="Version 1.2B", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**NEW** analyzeMulti ", inline = False)
         await ctx.send(embed = embed)
 
 def setup(client):
