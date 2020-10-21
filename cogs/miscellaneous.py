@@ -38,16 +38,16 @@ class Miscellaneous(commands.Cog):
         embed.add_field(name = "** **", value = "```;flipcoin```", inline = False)
         embed.add_field(name = "** **",value ="Displays the result of a coin flip.", inline = False)
         
-        # embed.add_field(name = ";patchNotes", value = "** **", inline = False)
-        # embed.add_field(name = "** **", value = "```;patchNotes```", inline = False)
-        # embed.add_field(name = "** **", value = "Displays patch notes.", inline = False)
+        embed.add_field(name = ";patchNotes", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "```;patchNotes```", inline = False)
+        embed.add_field(name = "** **", value = "Displays patch notes.", inline = False)
 
         await ctx.send(embed = embed)
         
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx): 
         embed = discord.Embed(title = "Patch Notes - October 21st 2020") 
-        embed.add_field(name ="Version 1.2", value = "** **", inline = False)
+        embed.add_field(name ="Version 1.2A", value = "** **", inline = False)
         embed.add_field(name = "** **", value = "Updated help message", inline = False)
         embed.add_field(name = "** **", value = "Created patch notes command", inline = False)
         await ctx.send(embed = embed)
