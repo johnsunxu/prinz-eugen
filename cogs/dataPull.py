@@ -105,6 +105,11 @@ class CheckPlayer(commands.Cog):
         #updateSpreadsheet()
         updateTime()
 
+        #Check if player has entered too few arguments
+        if playerName == None: 
+            await ctx.send("Remember to input the server!")
+            return
+
         #Check if player has entered too many arguments
         if len(extraArgs) != 0 and customTime == None and customDate == None:
             print(extraArgs)
