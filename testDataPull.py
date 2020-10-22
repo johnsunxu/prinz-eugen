@@ -1,5 +1,5 @@
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials 
+from oauth2client.service_account import ServiceAccountCredentials
 
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 creds = ServiceAccountCredentials.from_json_keyfile_name("client_secret.json",scope)
@@ -21,7 +21,7 @@ print(sheet.cell(27,2).value.strip() == sheet.cell(28,2).value.strip())
 #dateValues = sheet.col_values(4)
 
 # for i in range(len(timeValues)):
-#     if i >= 17: 
+#     if i >= 17:
 #         doubleDigitHour = False
 #         #check hour time
 #         hours = timeValues[i][0]
@@ -30,9 +30,9 @@ print(sheet.cell(27,2).value.strip() == sheet.cell(28,2).value.strip())
 #             doubleDigitHour = True
 
 #         hours = int(hours)
-#         #Check if it will go back to next day 
+#         #Check if it will go back to next day
 #         if hours-15 < 0:
-#             if doubleDigitHour: 
+#             if doubleDigitHour:
 #                 sheet.update_cell(i+1,9, str(24+(hours-15))+timeValues[i][2:])
 #             else:
 #                 sheet.update_cell(i+1,9,str(24+(hours-15)) + timeValues[i][1:])
@@ -45,8 +45,5 @@ print(sheet.cell(27,2).value.strip() == sheet.cell(28,2).value.strip())
 
 #test = sheet.get_all_records()
 #for i in range(len(playerName)):
-#    if playerName[i] == "ZokeEstafarm": 
+#    if playerName[i] == "ZokeEstafarm":
 #        print(sheet.row_values(i+1))
-
-
-
