@@ -3,11 +3,11 @@ import gspread
 import pytz
 from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
-from discord.ext import commands 
+from discord.ext import commands
 
 #Check if user entered correct servers
 def checkServerInput(server):
-       
+
     validServer = False
     serverList = ["Avrora", "Sandy", "Washington", "Lexington", "Amagi"]
 
@@ -19,7 +19,7 @@ def checkServerInput(server):
                 validServer = True
     return validServer,server
 
-#procedure for updating the time the bot is at in PST 
+#procedure for updating the time the bot is at in PST
 def updateTime():
     global serverTime, time, date
     serverTime = datetime.now(pytz.timezone("US/Pacific"))
@@ -36,8 +36,8 @@ def updateSpreadsheet(server):
 
     return sheet
 
-def sendData(server, data): 
-    
+def sendData(server, data):
+
     sheet = updateSpreadsheet(server)
     sheet.append_row(data, value_input_option="USER_ENTERED")
 
@@ -46,9 +46,9 @@ class CheckPlayer(commands.Cog):
     #init func
     def __init__(self, client):
         self.client = client
-    
+
     # @commands.Cog.listener()
-    # async def on_message(self, message):        
+    # async def on_message(self, message):
     #     updateTime()
     #     print(time, "\n", date)
 
@@ -58,7 +58,7 @@ class CheckPlayer(commands.Cog):
         if checkServerInput(server)[0] != True:
             await ctx.send("Server input incorrect!")
             return
-        else: 
+        else:
             server = checkServerInput(server)[1]
 
         sheet = updateSpreadsheet(server)
@@ -73,30 +73,30 @@ class CheckPlayer(commands.Cog):
             storedPlayerData.append(sheetData[row].get("User"))
 
         #Check if player has entered too many arguments
-        if len(extraArgs) != 0: 
+        if len(extraArgs) != 0:
             print(extraArgs)
             await ctx.send("No spaces! Use \" \" for names with spaces.")
             return
 
         global playerFound
         #Search each cell in the player column for the inputted player
-        for i in range(len(storedPlayerData)): 
+        for i in range(len(storedPlayerData)):
             #Check if player is found in spreadsheet
             if playerName == storedPlayerData[i]:
                 #Send message with value
-                #Only send "Here is the player data" if it is the first time 
-                if playerFound == False: 
+                #Only send "Here is the player data" if it is the first time
+                if playerFound == False:
                     await ctx.send(f"Here is the player data \n{rows[i]} \n")
-                else: 
+                else:
                     await ctx.send(f"{rows[i]} \n")
-                #Set playerFound to True now that the player has been found 
+                #Set playerFound to True now that the player has been found
                 playerFound = True
 
                 #print(playerName, storedPlayerData[i])
-                
-        if playerFound == False: 
+
+        if playerFound == False:
             await ctx.send("Player not found.")
-        playerFound = False    
+        playerFound = False
     
     @commands.command(aliases = ["addplayer"], brief = "Add player to spreadsheet in UTC time.")
     async def addPlayer(self,ctx, server, playerName, customTime = None, customDate = None, *extraArgs):
@@ -110,7 +110,7 @@ class CheckPlayer(commands.Cog):
             return
 
         #Check if user entered correct servers
-        if checkServerInput(server)[0] != True: 
+        if checkServerInput(server)[0] != True:
             await ctx.send("Server input incorrect!")
             return
         else:
@@ -118,7 +118,7 @@ class CheckPlayer(commands.Cog):
 
         #Create list of player data
         global time, date
-        if customTime != None and customDate != None: 
+        if customTime != None and customDate != None:
             dataEntry = [server, playerName, customTime, customDate, "Prinz Eugen"]
         else:
             dataEntry = [server, playerName, time, date, "Prinz Eugen"]
@@ -152,10 +152,9 @@ client = gspread.authorize(creds)
 # storedPlayerData = []
 # rows = []
 #Add rows to variable rows
-# for i in range(len(sheetData)): 
+# for i in range(len(sheetData)):
 #     rows.append([sheetData[i].get("Server"), sheetData[i].get("User"), sheetData[i].get("Time"), sheetData[i].get("Date")])
 
-# #Create variable to find the column that contains the player  
+# #Create variable to find the column that contains the player
 # for row in range(len(sheetData)):
-#     storedPlayerData.append(sheetData[row].get("User")) 
-
+#     storedPlayerData.append(sheetData[row].get("User"))
