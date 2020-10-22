@@ -5,9 +5,10 @@ scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/au
 creds = ServiceAccountCredentials.from_json_keyfile_name("client_secret.json",scope)
 client = gspread.authorize(creds)
 
-sheet = client.open("Azur Lane Avrora PvP Exercise log").worksheet("Amagi")
-print(sheet.col_values(2))
-
+sheet = client.open("Azur Lane Avrora PvP Exercise log").worksheet("Avrora")
+print(sheet.cell(27,2).value.strip())
+print(sheet.cell(28,2).value.strip())
+print(sheet.cell(27,2).value.strip() == sheet.cell(28,2).value.strip())
 
 
 
