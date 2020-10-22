@@ -1,6 +1,7 @@
 import discord
 import random
 from discord.ext import commands
+import json
 
 #create class
 class Miscellaneous(commands.Cog):
@@ -14,6 +15,10 @@ class Miscellaneous(commands.Cog):
         #Set status of bot
         await self.client.change_presence(status=discord.Status.online, activity = discord.Game("Exercises"))
 
+        #Clear out channelList
+        with open('cogs/channelList.json', 'w') as outfile:
+            json.dump({}, outfile)
+
     #Coinflip function
     @commands.command(aliases = ["flipcoin", "coinflip"])
     async def flipCoin(self, ctx):
@@ -24,36 +29,25 @@ class Miscellaneous(commands.Cog):
     async def help(self, ctx):
         embed = discord.Embed(title = "Help Menu")
 
-        embed.add_field(name =";addPlayer", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "```;addPlayer [server] [player] [minutes from present, default 0] [days from present, default 0]```", inline = False)
-        embed.add_field(name = "** **", value = "Create a report on a rusher.", inline = False)
-        embed.add_field(name = "** **", value = "Example ```;addPlayer Avrora test123```", inline = False)
+        embed.add_field(name =":small_red_triangle: ;addPlayer [server] [player] [minutes from present, default 0] [days from present, default 0]", value = "Create a report on a rusher.\nExample `;addPlayer Avrora test123`", inline = False)
 
-        embed.add_field(name = ";analyze", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "```;analyze [server] [player]```")
-        embed.add_field(name = "** **", value = "Displays reports on a player.", inline = False)
-        embed.add_field(name = "** **", value = "Example: ```;analyze test123```", inline = False)
+        embed.add_field(name = ":small_red_triangle: ;analyze [server] [player]", value = "Displays reports on a player.\nExample: `;analyze test123`", inline = False)
 
-        embed.add_field(name = ";analyzeMulti", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "```;analyzeMulti [server] [player1] [player2] [player3] [player4]```")
-        embed.add_field(name = "** **", value = "Displays report for four players", inline = False)
-        embed.add_field(name = "** **", value = "Example: ```;analyzeMulti Avrora \"Test one\" test2 test3 test4```")
+        embed.add_field(name = ":small_red_triangle: ;analyzeMulti [server] [player1] [player2] [player3] [player4]", value = "Displays report for four players\nExample: `;analyzeMulti Avrora \"Test one\" test2 test3 test4`",inline = False)
 
-        embed.add_field(name = ";flipcoin", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "```;flipcoin```", inline = False)
-        embed.add_field(name = "** **",value ="Displays the result of a coin flip.", inline = False)
+        embed.add_field(name = ":small_red_triangle: ;flipcoin", value = "Displays the result of a unbiased coin flip.", inline = False)
 
-        embed.add_field(name = ";patchNotes", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "```;patchNotes```", inline = False)
-        embed.add_field(name = "** **", value = "Displays patch notes.", inline = False)
+        embed.add_field(name = ":small_red_triangle: ;patchNotes", value = "Displays patch notes.", inline = False)
+
+        embed.add_field(name = ":small_red_triangle: ;guess help", value = "Shows how to play the shipgirl guessing game.", inline = False)
 
         await ctx.send(embed = embed)
 
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
-        embed = discord.Embed(title = "Patch Notes - October 21st 2020")
-        embed.add_field(name ="Version 1.2B", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**NEW** analyzeMulti ", inline = False)
+        embed = discord.Embed(title = "Patch Notes - October 22nd 2020")
+        embed.add_field(name ="Version 1.3", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**NEW** Added ;guess", inline = False)
         await ctx.send(embed = embed)
 
 def setup(client):

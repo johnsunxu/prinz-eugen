@@ -435,7 +435,15 @@ class GuessThatShipgirl(commands.Cog):
     @commands.command(aliases = ["guess"])
     async def run(self, message, arg):
 
-        if (arg == 'start'):
+        if (arg == 'help'):
+            embed = discord.Embed(title = "Guess Game Help Menu")
+            embed.add_field(name =":small_red_triangle: ;guess start", value = "Start a guessing game", inline = False)
+            embed.add_field(name =":small_red_triangle: ;guess stop", value = "Ends a guessing game if one is running.", inline = False)
+            embed.add_field(name =":small_red_triangle: ;guess [Shipgirl Name]", value = "Guess a shipgirl.\nex.`;guess Long Island`", inline = False)
+
+            await message.channel.send(embed = embed);
+
+        elif (arg == 'start'):
             if getChannelData(message) != 0:
                 #The channel has a game running. Send error.
                 await message.channel.send('This channel already has a game running! Try again in a different channel or wait until this game is over.');
@@ -459,14 +467,14 @@ class GuessThatShipgirl(commands.Cog):
                 if (getChannelData(message) != 0):
                     if (getChannelData(message) == answer):
                         embedVar = discord.Embed(title=f"The game timed out. {answer} was the correct answer.", color=embedColor)
-                        imageURL = f'https://github.com/Drakomire/AzurLaneShipgirls/blob/master/ImageNormal/default/{answer}Default.png?raw=true';
+                        imageURL = f'https://github.com/Drakomire/AzurLaneShipgirls/blob/master/ImageNormal/default/{answer}Default.png?raw=true'.replace(' ','%20');
                         embedVar.set_image(url=imageURL)
                         await message.channel.send(embed = embedVar);
 
-        elif (arg == 'give' or arg == 'give up'):
+        elif (arg == 'give' or arg == 'give up' or arg == 'quit' or arg == 'stop' or arg == 'end'):
             ans = getChannelData(message);
             embedVar = discord.Embed(title=f"{message.author} stopped the game. The correct answer was {ans}.", color=embedColor)
-            imageURL = f'https://github.com/Drakomire/AzurLaneShipgirls/blob/master/ImageNormal/default/{ans}Default.png?raw=true';
+            imageURL = f'https://github.com/Drakomire/AzurLaneShipgirls/blob/master/ImageNormal/default/{ans}Default.png?raw=true'.replace(' ','%20');
             embedVar.set_image(url=imageURL)
             await message.channel.send(embed = embedVar);
 
@@ -477,9 +485,9 @@ class GuessThatShipgirl(commands.Cog):
             ans = getChannelData(message);
             if ans == 0:
                 await message.channel.send("A game is not running right now. Start a new game with ;guess start!");
-            elif ans.lower() == arg.lower():
+            elif ans.lower() == arg.lower().replace('"',''):
                 embedVar = discord.Embed(title=f"Hooray! {ans} was the correct answer!", color=embedColor)
-                imageURL = f'https://github.com/Drakomire/AzurLaneShipgirls/blob/master/ImageNormal/default/{ans}Default.png?raw=true';
+                imageURL = f'https://github.com/Drakomire/AzurLaneShipgirls/blob/master/ImageNormal/default/{ans}Default.png?raw=true'.replace(' ', '%20');
                 embedVar.set_image(url=imageURL)
                 await message.channel.send(embed = embedVar);
 
