@@ -543,6 +543,9 @@ class GuessThatShipgirl(commands.Cog):
                     "pow" : "Prince of Wales",
                     "doy" : "Duke of York",
                     "qe" : "Queen Elizabeth",
+                    "bulin" : "Universal Bulin",
+                    "purin" : "Prototype Bulin MKII",
+                    "urin" : "Specialized Bulin Custom MKIII"
 
                 }
 
