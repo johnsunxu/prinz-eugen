@@ -372,11 +372,11 @@ shipgirlNames = ["	Universal Bulin	",
 "	Carabiniere	",
 "	U-110	",
 "	Smalley	",
-"	Gascogne µ	",
-"	Akagi µ	",
-"	Cleveland µ	",
-"	Sheffield µ	",
-"	Admiral Hipper µ	",
+#"	Gascogne µ	",
+#"	Akagi µ	",
+#"	Cleveland µ	",
+#"	Sheffield µ	",
+#"	Admiral Hipper µ	",
 "	Glasgow	",
 "	Kasumi	",
 "	Suruga	",
@@ -404,10 +404,10 @@ shipgirlNames = ["	Universal Bulin	",
 "	Tartu	",
 "	Richelieu	",
 "	Jeanne d'Arc	",
-"	Algérie	",
+#"	Algérie	",
 "	La Galissonnière	",
 "	Vauquelin	",
-"	Béarn	",
+#"	Béarn	",
 "	Little Illustrious	",
 "	Eskimo	",
 "	Howe	",
@@ -433,13 +433,14 @@ class GuessThatShipgirl(commands.Cog):
 
     #Main function
     @commands.command(aliases = ["guess"])
-    async def run(self, message, arg):
+    async def run(self, message, *args):
 
+        arg = " ".join(args);
         if (arg == 'help'):
             embed = discord.Embed(title = "Guess Game Help Menu")
             embed.add_field(name =":small_red_triangle: ;guess start", value = "Start a guessing game", inline = False)
             embed.add_field(name =":small_red_triangle: ;guess stop", value = "Ends a guessing game if one is running.", inline = False)
-            embed.add_field(name =":small_red_triangle: ;guess [Shipgirl Name]", value = 'Guess a shipgirl.\nex.`;guess Howe`\nex.`;guess "Long Island"`', inline = False)
+            embed.add_field(name =":small_red_triangle: ;guess [Shipgirl Name]", value = 'Guess a shipgirl.\nex.`;guess Howe`\nex.`;guess Long Island`', inline = False)
 
             await message.channel.send(embed = embed);
 
