@@ -8,7 +8,7 @@ import os
 
 #encode channel into my jank format
 def encodeChannel(message):
-    return str(message.guild.name) +":"+ str(message.channel);
+    return str(message.guild.id) +":"+ str(message.channel);
 
 #loads the list of all the channels
 def loadChannelList():
