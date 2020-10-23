@@ -6,31 +6,46 @@ import json
 import hashlib
 import os
 
-#encode channel function
+#encode channel into my jank format
 def encodeChannel(message):
     return str(message.guild.name) +":"+ str(message.channel);
 
+#loads the list of all the channels
 def loadChannelList():
     with open('cogs/channelList.json') as json_file:
         return json.load(json_file);
+
+#Saves the entire json list
 def saveChannelList(data):
+    #dictionary data
     with open('cogs/channelList.json', 'w') as outfile:
         json.dump(data, outfile)
+
+#Save a certain value into the current message. This is the ship name for now.
 def saveChannelData(message, data):
+    #message message
+    #string data
     list = loadChannelList()
     list[encodeChannel(message)] = data
     saveChannelList(list)
+
+#reads the value of the game that is running in a certain channel
 def getChannelData(message):
+    #message message
     data = loadChannelList();
     if encodeChannel(message) in data:
         return data[encodeChannel(message)]
     else:
         return 0;
+
+#clears the data for the game running in a certain channel
 def deleteChannelData(message):
+    #message message
     list = loadChannelList()
     list.pop(encodeChannel(message),None)
     saveChannelList(list)
 
+#Some ships are disabled until I can fix the character glitch. This is such a mess :(.
 shipgirlNames = ["	Universal Bulin	",
 "	Prototype Bulin MKII	",
 "	Specialized Bulin Custom MKIII	",
@@ -221,9 +236,9 @@ shipgirlNames = ["	Universal Bulin	",
 "	Z1	",
 "	Z23	",
 "	Z25	",
-"	Königsberg	",
-"	Karlsruhe	",
-"	Köln	",
+#"	Königsberg	",
+#"	Karlsruhe	",
+#"	Köln	",
 "	Leipzig	",
 "	Admiral Hipper	",
 "	Prinz Eugen	",
@@ -405,7 +420,7 @@ shipgirlNames = ["	Universal Bulin	",
 "	Richelieu	",
 "	Jeanne d'Arc	",
 #"	Algérie	",
-"	La Galissonnière	",
+#"	La Galissonnière	",
 "	Vauquelin	",
 #"	Béarn	",
 "	Little Illustrious	",
@@ -435,7 +450,10 @@ class GuessThatShipgirl(commands.Cog):
     @commands.command(aliases = ["guess"])
     async def run(self, message, *args):
 
+        #Combine the args into one so it is easier to referance later
         arg = " ".join(args);
+
+        #Help menu embed.
         if (arg == 'help'):
             embed = discord.Embed(title = "Guess Game Help Menu")
             embed.add_field(name =":small_red_triangle: ;guess start", value = "Start a guessing game", inline = False)
@@ -444,6 +462,7 @@ class GuessThatShipgirl(commands.Cog):
 
             await message.channel.send(embed = embed);
 
+        #Start game argument
         elif (arg == 'start'):
             if getChannelData(message) != 0:
                 #The channel has a game running. Send error.
@@ -458,49 +477,83 @@ class GuessThatShipgirl(commands.Cog):
 
                 #send start embed
                 embedVar = discord.Embed(title="Guess the Shipgirl with ;guess [name]! You have 2 minutes!", color=embedColor)
+                #It is encrypted because it is hosted on git. You can see the full directory in the URL.
                 imageURL = f'https://github.com/Drakomire/AzurLaneShipgirls/blob/master/ImageSilhouette/default/{hashlib.sha224((answer+"Default.png").encode("utf-8")).hexdigest()}.png?raw=true';
                 embedVar.set_image(url=imageURL)
                 await message.channel.send(embed = embedVar);
 
-                #set timeout
+                #set timeout. 120 = 2 minutes.
                 await asyncio.sleep(120)
                 #If game is still running, end.
                 if (getChannelData(message) != 0):
                     if (getChannelData(message) == answer):
+                        #Send time out embed. I have to make this a function.
                         embedVar = discord.Embed(title=f"The game timed out. {answer} was the correct answer.", color=embedColor)
                         imageURL = f'https://github.com/Drakomire/AzurLaneShipgirls/blob/master/ImageNormal/default/{answer}Default.png?raw=true'.replace(' ','%20');
                         embedVar.set_image(url=imageURL)
                         await message.channel.send(embed = embedVar);
 
-                        #end Game
+                        #Delete data to end the game
                         deleteChannelData(message);
 
+        #Handle player giving up
         elif (arg == 'give' or arg == 'give up' or arg == 'quit' or arg == 'stop' or arg == 'end' or arg == 'giveup'):
+            #Find out what the answer was
             ans = getChannelData(message);
+            #Send the embed for timeout
             embedVar = discord.Embed(title=f"{message.author} stopped the game. The correct answer was {ans}.", color=embedColor)
             imageURL = f'https://github.com/Drakomire/AzurLaneShipgirls/blob/master/ImageNormal/default/{ans}Default.png?raw=true'.replace(' ','%20');
             embedVar.set_image(url=imageURL)
             await message.channel.send(embed = embedVar);
 
-
+            #Delete the game from memory
             deleteChannelData(message);
         else:
             #determine if game is running
             ans = getChannelData(message);
             c = False;
+            #A game is not running if it is not in the json list. getChannelData() returns 0 if a game is not found.
             if ans == 0:
+                #C is the bool used to tell if the answer is true
                 c = True;
                 await message.channel.send("A game is not running right now. Start a new game with ;guess start!");
             else:
                 #Do all the special checks
                 arg2 = arg.lower().replace('"','');
-                if (ans.lower().replace('é','e').replace('â','a') == arg2):
-                    c = True;
-                if (ans == "Friedrich der Große" and arg2 == 'fdg'):
-                    c = True;
+
+                #Handle nick names. Im proud of this solution tbh.
+                nicknameDic = {
+                    "fdg" : "Friedrich der Große",
+                    "bad" : "Izumo",
+                    "warcorgi" : "Warspite",
+                    "warpoi" : "Warspite",
+                    "nanoda" : "Yukikaze",
+                    "yuki" : "Yukikaze",
+                    "graf" : "Graf Zeppelin",
+                    "enty" : "Enterprise",
+                    "owari da" : "Enterprise",
+                    "st louis" : "St. louis",
+                    "sanrui" : "Saint Louis",
+                    "jesus" : "Juneau",
+                    "sandy" : "San Diego",
+                    "bisko" : "Bismark",
+                    "bisco" : "Bismark",
+                    "kgv" : "King George V",
+                    "clevebro" : "Cleveland",
+                    "pow" : "Prince of Wales",
+                    "doy" : "Duke of York",
+                    "qe" : "Queen Elizabeth",
+
+                }
+
+                #Here is where special characters should be handled. Ex. Muse, special o, e, and a.
+
+                #if answer is a nickname, replace answer with ship it is referencing.
+                if arg2 in nicknameDic:
+                    arg2 = nicknameDic[arg2].lower();
+
+                #Another shit system. I think im going to need multiple ifs in the future for checking special characters so hopefully it works out.
                 if (ans.lower() == arg2):
-                    c = True;
-                if (ans.lower() == arg2.replace('muse','µ')):
                     c = True;
 
                 if (c == True):
@@ -510,11 +563,12 @@ class GuessThatShipgirl(commands.Cog):
                     await message.channel.send(embed = embedVar);
 
                     deleteChannelData(message);
+            #If the answer was not correct, its incorrect. Tell the play that.
             if (c == False):
                 await message.channel.send(f"{arg} was not the correct answer.");
 
 
 
-
+#set this up with cogs and pray it works
 def setup(client):
     client.add_cog(GuessThatShipgirl(client))
