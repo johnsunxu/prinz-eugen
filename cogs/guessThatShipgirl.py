@@ -116,15 +116,12 @@ class GuessThatShipgirl(commands.Cog):
                         if (j['name'] == 'Default'):
                             if not "Default" in pool:
                                 skinsArr.pop(i);
-                                print("remove default")
                         elif j['name'] == 'Retrofit':
                             if not "Retrofit" in pool:
                                 skinsArr.pop(i);
-                                print("remove retro")
                         else:
                             if not "Skins" in pool:
                                 skinsArr.pop(i);
-                                print("remove skin")
                         i+=1;
                     if (len(skinsArr) > 0):
                         break;
@@ -251,16 +248,19 @@ class GuessThatShipgirl(commands.Cog):
                     "ayaya" : "Ayanami",
                     "nimi" : "Z23",
                     "monty" : "Montpelier",
-                    "pamiat" : "pamiat merkuria"
-                }
+                    "pamiat" : "Pamiat Merkuria",
 
-                #Here is where special characters should be handled. Ex. Muse, special o, e, and a.
+
+                }
 
                 #if answer is a nickname, replace answer with ship it is referencing.
                 if arg2 in nicknameDic:
                     arg2 = nicknameDic[arg2].lower();
 
-                #Another shit system. I think im going to need multiple ifs in the future for checking special characters so hopefully it works out.
+                #Here is where special characters are handled. Ex. Muse, special o, e, and a.
+                if (ans.lower().replace('ö','o').replace('é', 'e').replace('â','a').replace('µ','muse') == arg2):
+                    c = True;
+
                 if (ans.lower() == arg2):
                     c = True;
 
