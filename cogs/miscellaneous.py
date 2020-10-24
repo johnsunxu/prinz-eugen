@@ -45,9 +45,9 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
-        embed = discord.Embed(title = "Patch Notes - October 22nd 2020")
-        embed.add_field(name ="Version 1.4A", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**DEPRECATED** ;analyzeMulti. Now ;analyze takes in as many players as requested.", inline = False)
+        embed = discord.Embed(title = "Patch Notes - October 23rd 2020")
+        embed.add_field(name ="Version 1.4B", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**UPDATED** ;analyze is now not case sensitive and looks for match up to 82%", inline = False)
         await ctx.send(embed = embed)
 
 def setup(client):

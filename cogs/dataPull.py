@@ -1,10 +1,12 @@
 import discord
 import gspread
 import pytz
+import jellyfish
 from datetime import datetime
 from datetime import timedelta
 from oauth2client.service_account import ServiceAccountCredentials
 from discord.ext import commands 
+
 
 #Check if user entered correct servers
 def checkServerInput(server):
@@ -123,6 +125,7 @@ class CheckPlayer(commands.Cog):
         for player in players:
             playerInput.append(player)
         playerOutput = []
+        #add lists for each player inputted
         for i in range(len(playerInput)): 
             playerOutput.append([])
 
@@ -138,9 +141,12 @@ class CheckPlayer(commands.Cog):
             #Loop through the spreadsheet
             for j in range(len(storedPlayerData)): 
                 #Check the player matches
-                if playerInput[i].strip() == storedPlayerData[j].strip():
+                # if playerInput[i].strip() == storedPlayerData[j].strip():
+                #     playerOutput[i].append(rows[j])
+                #check percent match 
+                if jellyfish.damerau_levenshtein_distance(playerInput[i].strip().lower(), storedPlayerData[j].strip().lower())/len(storedPlayerData[j].strip()) <= 0.18: 
                     playerOutput[i].append(rows[j])
-                    
+
         #Create output string
         str = "" 
         for i in range(len(playerInput)):

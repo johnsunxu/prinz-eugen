@@ -3,3 +3,4 @@ gspread
 datetime
 pytz
 oauth2client
+jellyfish
