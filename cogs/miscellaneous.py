@@ -31,9 +31,9 @@ class Miscellaneous(commands.Cog):
 
         embed.add_field(name =":small_red_triangle: ;addPlayer [server] [player] [minutes from present, default 0] [days from present, default 0]", value = "Create a report on a rusher.\nExample `;addPlayer Avrora test123`", inline = False)
 
-        embed.add_field(name = ":small_red_triangle: ;analyze [server] [player]", value = "Displays reports on a player.\nExample: `;analyze test123`", inline = False)
+        embed.add_field(name = ":small_red_triangle: ;analyze [server] [player1] [player2]...", value = "Displays reports on a player.\nExample: `;analyze Avrora test123 \"test 123\"`", inline = False)
 
-        embed.add_field(name = ":small_red_triangle: ;analyzeMulti [server] [player1] [player2] [player3] [player4]", value = "Displays report for four players\nExample: `;analyzeMulti Avrora \"Test one\" test2 test3 test4`",inline = False)
+        #embed.add_field(name = ":small_red_triangle: ;analyzeMulti [server] [player1] [player2] [player3] [player4]", value = "Displays report for four players\nExample: `;analyzeMulti Avrora \"Test one\" test2 test3 test4`",inline = False)
 
         embed.add_field(name = ":small_red_triangle: ;flipcoin", value = "Displays the result of a unbiased coin flip.", inline = False)
 
@@ -46,8 +46,8 @@ class Miscellaneous(commands.Cog):
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
         embed = discord.Embed(title = "Patch Notes - October 22nd 2020")
-        embed.add_field(name ="Version 1.3", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**NEW** Added ;guess", inline = False)
+        embed.add_field(name ="Version 1.4A", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**DEPRECATED** ;analyzeMulti. Now ;analyze takes in as many players as requested.", inline = False)
         await ctx.send(embed = embed)
 
 def setup(client):
