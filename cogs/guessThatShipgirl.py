@@ -73,7 +73,7 @@ class GuessThatShipgirl(commands.Cog):
         self.client = client
 
     #Main function
-    @commands.command(aliases = ["guess"])
+    @commands.command(aliases = ["guess","g"])
     async def run(self, message, *args):
 
         #Combine the args into one so it is easier to referance later
@@ -82,14 +82,14 @@ class GuessThatShipgirl(commands.Cog):
         #Help menu embed.
         if (arg == 'help'):
             embed = discord.Embed(title = "Guess Game Help Menu")
-            embed.add_field(name =":small_red_triangle: ;guess start", value = "Start a guessing game\n`+skins`, `+s`, or `s` to add skins.\n`+retro`, `+r`, or `r` to add retrofit skins.\n`-default`, `-d`, or `d` to remove default skins.\n", inline = False)
+            embed.add_field(name =":small_red_triangle: ;guess", value = "Start a guessing game\n`+skins`, `+s`, or `s` to add skins.\n`+retro`, `+r`, or `r` to add retrofit skins.\n`-default`, `-d`, or `d` to remove default skins.\n", inline = False)
             embed.add_field(name =":small_red_triangle: ;guess stop", value = "Ends a guessing game if one is running.", inline = False)
             embed.add_field(name =":small_red_triangle: ;guess [Shipgirl Name]", value = 'Guess a shipgirl.\nex.`;guess Howe`\nex.`;guess Long Island`', inline = False)
 
             await message.channel.send(embed = embed);
 
         #Start game argument
-        elif (args[0] == 'start'):
+        elif (len(args) == 0):
             if getChannelData(message) != 0:
                 #The channel has a game running. Send error.
                 await message.channel.send('This channel already has a game running! Try again in a different channel or wait until this game is over.');
@@ -208,7 +208,7 @@ class GuessThatShipgirl(commands.Cog):
                 deleteChannelData(message);
             else:
                 #no game is running. Send error message.
-                await message.channel.send("A game is not running right now. Start a new game with ;guess start!");
+                await message.channel.send("A game is not running right now. Start a new game with ;guess or ;g!");
         else:
             #determine if game is running
             data = getChannelData(message);
@@ -217,7 +217,7 @@ class GuessThatShipgirl(commands.Cog):
             if data == 0:
                 #C is the bool used to tell if the answer is true
                 c = True;
-                await message.channel.send("A game is not running right now. Start a new game with ;guess start!");
+                await message.channel.send("A game is not running right now. Start a new game with ;guess or ;g!");
             else:
                 ans = data['name'];
                 #Do all the special checks
@@ -264,6 +264,7 @@ class GuessThatShipgirl(commands.Cog):
                     "nimi" : "Z23",
                     "monty" : "Montpelier",
                     "pamiat" : "Pamiat Merkuria",
+                    "rossiya" : "Sovetskaya Rossiya"
 
 
                 }

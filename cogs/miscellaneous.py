@@ -46,8 +46,8 @@ class Miscellaneous(commands.Cog):
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
         embed = discord.Embed(title = "Patch Notes - October 23rd 2020")
-        embed.add_field(name ="Version 1.5", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**UPDATED** Guessing game bot now supports skins. type `;guess help` for more information.", inline = False)
+        embed.add_field(name ="Version 1.51", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**UPDATED** Guessing game bot commands changed. Type `;guess help` for more information.", inline = False)
         await ctx.send(embed = embed)
 
 def setup(client):
