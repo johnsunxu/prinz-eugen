@@ -348,6 +348,7 @@ class GuessThatShipgirl(commands.Cog):
                     "bulin" : "Universal Bulin",
                     "purin" : "Prototype Bulin MKII",
                     "urin" : "Specialized Bulin Custom MKIII",
+                    "ur bulin" : "Specialized Bulin Custom MKIII",
                     "hipper" : "Admiral Hipper",
                     "hipper muse" : "Admiral Hipper µ",
                     "spee" : "Graf Spee",
@@ -364,7 +365,10 @@ class GuessThatShipgirl(commands.Cog):
                     "nimi" : "Z23",
                     "monty" : "Montpelier",
                     "pamiat" : "Pamiat Merkuria",
-                    "rossiya" : "Sovetskaya Rossiya"
+                    "rossiya" : "Sovetskaya Rossiya",
+                    "kaga (bb)" : "Kaga (Battleship)",
+                    "kaga bb" : "Kaga (Battleship)",
+                    "jb" : "Jean Bart"
 
 
                 }
