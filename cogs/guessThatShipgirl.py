@@ -237,7 +237,7 @@ class GuessThatShipgirl(commands.Cog):
                         pool[0] = '';
                     elif (i != "start"):
                         #There was an error. Tell the player that they are using an invalid argument.
-                        await message.channel.send(f"{i.title()} is an invalid argument. View ;guess help to see what went wrong.");
+                        await message.channel.send(f"{i.title()} is an invalid argument. View `;guess help` to see what went wrong.");
                         skip = True;
                         break;
 
@@ -287,33 +287,34 @@ class GuessThatShipgirl(commands.Cog):
                         shipData['skin'] = random.choice(skinsArr);
 
                         #make dir
-                        os.mkdir(f"cogs/GuessThatShipgirl/{encodeChannel(message)}");
-                        #its saved at cogs/GuessThatShipgirl/dont_try_to_cheat.png. Thought the name would be funny.
-                        urllib.request.urlretrieve(shipData['skin']['image'], f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png");
+                        if not os.path.exists(f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png"):
+                            os.mkdir(f"cogs/GuessThatShipgirl/{encodeChannel(message)}");
+                            #its saved at cogs/GuessThatShipgirl/dont_try_to_cheat.png. Thought the name would be funny.
+                            urllib.request.urlretrieve(shipData['skin']['image'], f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png");
 
-                        #Save to outfile
-                        saveChannelData(message,shipData);
+                            #Save to outfile
+                            saveChannelData(message,shipData);
 
-                        #turn the image into a sillouete
-                        image = Image.open(f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png") # open colour image
-                        x = np.array(image)
-                        r, g, b, a = np.rollaxis(x, axis=-1)
-                        r[a!=0] = 0;
-                        g[a!=0] = 0;
-                        b[a!=0] = 0;
-                        x = np.dstack([r, g, b, a])
-                        image = Image.fromarray(x, 'RGBA');
-                        image.save(f'cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png')
+                            #turn the image into a sillouete
+                            image = Image.open(f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png") # open colour image
+                            x = np.array(image)
+                            r, g, b, a = np.rollaxis(x, axis=-1)
+                            r[a!=0] = 0;
+                            g[a!=0] = 0;
+                            b[a!=0] = 0;
+                            x = np.dstack([r, g, b, a])
+                            image = Image.fromarray(x, 'RGBA');
+                            image.save(f'cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png')
 
-                        #send the embed
-                        file = discord.File(f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png");
-                        embedVar = discord.Embed(title="Guess the Shipgirl with ;guess [name]! You have 2 minutes!", color=embedColor)
-                        imageURL = "attachment://dont_try_to_cheat.png"
-                        embedVar.set_image(url=imageURL)
-                        await message.channel.send(embed = embedVar,file = file);
+                            #send the embed
+                            file = discord.File(f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png");
+                            embedVar = discord.Embed(title="Guess the Shipgirl with ;guess [name]! You have 2 minutes!", color=embedColor)
+                            imageURL = "attachment://dont_try_to_cheat.png"
+                            embedVar.set_image(url=imageURL)
+                            await message.channel.send(embed = embedVar,file = file);
 
-                        #delete the files
-                        shutil.rmtree(f"cogs/GuessThatShipgirl/{encodeChannel(message)}")
+                            #delete the files
+                            shutil.rmtree(f"cogs/GuessThatShipgirl/{encodeChannel(message)}")
 
                         #set timeout. 120 = 2 minutes.
                         await asyncio.sleep(120)
