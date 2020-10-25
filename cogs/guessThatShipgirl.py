@@ -106,77 +106,90 @@ class GuessThatShipgirl(commands.Cog):
                     pool[0] = '';
 
                 skinArr = [];
-                #Choose random ship
-                while True:
-                    randomShip = random.choice(ships)
-                    skinsArr = randomShip['skins']
-                    #Remove what doesn't belong
-                    i = 0;
-                    for j in skinsArr:
-                        if (j['name'] == 'Default'):
-                            if not "Default" in pool:
-                                skinsArr.pop(i);
-                        elif j['name'] == 'Retrofit':
-                            if not "Retrofit" in pool:
-                                skinsArr.pop(i);
-                        else:
-                            if not "Skins" in pool:
-                                skinsArr.pop(i);
-                        i+=1;
-                    if (len(skinsArr) > 0):
-                        break;
+                if len(pool) == 1 and pool[0] == '':
+                    await message.channel.send("You need to play with at least one category!");
+                else:
+                    #Choose random ship
+                    while True:
+                        randomShip = random.choice(ships)
+                        skinsArr = randomShip['skins']
+                        #Remove what doesn't belong
+                        i = 0;
+                        sizeOfSkinArr = len(skinsArr);
+                        for j in range(0,sizeOfSkinArr):
+                            try:
+                                if (skinsArr[i]['name'] == 'Default'):
+                                    if not "Default" in pool:
+                                        skinsArr.pop(i);
+                                        i-=1;
+                                        #print(skinsArr[i]['name'])
+                                elif skinsArr[i]['name'] == 'Retrofit':
+                                    if not "Retrofit" in pool:
+                                        skinsArr.pop(i);
+                                        i-=1;
+                                        #print(skinsArr[i]['name'])
+                                else:
+                                    if not "Skins" in pool:
+                                        skinsArr.pop(i);
+                                        i-=1;
+                                        #print(skinsArr[i]['name'])
+                            except:
+                                break;
+                            i+=1;
+                        if (len(skinsArr) > 0):
+                            break;
 
-                #Create data structure that will store ship data
-                shipData = {
-                    'name' : '',
-                    'skin' : ''
-                }
-                #Populate the dictionary
-                shipData['name'] = randomShip['names']['en'];
-                shipData['skin'] = random.choice(skinsArr);
+                    #Create data structure that will store ship data
+                    shipData = {
+                        'name' : '',
+                        'skin' : ''
+                    }
+                    #Populate the dictionary
+                    shipData['name'] = randomShip['names']['en'];
+                    shipData['skin'] = random.choice(skinsArr);
 
-                #make dir
-                os.mkdir(f"cogs/GuessThatShipgirl/{encodeChannel(message)}");
-                #its saved at cogs/GuessThatShipgirl/dont_try_to_cheat.png. Thought the name would be funny.
-                urllib.request.urlretrieve(shipData['skin']['image'], f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png");
+                    #make dir
+                    os.mkdir(f"cogs/GuessThatShipgirl/{encodeChannel(message)}");
+                    #its saved at cogs/GuessThatShipgirl/dont_try_to_cheat.png. Thought the name would be funny.
+                    urllib.request.urlretrieve(shipData['skin']['image'], f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png");
 
-                #Save to outfile
-                saveChannelData(message,shipData);
+                    #Save to outfile
+                    saveChannelData(message,shipData);
 
-                #turn the image into a sillouete
-                image = Image.open(f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png") # open colour image
-                x = np.array(image)
-                r, g, b, a = np.rollaxis(x, axis=-1)
-                r[a!=0] = 0;
-                g[a!=0] = 0;
-                b[a!=0] = 0;
-                x = np.dstack([r, g, b, a])
-                image = Image.fromarray(x, 'RGBA');
-                image.save(f'cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png')
+                    #turn the image into a sillouete
+                    image = Image.open(f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png") # open colour image
+                    x = np.array(image)
+                    r, g, b, a = np.rollaxis(x, axis=-1)
+                    r[a!=0] = 0;
+                    g[a!=0] = 0;
+                    b[a!=0] = 0;
+                    x = np.dstack([r, g, b, a])
+                    image = Image.fromarray(x, 'RGBA');
+                    image.save(f'cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png')
 
-                #send the embed
-                file = discord.File(f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png");
-                embedVar = discord.Embed(title="Guess the Shipgirl with ;guess [name]! You have 2 minutes!", color=embedColor)
-                imageURL = "attachment://dont_try_to_cheat.png"
-                embedVar.set_image(url=imageURL)
-                await message.channel.send(embed = embedVar,file = file);
+                    #send the embed
+                    file = discord.File(f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png");
+                    embedVar = discord.Embed(title="Guess the Shipgirl with ;guess [name]! You have 2 minutes!", color=embedColor)
+                    imageURL = "attachment://dont_try_to_cheat.png"
+                    embedVar.set_image(url=imageURL)
+                    await message.channel.send(embed = embedVar,file = file);
 
-                #delete the files
-                shutil.rmtree(f"cogs/GuessThatShipgirl/{encodeChannel(message)}")
+                    #delete the files
+                    shutil.rmtree(f"cogs/GuessThatShipgirl/{encodeChannel(message)}")
 
-                #set timeout. 120 = 2 minutes.
-                await asyncio.sleep(120)
-                #If game is still running, end.
-                if (getChannelData(message) != 0):
-                    if (getChannelData(message) == shipData):
-                        #Send time out embed. I have to make this a function.
-                        embedVar = discord.Embed(title=f"The game timed out. {shipData['name']} was the correct answer.", color=embedColor)
-                        imageURL = shipData['skin']['image']
-                        embedVar.set_image(url=imageURL)
-                        await message.channel.send(embed = embedVar);
+                    #set timeout. 120 = 2 minutes.
+                    await asyncio.sleep(120)
+                    #If game is still running, end.
+                    if (getChannelData(message) != 0):
+                        if (getChannelData(message) == shipData):
+                            #Send time out embed. I have to make this a function.
+                            embedVar = discord.Embed(title=f"The game timed out. {shipData['name']} was the correct answer.", color=embedColor)
+                            imageURL = shipData['skin']['image']
+                            embedVar.set_image(url=imageURL)
+                            await message.channel.send(embed = embedVar);
 
-                        #Delete data to end the game
-                        deleteChannelData(message);
+                            #Delete data to end the game
+                            deleteChannelData(message);
 
         #Handle player giving up
         elif (arg == 'give' or arg == 'give up' or arg == 'quit' or arg == 'stop' or arg == 'end' or arg == 'giveup' or arg == "skip"):
