@@ -89,12 +89,139 @@ class GuessThatShipgirl(commands.Cog):
             await message.channel.send(embed = embed);
 
         #Start game argument
-        elif (len(args) == 0):
-            if getChannelData(message) != 0:
-                #The channel has a game running. Send error.
-                await message.channel.send('This channel already has a game running! Try again in a different channel or wait until this game is over.');
+        # elif (len(args) == 0):
+            # if getChannelData(message) != 0:
+            #     #The channel has a game running. Send error.
+            #     await message.channel.send('This channel already has a game running! Try again in a different channel or wait until this game is over.');
+            #
+            # else:
+            #     #The channel does not have a game running. Start it.
+            #     pool = ["Default"];
+            #     #Get arguments
+            #     if "+skins" in args or "+s" in args or "s" in args:
+            #         pool += ["Skins"]
+            #     if "+retrofit" in args or "+r" in args or "+retro" in args or "r" in args:
+            #         pool += ["Retrofit"]
+            #     if "-default" in args or "-d" in args or "d" in args:
+            #         pool[0] = '';
+            #
+            #     skinArr = [];
+            #     if len(pool) == 1 and pool[0] == '':
+            #         await message.channel.send("You need to play with at least one category!");
+            #     else:
+            #         #Choose random ship
+            #         while True:
+            #             randomShip = random.choice(ships)
+            #             skinsArr = randomShip['skins']
+            #             #print('\n'+randomShip['names']['en'])
+            #             #Remove what doesn't belong
+            #             i = 0;
+            #             sizeOfSkinArr = len(skinsArr);
+            #             for j in range(0,sizeOfSkinArr):
+            #                 try:
+            #                     if (skinsArr[i]['name'] == 'Default'):
+            #                         if not "Default" in pool:
+            #                             skinsArr.pop(i);
+            #                             i-=1;
+            #                             #print(skinsArr[i]['name'])
+            #                     elif skinsArr[i]['name'] == 'Retrofit':
+            #                         if not "Retrofit" in pool:
+            #                             skinsArr.pop(i);
+            #                             i-=1;
+            #                             #print(skinsArr[i]['name'])
+            #                     else:
+            #                         if not "Skins" in pool:
+            #                             skinsArr.pop(i);
+            #                             i-=1;
+            #                             #print(skinsArr[i]['name'])
+            #                 except:
+            #                     break;
+            #                 i+=1;
+            #             if (len(skinsArr) > 0):
+            #                 break;
+            #
+            #         #Create data structure that will store ship data
+            #         shipData = {
+            #             'name' : '',
+            #             'skin' : ''
+            #         }
+            #         #Populate the dictionary
+            #         shipData['name'] = randomShip['names']['en'];
+            #         shipData['skin'] = random.choice(skinsArr);
+            #
+            #         #make dir
+            #         os.mkdir(f"cogs/GuessThatShipgirl/{encodeChannel(message)}");
+            #         #its saved at cogs/GuessThatShipgirl/dont_try_to_cheat.png. Thought the name would be funny.
+            #         urllib.request.urlretrieve(shipData['skin']['image'], f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png");
+            #
+            #         #Save to outfile
+            #         saveChannelData(message,shipData);
+            #
+            #         #turn the image into a sillouete
+            #         image = Image.open(f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png") # open colour image
+            #         x = np.array(image)
+            #         r, g, b, a = np.rollaxis(x, axis=-1)
+            #         r[a!=0] = 0;
+            #         g[a!=0] = 0;
+            #         b[a!=0] = 0;
+            #         x = np.dstack([r, g, b, a])
+            #         image = Image.fromarray(x, 'RGBA');
+            #         image.save(f'cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png')
+            #
+            #         #send the embed
+            #         file = discord.File(f"cogs/GuessThatShipgirl/{encodeChannel(message)}/dont_try_to_cheat.png");
+            #         embedVar = discord.Embed(title="Guess the Shipgirl with ;guess [name]! You have 2 minutes!", color=embedColor)
+            #         imageURL = "attachment://dont_try_to_cheat.png"
+            #         embedVar.set_image(url=imageURL)
+            #         await message.channel.send(embed = embedVar,file = file);
+            #
+            #         #delete the files
+            #         shutil.rmtree(f"cogs/GuessThatShipgirl/{encodeChannel(message)}")
+            #
+            #         #set timeout. 120 = 2 minutes.
+            #         await asyncio.sleep(120)
+            #         #If game is still running, end.
+            #         if (getChannelData(message) != 0):
+            #             if (getChannelData(message) == shipData):
+            #                 #Send time out embed. I have to make this a function.
+            #                 embedVar = discord.Embed(title=f"The game timed out. {shipData['name']} was the correct answer.", color=embedColor)
+            #                 imageURL = shipData['skin']['image']
+            #                 embedVar.set_image(url=imageURL)
+            #                 await message.channel.send(embed = embedVar);
+            #
+            #                 #Delete data to end the game
+            #                 deleteChannelData(message);
 
+        #Handle player giving up
+        elif (arg == 'give' or arg == 'give up' or arg == 'quit' or arg == 'stop' or arg == 'end' or arg == 'giveup' or arg == "skip"):
+            if getChannelData(message) != 0:
+                #Find out what the answer was
+                data = getChannelData(message);
+                ans = data['name'];
+                #Send the embed for timeout
+                embedVar = discord.Embed(title=f"{message.author} stopped the game. The correct answer was {ans}.", color=embedColor)
+                imageURL = data['skin']['image']
+                embedVar.set_image(url=imageURL)
+                await message.channel.send(embed = embedVar);
+
+                #Delete the game from memory
+                deleteChannelData(message);
             else:
+                #no game is running. Send error message.
+                await message.channel.send("A game is not running right now. Start a new game with ;guess or ;g!");
+        else:
+            #determine if game is running
+            data = getChannelData(message);
+            c = False;
+            #A game is not running if it is not in the json list. getChannelData() returns 0 if a game is not found.
+            if data == 0:
+                #C is the bool used to tell if the answer is true
+                c = True;
+                #This is where I start a new game apparently.
+                #await message.channel.send("A game is not running right now. Start a new game with ;guess or ;g!");
+                            #if getChannelData(message) != 0:
+                #The channel has a game running. Send error.
+                #await message.channel.send('This channel already has a game running! Try again in a different channel or wait until this game is over.');
                 #The channel does not have a game running. Start it.
                 pool = ["Default"];
                 #Get arguments
@@ -191,33 +318,6 @@ class GuessThatShipgirl(commands.Cog):
 
                             #Delete data to end the game
                             deleteChannelData(message);
-
-        #Handle player giving up
-        elif (arg == 'give' or arg == 'give up' or arg == 'quit' or arg == 'stop' or arg == 'end' or arg == 'giveup' or arg == "skip"):
-            if getChannelData(message) != 0:
-                #Find out what the answer was
-                data = getChannelData(message);
-                ans = data['name'];
-                #Send the embed for timeout
-                embedVar = discord.Embed(title=f"{message.author} stopped the game. The correct answer was {ans}.", color=embedColor)
-                imageURL = data['skin']['image']
-                embedVar.set_image(url=imageURL)
-                await message.channel.send(embed = embedVar);
-
-                #Delete the game from memory
-                deleteChannelData(message);
-            else:
-                #no game is running. Send error message.
-                await message.channel.send("A game is not running right now. Start a new game with ;guess or ;g!");
-        else:
-            #determine if game is running
-            data = getChannelData(message);
-            c = False;
-            #A game is not running if it is not in the json list. getChannelData() returns 0 if a game is not found.
-            if data == 0:
-                #C is the bool used to tell if the answer is true
-                c = True;
-                await message.channel.send("A game is not running right now. Start a new game with ;guess or ;g!");
             else:
                 ans = data['name'];
                 #Do all the special checks
