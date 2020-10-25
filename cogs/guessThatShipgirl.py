@@ -113,6 +113,7 @@ class GuessThatShipgirl(commands.Cog):
                     while True:
                         randomShip = random.choice(ships)
                         skinsArr = randomShip['skins']
+                        #print('\n'+randomShip['names']['en'])
                         #Remove what doesn't belong
                         i = 0;
                         sizeOfSkinArr = len(skinsArr);
