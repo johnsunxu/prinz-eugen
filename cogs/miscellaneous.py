@@ -43,10 +43,10 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
-        embed = discord.Embed(title = "Patch Notes - October 23rd 2020")
-        embed.add_field(name ="Version 1.6", value = "** **", inline = False)
+        embed = discord.Embed(title = "Patch Notes - October 28th 2020")
+        embed.add_field(name ="Version 1.6.1", value = "** **", inline = False)
         embed.add_field(name = "** **", value = "**NEW** Added skins for ;guess.")
-        embed.add_field(name = "** **", value = "**IMPROVEMENT** Improved user input for ;guess and ;addplayer  .", inline = False)
+        embed.add_field(name = "** **", value = "**IMPROVEMENT** Improved input and output for ;guess and ;addplayer  .", inline = False)
         await ctx.send(embed = embed)
 
 def setup(client):
