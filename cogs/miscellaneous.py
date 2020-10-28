@@ -33,8 +33,6 @@ class Miscellaneous(commands.Cog):
 
         embed.add_field(name = ":small_red_triangle: ;analyze [server] [player1] [player2]...", value = "Displays reports on a player.\nExample: `;analyze Avrora test123 \"test 123\"`", inline = False)
 
-        #embed.add_field(name = ":small_red_triangle: ;analyzeMulti [server] [player1] [player2] [player3] [player4]", value = "Displays report for four players\nExample: `;analyzeMulti Avrora \"Test one\" test2 test3 test4`",inline = False)
-
         embed.add_field(name = ":small_red_triangle: ;flipcoin", value = "Displays the result of a unbiased coin flip.", inline = False)
 
         embed.add_field(name = ":small_red_triangle: ;patchNotes", value = "Displays patch notes.", inline = False)
@@ -46,8 +44,9 @@ class Miscellaneous(commands.Cog):
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
         embed = discord.Embed(title = "Patch Notes - October 23rd 2020")
-        embed.add_field(name ="Version 1.51", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**UPDATED** Guessing game bot commands changed. Type `;guess help` for more information.", inline = False)
+        embed.add_field(name ="Version 1.6", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**NEW** Added skins for ;guess.")
+        embed.add_field(name = "** **", value = "**IMPROVEMENT** Improved user input for ;guess and ;addplayer  .", inline = False)
         await ctx.send(embed = embed)
 
 def setup(client):

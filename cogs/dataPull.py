@@ -148,6 +148,7 @@ class CheckPlayer(commands.Cog):
                     playerOutput[i].append(rows[j])
 
         #Create output string
+        await ctx.send("Reminder: Times are in server time!")
         str = "" 
         for i in range(len(playerInput)):
             #Check if player isn't found
@@ -159,8 +160,6 @@ class CheckPlayer(commands.Cog):
                 str+= ", ".join(report)+"\n"
             str+= "```"
         await ctx.send(str)
-
-
 
     @commands.command(aliases = ["addplayer"], brief = "Add player to spreadsheet in UTC time.")
     async def addPlayer(self,ctx, server, playerName, customTime = 0, customDate = 0, *extraArgs):
@@ -176,6 +175,14 @@ class CheckPlayer(commands.Cog):
         #Check if player has entered too many arguments
         if len(extraArgs) != 0 and customTime == None and customDate == None:
             print(extraArgs)
+            await ctx.send("No spaces! Use \" \" for names with spaces.")
+            return
+        
+        #Check customTime and customDate
+        try: 
+            customTime = int(customTime)
+            customDate = int(customDate)
+        except:
             await ctx.send("No spaces! Use \" \" for names with spaces.")
             return
 
