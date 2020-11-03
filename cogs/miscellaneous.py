@@ -22,7 +22,7 @@ class Miscellaneous(commands.Cog):
     #Coinflip function
     @commands.command(aliases = ["flipcoin", "coinflip"])
     async def flipCoin(self, ctx):
-        reply = ["Heads","Heads","Heads","Tails","Tails"]
+        reply = ["Heads","Heads","Tails","Tails","Tails","Tails"]
         await ctx.send("%s" %(random.choice(reply)))
 
     @commands.command()
@@ -43,10 +43,10 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
-        embed = discord.Embed(title = "Patch Notes - October 28th 2020")
-        embed.add_field(name ="Version 1.6.1", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**NEW** Added skins for ;guess.")
-        embed.add_field(name = "** **", value = "**IMPROVEMENT** Improved input and output for ;guess and ;addplayer  .", inline = False)
+        embed = discord.Embed(title = "Patch Notes - November 2nd 2020")
+        embed.add_field(name ="Version 1.6.2", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**NEW** Endless mode added for guessing game. View `;g help` for details.")
+        embed.add_field(name = "** **", value = "**IMPROVEMENT** Added more nicknames for the guessing game.", inline = False)
         await ctx.send(embed = embed)
 
 def setup(client):
