@@ -73,14 +73,14 @@ class ehpCalculator(commands.Cog):
                 embed = discord.Embed(title = "EHP Help Menu")
                 embed.add_field(name =":small_red_triangle: ;ehp [ship name] [args]", value =
                 """
-`ship name` - The ship that you want to calculate the eHP of.
+`ship name` - The ship that you want to calculate the eHP of. Use quotes for character names with a space.
 `Args`-
     hitN = Set enemy hit stat to value N.
     luckN = set enemy luck to value N.
     timeN = Set enemy luck stat to value N.
 Example:
     `;ehp Akagi` - get Akagi's eHP
-    `;ehp Warspite hit100` - get Warspite's eHP with an enemy hit stat of 100.
+    `;ehp "Graf Zeppelin" hit100` - get Graf Zeppelin's eHP with an enemy hit stat of 100.
 """, inline = False)
 
 
