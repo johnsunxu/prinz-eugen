@@ -13,6 +13,7 @@ import requests
 import urllib.request
 import numpy as np
 import shutil
+from shipGirlNicknameHandler import getNickname
 
 
 #encode channel into my jank format
@@ -210,8 +211,8 @@ class GuessThatShipgirl(commands.Cog):
         self.client = client
 
     #Main function
-    @commands.command(aliases = ["guess","g"])
-    async def run(self, message, *args):
+    @commands.command(aliases = ["g"])
+    async def guess(self, message, *args):
 
         #Combine the args into one so it is easier to referance later
         arg = " ".join(args);
@@ -264,65 +265,7 @@ class GuessThatShipgirl(commands.Cog):
                 #Do all the special checks
                 arg2 = arg.lower().replace('"','');
 
-                #Handle nick names. Im proud of this solution tbh.
-                nicknameDic = {
-                    "fdg" : "Friedrich der Große",
-                    "bad" : "Izumo",
-                    "warcorgi" : "Warspite",
-                    "warpoi" : "Warspite",
-                    "nanoda" : "Yukikaze",
-                    "yuki" : "Yukikaze",
-                    "graf" : "Graf Zeppelin",
-                    "enty" : "Enterprise",
-                    "owari da" : "Enterprise",
-                    "st louis" : "St. louis",
-                    "sanrui" : "Saint Louis",
-                    "jesus" : "Juneau",
-                    "sandy" : "San Diego",
-                    "bisko" : "Bismark",
-                    "bisco" : "Bismark",
-                    "kgv" : "King George V",
-                    "clevebro" : "Cleveland",
-                    "pow" : "Prince of Wales",
-                    "doy" : "Duke of York",
-                    "qe" : "Queen Elizabeth",
-                    "bulin" : "Universal Bulin",
-                    "purin" : "Prototype Bulin MKII",
-                    "urin" : "Specialized Bulin Custom MKIII",
-                    "ur bulin" : "Specialized Bulin Custom MKIII",
-                    "hipper" : "Admiral Hipper",
-                    "hipper muse" : "Admiral Hipper µ",
-                    "spee" : "Graf Spee",
-                    "indy" : "Indianapolis",
-                    "177013" : "Marblehead",
-                    'prinz' : "Prinz Eugen",
-                    'sara' : "Saratoga",
-                    'iroha' : "I-168",
-                    "lolicon" : "Ark Royal",
-                    "massa" : "Massachusetts",
-                    "poi" : "Yuudachi",
-                    "lusty" : "Illustrious",
-                    "ayaya" : "Ayanami",
-                    "nimi" : "Z23",
-                    "monty" : "Montpelier",
-                    "pamiat" : "Pamiat Merkuria",
-                    "rossiya" : "Sovetskaya Rossiya",
-                    "kaga (bb)" : "Kaga (Battleship)",
-                    "kaga bb" : "Kaga (Battleship)",
-                    "jb" : "Jean Bart",
-                    "desuland" : "Deutschland",
-                    "richy" : "Richelieu",
-                    "formi" : "Formidable",
-                    "sheffy" : "Sheffield",
-                    "hms neptune" : "Neptune",
-                    "maki" : "Makinami"
-
-
-                }
-
-                #if answer is a nickname, replace answer with ship it is referencing.
-                if arg2 in nicknameDic:
-                    arg2 = nicknameDic[arg2].lower();
+                arg2 = getNickname(arg2);
 
                 #Here is where special characters are handled. Ex. Muse, special o, e, and a.
                 if (ans.lower().replace('ö','o').replace('é', 'e').replace('â','a').replace('µ','muse') == arg2):

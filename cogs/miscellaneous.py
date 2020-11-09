@@ -39,6 +39,8 @@ class Miscellaneous(commands.Cog):
 
         embed.add_field(name = ":small_red_triangle: ;guess help", value = "Shows how to play the shipgirl guessing game.", inline = False)
 
+        embed.add_field(name = ":small_red_triangle: ;ehp help", value = "Shows how to calculate eHP for a ship.", inline = False)
+
         await ctx.send(embed = embed)
 
     @commands.command(aliases=["patchnotes"])
