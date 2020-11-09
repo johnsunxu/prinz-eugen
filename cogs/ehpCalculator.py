@@ -32,7 +32,8 @@ def ehpAzuma(hp,eva,time):
             totalEVABoost+=.7*.2;
             iteration+=1;
     return [hp,eva*(1+(totalEVABoost*1.2)/(iteration*.8)),0,"Mizuho's Intuition"];
-
+def ehpGrafZeppelin(hp,eva,time):
+    return [hp*1.15,eva,0,"Iron Blood Wings"];
 def ehpJintsuu(hp,eva,time):
     return [hp*1.2,eva,0,"The Unyielding Jintsuu"];
 def ehpNoshiro(hp,eva,time):
@@ -73,13 +74,13 @@ class ehpCalculator(commands.Cog):
                 embed = discord.Embed(title = "EHP Help Menu")
                 embed.add_field(name =":small_red_triangle: ;ehp [ship name] [args]", value =
                 """
-`ship name` - The ship that you want to calculate the eHP of. Use quotes for character names with a space.
+`ship name` - The ship that you want to calculate the eHP of in exercises. Use quotes for character names with a space.
 `Args`-
     hitN = Set enemy hit stat to value N.
     luckN = set enemy luck to value N.
     timeN = Set enemy luck stat to value N.
 Example:
-    `;ehp Akagi` - get Akagi's eHP
+    `;ehp Akagi` - get Akagi's eHP.
     `;ehp "Graf Zeppelin" hit100` - get Graf Zeppelin's eHP with an enemy hit stat of 100.
 """, inline = False)
 
@@ -167,7 +168,8 @@ Toolkit   {calcEHP(500,0,time)}      {calcEHP(575,35,time)}     {calcEHP(1000,0,
 
 
                 embed = discord.Embed(title=f"{name}'s EHP", description=s)
-                embed.set_thumbnail(url=shipData["skins"][0]["chibi"]);
+                r = random.choice(shipData["skins"])['chibi'];
+                embed.set_thumbnail(url=r);
 
                 await message.channel.send(embed = embed);
 
