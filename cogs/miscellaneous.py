@@ -45,10 +45,9 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
-        embed = discord.Embed(title = "Patch Notes - November 2nd 2020")
-        embed.add_field(name ="Version 1.6.2", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**NEW** Endless mode added for guessing game. View `;g help` for details.")
-        embed.add_field(name = "** **", value = "**IMPROVEMENT** Added more nicknames for the guessing game.", inline = False)
+        embed = discord.Embed(title = "Patch Notes - November 11th 2020")
+        embed.add_field(name ="Version 1.6.3", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**BUGFIX** Fixed `;addplayer` error message.")
         await ctx.send(embed = embed)
 
 def setup(client):
