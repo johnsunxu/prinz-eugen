@@ -78,7 +78,7 @@ class ehpCalculator(commands.Cog):
 `Args`-
     hitN = Set enemy hit stat to value N.
     luckN = set enemy luck to value N.
-    timeN = Set enemy luck stat to value N.
+    timeN = Set battle duration stat to value N.
 Example:
     `;ehp Akagi` - get Akagi's eHP.
     `;ehp "Graf Zeppelin" hit100` - get Graf Zeppelin's eHP with an enemy hit stat of 100.
@@ -142,6 +142,7 @@ Example:
 
 
                     acc = 0.1 + (eHit)/(eHit+realEva+2) + (eLck-lck+0)/(1000) - (evaSkill+e);
+                    acc = max(acc,.1);
                     repairHeal = 1+(math.floor(rtime/15) * .01)
                     return round((realHP/acc)*2.34*repairHeal);
 
