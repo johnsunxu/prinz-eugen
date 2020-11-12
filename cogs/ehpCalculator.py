@@ -12,7 +12,7 @@ import math
 api = AzurAPI()
 
 #Structure of return data
-#[HP, Eva, Eva Rate, skill]
+#[HP, Eva, Eva Rate, skill] (make function to format this)
 #createSwitcher
 def ehpAmagi(hp,eva,time):
     return [hp,eva,.1,"Efficacious Planning"];
@@ -133,6 +133,7 @@ Example:
                     realEva = eva+exEva;
                     #Claculate skills
                     e = 0;
+                    #switcher
                     if name in skillSwitch:
                         func = skillSwitch.get(name, "nothing")
                         result = func(realHP,realEva,time);
@@ -140,10 +141,11 @@ Example:
                         realEva = result[1]
                         e = result[2];
 
-
+                    #Claculate accuracy
                     acc = 0.1 + (eHit)/(eHit+realEva+2) + (eLck-lck+0)/(1000) - (evaSkill+e);
                     acc = max(acc,.1);
                     repairHeal = 1+(math.floor(rtime/15) * .01)
+                    #devide HP by acc to get eHP
                     return round((realHP/acc)*2.34*repairHeal);
 
                 def getIncludedSkill():
@@ -163,12 +165,13 @@ Rudder    {calcEHP(60,40,0)}      {calcEHP(75+60,35+40,0)}     {calcEHP(540,40,t
 Toolkit   {calcEHP(500,0,time)}      {calcEHP(575,35,time)}     {calcEHP(1000,0,time)}
 ```
     {getIncludedSkill()}
+This is NOT an representation of a ships eHP in PvE.
                 """
     #Tear      {calcEHP(500,0,0)}      {calcEHP(575,35,0)}     {calcEHP(1000,0,time)}
 
 
 
-                embed = discord.Embed(title=f"{name}'s EHP", description=s)
+                embed = discord.Embed(title=f"{name}'s EHP in Exercises", description=s)
                 r = random.choice(shipData["skins"])['chibi'];
                 embed.set_thumbnail(url=r);
 
