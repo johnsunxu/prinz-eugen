@@ -154,7 +154,7 @@ Example:
                         result = func(0,0,0);
                         return "Skills included: " + result[3];
                     else:
-                        return "No skills are included in this calculation";
+                        return "No skills are included in this calculation.";
 
                 s = f"""
             Enemy Hit: {eHit} | Enemy Luck: {eLck} | Battle Duration: {time}s
