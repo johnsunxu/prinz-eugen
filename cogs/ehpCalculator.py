@@ -165,7 +165,7 @@ Rudder    {calcEHP(60,40,0)}      {calcEHP(75+60,35+40,0)}     {calcEHP(540,40,t
 Toolkit   {calcEHP(500,0,time)}      {calcEHP(575,35,time)}     {calcEHP(1000,0,time)}
 ```
     {getIncludedSkill()}
-This is NOT an representation of a ships eHP in PvE.
+This is NOT an accurate representation of a ships eHP in PvE.
                 """
     #Tear      {calcEHP(500,0,0)}      {calcEHP(575,35,0)}     {calcEHP(1000,0,time)}
 
