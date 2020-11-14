@@ -2,7 +2,6 @@ import discord
 import random
 from discord.ext import commands
 from azurlane.azurapi import AzurAPI
-from PIL import Image
 import requests
 import urllib.request
 from shipGirlNicknameHandler import getNickname
