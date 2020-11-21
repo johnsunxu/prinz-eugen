@@ -171,6 +171,10 @@ class CheckPlayer(commands.Cog):
 
     @commands.command(aliases=["addplayer"], brief="Add player to spreadsheet in UTC time.")
     async def addPlayer(self, ctx, server, playerName, customTime="0", customDate="0", *extraArgs):
+        
+        await ctx.send("Sorry this command is currently under maintenance.")
+        return
+
         #Update Spreadsheet
         #updateSpreadsheet()
         updateTime()
