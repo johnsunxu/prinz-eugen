@@ -2,29 +2,38 @@ import discord
 import gspread
 import pytz
 import jellyfish
+import psycopg2
+import sys
+import os
 from datetime import datetime
 from datetime import timedelta
 from oauth2client.service_account import ServiceAccountCredentials
 from discord.ext import commands
+from dotenv import load_dotenv
+from pathlib import Path
+
 
 
 #Check if user entered correct servers
 def checkServerInput(server):
+    global avrora_cur,washington_cur,lexington_cur,amagi_cur,sandy_cur, avrora_conn,washington_conn,lexington_conn,amagi_conn,sandy_conn
 
     validServer = False
     serverList = ["Avrora", "Sandy", "Washington", "Lexington", "Amagi"]
+    cursorList= [avrora_cur,sandy_cur,washington_cur,lexington_cur,amagi_cur]
+    connectionList =[avrora_conn,sandy_conn,washington_conn,lexington_conn,amagi_conn]
 
-    for i in serverList:
+    for i in range(len(serverList)):
         if validServer == False:
             #print(server.lower(), i.lower())
-            if server.lower() == i.lower():
-                server = i
+            if server.lower() == serverList[i].lower():
+                server = serverList[i]
                 validServer = True
-    return validServer, server
+                cursor = cursorList[i]
+                connection = connectionList[i]
+    return validServer, server,cursor, connection
 
-#procedure for updating the time the bot is at in PST
-
-
+#procedure for updating the time the bot is at in PST/MOUNTAIN
 def updateTime():
     global serverTime, time, date
     serverTime = datetime.now(pytz.timezone("US/Mountain"))
@@ -44,11 +53,18 @@ def updateSpreadsheet(server):
     return sheet
 
 
-def sendData(server, data):
+# def sendData(server, data):
 
-    sheet = updateSpreadsheet(server)
-    sheet.append_row(data, value_input_option="USER_ENTERED")
-
+#     sheet = updateSpreadsheet(server)
+#     sheet.append_row(data, value_input_option="USER_ENTERED")
+def sendData(server, serverCursor, serverConnection, rusherName, time, date, reporterName):
+    #find out entry number
+    serverCursor.execute(f"SELECT * FROM {server.lower()}_entries;")
+    entryNumber = serverCursor.fetchall()[len(serverCursor.fetchall())-1][0]+1
+    print("ENTRY NUM IS", entryNumber)
+    print(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
+    serverCursor.execute(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
+    serverConnection.commit()
 #create class
 
 
@@ -57,65 +73,19 @@ class CheckPlayer(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    # @commands.Cog.listener()
-    # async def on_message(self, message):
-    #     updateTime()
-    #     print(time, "\n", date)
-
-    # @commands.command(aliases = [], brief = "Call for reports on the player.")
-    # async def analyze(self, ctx, server, playerName, *extraArgs):
-    #     #Check if user entered correct servers
-    #     if checkServerInput(server)[0] != True:
-    #         await ctx.send("Server input incorrect!")
-    #         return
-    #     else:
-    #         server = checkServerInput(server)[1]
-
-    #     sheet = updateSpreadsheet(server)
-    #     sheetData = sheet.get_all_records()
-    #     storedPlayerData = []
-    #     rows = []
-    #     #Add rows to variable rows
-    #     for i in range(len(sheetData)):
-    #         rows.append([sheetData[i].get("Server"), sheetData[i].get("User"), sheetData[i].get("Time"), sheetData[i].get("Date")])
-    #     #Create variable to find the column that contains the player
-    #     for row in range(len(sheetData)):
-    #         storedPlayerData.append(sheetData[row].get("User"))
-
-    #     #Check if user has entered too many arguments
-    #     if len(extraArgs) != 0:
-    #         print(extraArgs)
-    #         await ctx.send("No spaces! Use \" \" for names with spaces.")
-    #         return
-
-    #     global playerFound
-    #     #Search each cell in the player column for the inputted player
-    #     for i in range(len(storedPlayerData)):
-    #         #Check if player is found in spreadsheet
-    #         if playerName == storedPlayerData[i]:
-    #             #Send message with value
-    #             #Only send "Here is the player data" if it is the first time
-    #             if playerFound == False:
-    #                 await ctx.send(f"Here is the player data \n{rows[i]} \n")
-    #             else:
-    #                 await ctx.send(f"{rows[i]} \n")
-    #             #Set playerFound to True now that the player has been found
-    #             playerFound = True
-
-    #             #print(playerName, storedPlayerData[i])
-
-    #     if playerFound == False:
-    #         await ctx.send("Player not found.")
-    #     playerFound = False
-
     @commands.command(aliases=["analyzemulti", "analyzeMulti"])
     async def analyze(self, ctx, server, *players):
+        await ctx.send("Sorry this command is currently under maintenance.")
+        return
+        
         #Check if user entered correct servers
         if checkServerInput(server)[0] != True:
             await ctx.send("Server input incorrect!")
             return
         else:
             server = checkServerInput(server)[1]
+            serverCursor = checkServerInput(server)[2]
+            serverConnection = checkServerInput(server)[3]
 
         #Check if user has entered too many arguments
         # if len(extraArgs) != 0:
@@ -125,7 +95,9 @@ class CheckPlayer(commands.Cog):
 
         #Receive variables
         sheet = updateSpreadsheet(server)
-        sheetData = sheet.get_all_records()
+        # sheetData = sheet.get_all_records()
+        serverCursor.execute(f"SELECT * FROM {server}_entries;")
+        sheetData = serverCursor.fetchall()
         storedPlayerData = []
         rows = []
         playerInput = []
@@ -138,8 +110,7 @@ class CheckPlayer(commands.Cog):
 
         #Add rows to variable rows
         for i in range(len(sheetData)):
-            rows.append([sheetData[i].get("Server"), sheetData[i].get(
-                "User"), sheetData[i].get("Time"), sheetData[i].get("Date")])
+            rows.append([sheetData[i].get("Server"), sheetData[i].get("User"), sheetData[i].get("Time"), sheetData[i].get("Date")])
         #Create variable to find the column that contains the player
         for row in range(len(sheetData)):
             storedPlayerData.append(sheetData[row].get("User"))
@@ -172,8 +143,8 @@ class CheckPlayer(commands.Cog):
     @commands.command(aliases=["addplayer"], brief="Add player to spreadsheet in UTC time.")
     async def addPlayer(self, ctx, server, playerName, customTime="0", customDate="0", *extraArgs):
         
-        await ctx.send("Sorry this command is currently under maintenance.")
-        return
+        # await ctx.send("Sorry this command is currently under maintenance.")
+        # return
 
         #Update Spreadsheet
         #updateSpreadsheet()
@@ -204,6 +175,8 @@ class CheckPlayer(commands.Cog):
             return
         else:
             server = checkServerInput(server)[1]
+            serverCursor = checkServerInput(server)[2]
+            serverConnection = checkServerInput(server)[3]
 
         #Remove white spaces
         playerName = playerName.strip()
@@ -211,10 +184,13 @@ class CheckPlayer(commands.Cog):
         deltaTime = timedelta(days=customDate, minutes=customTime)
         global serverTime
         temp = serverTime-deltaTime
-        dataEntry = [server, playerName, temp.strftime(
-            "%H:%M:%S"), temp.strftime("%d/%m/%Y"), ctx.message.author.name]
+        time = temp.strftime("%H:%M:%S")
+        date = temp.strftime("%d/%m/%Y")
+        reporterName = ctx.message.author.name
+
+        # dataEntry = [server, playerName, temp.strftime("%H:%M:%S"), temp.strftime("%d/%m/%Y"), ctx.message.author.name]
         #Add to sheet
-        sendData(server, dataEntry)
+        sendData(server, serverCursor, serverConnection,playerName,time,date,reporterName)
         # sheet.append_row(dataEntry, value_input_option="USER_ENTERED")
         await ctx.send("Data entry successful!")
         #updateSpreadsheet()
@@ -224,6 +200,28 @@ class CheckPlayer(commands.Cog):
 def setup(client):
     client.add_cog(CheckPlayer(client))
 
+#Database connections
+load_dotenv(dotenv_path="./dev.env")
+DATABASE_URL = os.getenv('DATABASE_URL')
+avrora_db = DATABASE_URL
+amagi_db = os.getenv('HEROKU_POSTGRESQL_SILVER_URL')
+sandy_db = os.getenv('HEROKU_POSTGRESQL_COPPER_URL')
+lexington_db = os.getenv('HEROKU_POSTGRESQL_MAROON_URL')
+washington_db = os.getenv('HEROKU_POSTGRESQL_GREEN_URL')
+
+print(avrora_db)
+
+avrora_conn = psycopg2.connect(avrora_db,sslmode="allow")
+amagi_conn = psycopg2.connect(amagi_db, sslmode="allow")
+sandy_conn = psycopg2.connect(sandy_db, sslmode="allow")
+lexington_conn=psycopg2.connect(lexington_db, sslmode="allow")
+washington_conn=psycopg2.connect(washington_db,sslmode="allow")
+
+avrora_cur=avrora_conn.cursor()
+amagi_cur=amagi_conn.cursor()
+sandy_cur=sandy_conn.cursor()
+lexington_cur=lexington_conn.cursor()
+washington_cur=washington_conn.cursor()
 
 #Set variables
 playerFound = False

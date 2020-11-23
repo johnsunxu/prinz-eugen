@@ -9,3 +9,5 @@ azurlane
 pillow
 numpy
 psycopg2-binary
+python-dotenv
+pathlib
