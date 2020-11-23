@@ -77,7 +77,7 @@ class CheckPlayer(commands.Cog):
     async def analyze(self, ctx, server, *players):
         await ctx.send("Sorry this command is currently under maintenance.")
         return
-        
+
         #Check if user entered correct servers
         if checkServerInput(server)[0] != True:
             await ctx.send("Server input incorrect!")
@@ -188,12 +188,34 @@ class CheckPlayer(commands.Cog):
         date = temp.strftime("%d/%m/%Y")
         reporterName = ctx.message.author.name
 
-        # dataEntry = [server, playerName, temp.strftime("%H:%M:%S"), temp.strftime("%d/%m/%Y"), ctx.message.author.name]
         #Add to sheet
         sendData(server, serverCursor, serverConnection,playerName,time,date,reporterName)
         # sheet.append_row(dataEntry, value_input_option="USER_ENTERED")
         await ctx.send("Data entry successful!")
         #updateSpreadsheet()
+
+        #Add entry to leaderboard
+        serverCursor.execute("SELECT * FROM leaderboard;")
+        test = serverCursor.fetchall()
+
+        print("REPORTER VALUE IS", reporterName)
+        for j in range(len(test)):
+            print(f"Checking {test[j][0].strip()}")
+            #check if already exists
+            repeat =False
+            if reporterName.strip()==test[j][0].strip(): 
+                repeat =True
+                print(f"reporter found, adding to {reporterName.strip()}")
+                #add one to entries if exists
+                #find out current number of entries
+                entries= test[j][1]
+                serverCursor.execute(f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
+                break
+        if not repeat: 
+            #print(f"no name found, creating new name:{reporterValues[i]};{test[i][0].strip()}")
+            #else create new entry
+            serverCursor.execute(f"INSERT INTO leaderboard(username, entries) VALUES(\'{reporterName}\',1)")
+        serverConnection.commit()
         return
 
 
