@@ -79,14 +79,18 @@ class CheckPlayer(commands.Cog):
         # return
 
         #Check if user entered correct servers
-        if checkServerInput(server)[0] != True:
+        try:
+            if checkServerInput(server)[0] != True:
+                await ctx.send("Server input incorrect!")
+                return
+            else:
+                server = checkServerInput(server)[1]
+                serverCursor = checkServerInput(server)[2]
+                serverConnection = checkServerInput(server)[3]
+        except:
             await ctx.send("Server input incorrect!")
             return
-        else:
-            server = checkServerInput(server)[1]
-            serverCursor = checkServerInput(server)[2]
-            serverConnection = checkServerInput(server)[3]
-
+            
         #Check if user has entered too many arguments
         # if len(extraArgs) != 0:
         #     print(extraArgs)
