@@ -75,8 +75,8 @@ class CheckPlayer(commands.Cog):
 
     @commands.command(aliases=["analyzemulti", "analyzeMulti"])
     async def analyze(self, ctx, server, *players):
-        await ctx.send("Sorry this command is currently under maintenance.")
-        return
+        # await ctx.send("Sorry this command is currently under maintenance.")
+        # return
 
         #Check if user entered correct servers
         if checkServerInput(server)[0] != True:
@@ -94,57 +94,34 @@ class CheckPlayer(commands.Cog):
         #     return
 
         #Receive variables
-        sheet = updateSpreadsheet(server)
-        # sheetData = sheet.get_all_records()
-        serverCursor.execute(f"SELECT * FROM {server}_entries;")
-        sheetData = serverCursor.fetchall()
-        storedPlayerData = []
-        rows = []
-        playerInput = []
-        for player in players:
-            playerInput.append(player)
-        playerOutput = []
-        #add lists for each player inputted
-        for i in range(len(playerInput)):
-            playerOutput.append([])
-
-        #Add rows to variable rows
-        for i in range(len(sheetData)):
-            rows.append([sheetData[i].get("Server"), sheetData[i].get("User"), sheetData[i].get("Time"), sheetData[i].get("Date")])
-        #Create variable to find the column that contains the player
-        for row in range(len(sheetData)):
-            storedPlayerData.append(sheetData[row].get("User"))
-
-        #Loop through number of players
-        for i in range(len(playerInput)):
-            #Loop through the spreadsheet
-            for j in range(len(storedPlayerData)):
-                #Check the player matches
-                # if playerInput[i].strip() == storedPlayerData[j].strip():
-                #     playerOutput[i].append(rows[j])
-                #check percent match
-                if jellyfish.damerau_levenshtein_distance(playerInput[i].strip().lower(), storedPlayerData[j].strip().lower())/len(storedPlayerData[j].strip()) <= 0.18:
-                    playerOutput[i].append(rows[j])
-
+        entries = []
+        for i in range(len(players)):
+            serverCursor.execute(f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
+            reports = serverCursor.fetchall()
+            entries.append(reports)
+        
         #Create output string
         await ctx.send("Reminder: Times are in server time!")
         str = ""
-        for i in range(len(playerInput)):
-            #Check if player isn't found
-            if len(playerOutput[i]) == 0:
-                str += playerInput[i]+" not found. \n"
+
+        for i in range(len(entries)):
+            #check if no reports found
+            if len(entries[i])==0:
+                str+= players[0]+" not found. \n"
                 continue
-            str += playerInput[i]+":```+\n"
-            for report in playerOutput[i]:
-                str += ", ".join(report)+"\n"
-            str += "```"
+            #format string
+            str+=players[0]+":```\n"
+            for report in entries[i]: 
+                str+= f"{report[1]}, {report[2]}, {report[3]}\n"
+            str+="```"
         await ctx.send(str)
+        
 
     @commands.command(aliases=["addplayer"], brief="Add player to spreadsheet in UTC time.")
     async def addPlayer(self, ctx, server, playerName, customTime="0", customDate="0", *extraArgs):
         
-        await ctx.send("Sorry this command is currently under maintenance.")
-        return
+        # await ctx.send("Sorry this command is currently under maintenance.")
+        # return
 
         #Update Spreadsheet
         #updateSpreadsheet()
