@@ -176,7 +176,7 @@ class CheckPlayer(commands.Cog):
         #updateSpreadsheet()
 
         #Add entry to leaderboard
-        serverCursor.execute("SELECT * FROM leaderboard;")
+        serverCursor.execute("SELECT * FROM leaderboard ORDER BY entrynumber ASC;")
         test = serverCursor.fetchall()
 
         print("REPORTER VALUE IS", reporterName)
