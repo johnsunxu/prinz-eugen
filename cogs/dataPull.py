@@ -59,7 +59,7 @@ def updateSpreadsheet(server):
 #     sheet.append_row(data, value_input_option="USER_ENTERED")
 def sendData(server, serverCursor, serverConnection, rusherName, time, date, reporterName):
     #find out entry number
-    serverCursor.execute(f"SELECT * FROM {server.lower()}_entries;")
+    serverCursor.execute(f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
     entryNumber = serverCursor.fetchall()[len(serverCursor.fetchall())-1][0]+1
     print("ENTRY NUM IS", entryNumber)
     print(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
@@ -176,7 +176,7 @@ class CheckPlayer(commands.Cog):
         #updateSpreadsheet()
 
         #Add entry to leaderboard
-        serverCursor.execute("SELECT * FROM leaderboard ORDER BY entrynumber ASC;")
+        serverCursor.execute("SELECT * FROM leaderboard;")
         test = serverCursor.fetchall()
 
         print("REPORTER VALUE IS", reporterName)
