@@ -72,6 +72,30 @@ class CheckPlayer(commands.Cog):
     #init func
     def __init__(self, client):
         self.client = client
+    
+    @commands.command(aliases = ["leaderboards"])
+    async def leaderboard(self, ctx, server):
+        #Check if user entered correct servers
+        print("Checking server")
+        try:
+            if checkServerInput(server)[0] != True:
+                await ctx.send("Server input incorrect!")
+                return
+            else:
+                server = checkServerInput(server)[1]
+                serverCursor = checkServerInput(server)[2]
+                serverConnection = checkServerInput(server)[3]
+        except:
+            await ctx.send("Server input incorrect!")
+            return
+        print(f"Server is: {server}")
+        serverCursor.execute("SELECT * FROM leaderboard ORDER BY entries DESC;")
+        leaderboard = serverCursor.fetchall()
+        str = f"{server}: \n```"
+        for i in range(len(leaderboard)):
+            str+=f"{leaderboard[i][0]} : {leaderboard[i][1]}\n"
+        str += "```"
+        await ctx.send(str)
 
     @commands.command(aliases=["analyzemulti", "analyzeMulti"])
     async def analyze(self, ctx, server, *players):

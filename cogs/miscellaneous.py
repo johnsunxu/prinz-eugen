@@ -45,9 +45,9 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
-        embed = discord.Embed(title = "Patch Notes - November 11th 2020")
-        embed.add_field(name ="Version 1.6.3", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**BUGFIX** Fixed `;addplayer` error message.")
+        embed = discord.Embed(title = "Patch Notes - November 25th 2020")
+        embed.add_field(name ="Version 1.7", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**NEW** Added `;leaderboard [server]` for viewing people with the most entries.")
         await ctx.send(embed = embed)
 
 def setup(client):
