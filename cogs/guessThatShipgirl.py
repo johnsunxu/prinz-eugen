@@ -145,17 +145,17 @@ async def startGame(message,encodedMessage, args):
             shipData['name'] = randomShip['names']['en'];
             shipData['skin'] = random.choice(skinsArr);
 
-            #make dir
-            if not os.path.exists(f"cogs/GuessThatShipgirl/{encodedMessage}/dont_try_to_cheat.png"):
-                os.mkdir(f"cogs/GuessThatShipgirl/{encodedMessage}");
-                #its saved at cogs/GuessThatShipgirl/dont_try_to_cheat.png. Thought the name would be funny.
-                urllib.request.urlretrieve(shipData['skin']['image'], f"cogs/GuessThatShipgirl/{encodedMessage}/dont_try_to_cheat.png");
+            #Create Image
+            url = shipData['skin']['image']
+            r = requests.get(url, timeout=4.0)
+            if r.status_code != requests.codes.ok:
+                assert False, 'Status code error: {}.'.format(r.status_code)
 
-                #Save to outfile
-                saveChannelDataEncoded(encodedMessage,[shipData,encodedMessage,args,mode]);
+            #save to outfile
+            saveChannelDataEncoded(encodedMessage,[shipData,encodedMessage,args,mode]);
 
-                #turn the image into a sillouete
-                image = Image.open(f"cogs/GuessThatShipgirl/{encodedMessage}/dont_try_to_cheat.png") # open colour image
+            with Image.open(io.BytesIO(r.content)) as image:
+                #modify the image to make it a silhouette
                 x = np.array(image)
                 r, g, b, a = np.rollaxis(x, axis=-1)
                 r[a!=0] = 0;
@@ -163,21 +163,20 @@ async def startGame(message,encodedMessage, args):
                 b[a!=0] = 0;
                 x = np.dstack([r, g, b, a])
                 image = Image.fromarray(x, 'RGBA');
-                image.save(f'cogs/GuessThatShipgirl/{encodedMessage}/dont_try_to_cheat.png')
+                #upload to discord
+                with io.BytesIO() as image_binary:
+                    desc = "Type `;g stop` to stop the game.";
+                    if (mode == 'endless'):
+                        desc += "\nType `;g stop endless` to stop endless mode.";
 
-                desc = "Type `;g stop` to stop the game.";
-                if (mode == 'endless'):
-                    desc += "\nType `;g stop endless` to stop endless mode.";
-
-                #send the embed
-                file = discord.File(f"cogs/GuessThatShipgirl/{encodedMessage}/dont_try_to_cheat.png");
-                embedVar = discord.Embed(title="Guess the Shipgirl with ;guess [name]! You have 2 minutes!", description=desc,color=embedColor)
-                imageURL = "attachment://dont_try_to_cheat.png"
-                embedVar.set_image(url=imageURL)
-                await message.channel.send(embed = embedVar,file = file);
-
-                #delete the files
-                shutil.rmtree(f"cogs/GuessThatShipgirl/{encodedMessage}")
+                    #send the embed
+                    file = discord.File(fp=image_binary, filename='dont_try_to_cheat.png');
+                    embedVar = discord.Embed(title="Guess the Shipgirl with ;guess [name]! You have 2 minutes!", description=desc,color=embedColor)
+                    imageURL = "attachment://dont_try_to_cheat.png"
+                    embedVar.set_image(url=imageURL)
+                    image.save(image_binary, 'PNG')
+                    image_binary.seek(0)
+                    await message.channel.send(embed = embedVar,file=file)
 
             #set timeout. 120 = 2 minutes.
             await asyncio.sleep(120)
