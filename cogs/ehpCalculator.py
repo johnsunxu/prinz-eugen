@@ -18,7 +18,7 @@ api = AzurAPI()
 #Structure of return data
 #[HP, Eva, Eva Rate, damage reduction, skill] (make function to format this)
 #createSwitcher
-def ehpAmagi(hp,eva,time):
+def ehpAmagi(hp,eva,source,time):
     return [hp,eva,.1,0,"Efficacious Planning"];
 def ehpAzuma(hp,eva,time):
     time = max(time,1)
@@ -27,29 +27,29 @@ def ehpAzuma(hp,eva,time):
         if time % 20 <= 12 and time >= 20:
             totalEVABoost+=.2
     return [hp,eva*(1+(totalEVABoost/time)),0,0,"Mizuho's Intuition"];
-def ehpBremerton(hp,eva,time):
+def ehpBremerton(hp,eva,source,time):
     return [hp,eva,0,.2,"One for the Team"];
-def ehpGrafZeppelin(hp,eva,time):
+def ehpGrafZeppelin(hp,eva,source,time):
     return [hp,eva,0,.15,"Iron Blood Wings"];
-def ehpJintsuu(hp,eva,time):
+def ehpJintsuu(hp,eva,source,time):
     return [hp,eva,0,.2,"The Unyielding Jintsuu"];
-def ehpNoshiro(hp,eva,time):
+def ehpNoshiro(hp,eva,source,time):
     return [hp,eva,.15,0,"Noshiro's Hoarfrost"];
-def ehpSanrui(hp,eva,time):
+def ehpSanrui(hp,eva,source,time):
     actualEVA=0;
     try:
         actualEVA = eva * (min(50/time,1)*1.35 +(1-(min(50/time,1))));
     except:
         actualEVA = eva;
     return [hp,actualEVA,0,0,"Engine Boost"];
-def ehpSeattle(hp,eva,time):
+def ehpSeattle(hp,eva,source,time):
     return [hp,eva,0,.15,"Dual Nock"];
-def ehpSuzutsuki(hp,eva,time):
+def ehpShinano(hp,eva,source,time):
+    return [hp,eva,0,.2 if source != 'Torpedo' else 0,"Protector of the New Moon" if source != 'Torpedo' else -1];
+def ehpSuzutsuki(hp,eva,source,time):
     return [hp*1.15,eva,0,0,"Suzutsuki, Causing Confusion!"];
-def ehpYukikaze(hp,eva,time):
+def ehpYukikaze(hp,eva,source,time):
     return [hp,eva,0,.25,"The Unsinkable Lucky Ship"];
-def ehpShinano(hp,eva,time):
-    return [hp,eva,0,.2,"Protector of the New Moon"];
 
 skillSwitch = {
     'Amagi' : ehpAmagi,
@@ -92,10 +92,11 @@ class ehpCalculator(commands.Cog):
     **evaRateN** = Add N percent EVA rate to the ship.
     **AP** = Change enemy ammo type to AP. 110/90/70 is used for vanguard ships. 45/130/110 is used for backline ships.
     **HE** = Change enemy ammo type to HE. 135/95/70 is used for vanguard ships. 140/110/90 is used for backline ships.
-    **avi** = View eHP vs aviation damage.
-    **torp** = View eHP vs tor\*\*\*\* damage.
+    **avi** = View eHP vs aviation damage. 80/100/120 are used as the modifiers.
+    **torp** = View eHP vs tor\*\*\*\* damage. 80/100/130 are used as the modifers.
     **crash** = View eHP vs crash damage.
-    **[t,x/y/z]** = View eHP with custom ammo modifiers x/y/z and ammo type t.""", inline = False)
+    **[t,x/y/z]** = View eHP with custom ammo modifiers x/y/z and ammo type t.
+    **retrofit** = use the retrofit version of this ship""", inline = False)
 
                 embed.add_field(name =":small_red_triangle: Examples", value =
 """
@@ -113,33 +114,23 @@ Example:
                 shipName = shipName.replace('"',"");
                 #nicknames
                 shipName = getNickname(shipName.lower())
+#                print(shipName)
                 shipData = api.getShip(ship=shipName)
                 #get the needed data
                 name = shipData['names']['en'];
                 sClass = shipData['class'];
                 hullType = shipData['hullType'];
-                hp = int(shipData['stats']['level120']['health']);
-                eva = int(shipData['stats']['level120']['evasion']);
-                lck = int(shipData['stats']['level120']['luck']);
-                armor = shipData['stats']['level120']['armor'];
+                retrofit = False;
 
-                #set default args
-                evaSkill = 0;
-                eHit = 150;
-                eLck = 50;
-                time = 30;
-                extraHP = 0;
-                extraEva = 0;
-                extraEvaRate = 0;
-                noSkill = False;
-
-                #Get damage source
-                damageSource = 'HE'
                 #damage mods
                 HEDamageMods = [135,95,70] if hullType in vanguard else [140,110,90];
                 APDamageMods = [110,90,70] if hullType in vanguard else [45,130,110];
-                AviationDamageMods = [70,100,130];
-                CustomArmorMods = [0,0,0,'HE'];
+                AviationDamageMods = [80,100,120];
+                TorpedoDamageMods = [80,100,130];
+                #Get damage source
+                damageSource = 'HE'
+                damageModifiers = HEDamageMods
+
 
                 #get arguments
                 for i in args:
@@ -162,21 +153,58 @@ Example:
                         elif "[" in i.lower() and "]" in i.lower():
                             m = i.replace('[','').split('/');
                             try:
-                                CustomArmorMods[0] = int(''.join(x for x in '0'+m[1] if x.isdigit()));
-                                CustomArmorMods[1] = int(''.join(x for x in '0'+m[2] if x.isdigit()));
-                                CustomArmorMods[2] = int(''.join(x for x in '0'+m[3] if x.isdigit()));
-                                CustomArmorMods[3] = m[0];
-                                damageSource = 'Custom';
+                                damageModifiers[0] = int(''.join(x for x in '0'+m[1] if x.isdigit()));
+                                damageModifiers[1] = int(''.join(x for x in '0'+m[2] if x.isdigit()));
+                                damageModifiers[2] = int(''.join(x for x in '0'+m[3] if x.isdigit()));
+                                damageSource = 'HE';
+                                if 'he' in m[0]:
+                                    damageSource = 'HE'
+                                if 'ap' in m[0]:
+                                    damageSource = 'AP'
+                                if 'avi' in m[0]:
+                                    damageSource = 'Aviation'
                             except:
                                 await message.channel.send("The custom armor modifiers are incorrect! HE modifiers have been used instead.");
                                 damageSource = 'HE';
                         elif "ap" in i.lower():
                             damageSource = 'AP'
-                        elif "torp" in i.lower() or "avi" in i.lower():
+                            damageModifiers = APDamageMods
+                        elif "torp" in i.lower():
+                            damageSource = 'Torpedo'
+                            damageModifiers = TorpedoDamageMods
+                        elif "avi" in i.lower():
                             damageSource = 'Aviation'
+                            damageModifiers = AviationDamageMods
                         elif "crash" in i.lower():
                             damageSource = 'Crash'
+                        elif "retro" in i.lower():
+                            retrofit = True;
 
+                level = 'level120'
+                if retrofit:
+                    level = 'level120Retrofit'
+                    try:
+                        shipData['stats'][level]
+                    except:
+                        level = 'level120'
+                        retrofit = False;
+                        await message.channel.send("This ship does not have a retrofit! The normal ship has been used instead.")
+
+                hp = int(shipData['stats'][level]['health']);
+                eva = int(shipData['stats'][level]['evasion']);
+                lck = int(shipData['stats'][level]['luck']);
+                aa = int(shipData['stats'][level]['antiair']);
+                armor = shipData['stats'][level]['armor'];
+
+                #set default args
+                evaSkill = 0;
+                eHit = 150;
+                eLck = 50;
+                time = 30;
+                extraHP = 0;
+                extraEva = 0;
+                extraEvaRate = 0;
+                noSkill = False;
 
                 #multiply HP by modifiers
                 if hullType == "Destroyer":
@@ -189,15 +217,20 @@ Example:
                 elif hullType == "Heavy Cruiser":
                     hp /= 1-.15;
 
+                #certain ships need retro for survivability skill
+                needRetro = [
+                    "Jintsuu"
+                ]
                 def calcEHP(exHP,exEva,rtime,isVHArmor):
                     realHP = hp+exHP;
                     realEva = eva+exEva;
                     #Claculate skills
                     e = 0;
                     #switcher
-                    if name in skillSwitch and noSkill == False:
+                    #bypass switcher if in retrofitless skill
+                    if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
                         func = skillSwitch.get(name, "nothing")
-                        result = func(realHP,realEva,time);
+                        result = func(realHP,realEva,damageSource,time);
                         realHP = result[0]/(1-result[3])
                         realEva = result[1]
                         e = result[2];
@@ -210,30 +243,20 @@ Example:
                     }
                     tempArmor = ArmorModLoc[armor]
                     #switch armor to heavy is the VH armor is used
-                    ammoMods = {
-                        'HE' : HEDamageMods,
-                        'AP' : APDamageMods,
-                        'Aviation' : AviationDamageMods,
-                        'Custom' : CustomArmorMods
-                    }
-                    ammoType = {
-                        'HE' : 'HE',
-                        'AP' : 'AP',
-                        'Aviation' : 'Aviation',
-                        'Custom' : CustomArmorMods[3].upper()
-                    }
-
-                    ammoType = ammoType[damageSource];
                     if isVHArmor:
                         if armor != 'Heavy':
                             tempArmor = 2
                         else:
-                            if ammoType in "HE" or ammoType in "Normal":
+                            if damageSource in "HE" or damageSource in "Normal":
                                 realHP *= (1/(1-.03))
-                            elif ammoType in "AP":
+                            elif damageSource in "AP":
                                 realHP *= (1/(1-.06))
 
-                    realHP *= (100/ammoMods[damageSource][tempArmor] if ammoMods[damageSource][tempArmor] != 0 else 100)
+                    realHP *= (100/damageModifiers[tempArmor] if damageModifiers[tempArmor] != 0 else 100)
+
+                    #reduce damage taken by AA stat if AVI
+                    if damageSource == 'Aviation':
+                        realHP *= (1+(aa/150))
 
                     repairHeal = 1+(math.floor(rtime/15) * .01)
                     if damageSource != "Crash":
@@ -246,15 +269,20 @@ Example:
                         return round(realHP*2.34*repairHeal)
 
                 def getIncludedSkill():
-                    if name in skillSwitch and noSkill == False:
+                    if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
                         func = skillSwitch.get(name, "nothing")
-                        result = func(0,0,0);
+                        result = func(0,0,damageSource,0);
+                        if result[4] == -1:
+                            return "No skills are included in this calculation.";
                         return "Skills included: " + result[4] + "\nAdd noskill as an argument to ignore this skill.";
                     else:
                         return "No skills are included in this calculation.";
 
                 #choose skin
-                skin = shipData["skins"][0]
+                if retrofit:
+                    skin = shipData["skins"][1]
+                else:
+                    skin = shipData["skins"][0]
                 #Create Image
                 url = skin['background']
                 background = requests.get(url, timeout=4.0)
@@ -268,7 +296,7 @@ Example:
                 #Create rouned rectangle functions
                 def round_corner(radius, fill):
                     #Draw a round corner
-                    corner = Image.new('RGB', (radius, radius), (0, 0, 0, 0))
+                    corner = Image.new('RGBA', (radius, radius), (0, 0, 0, 0))
                     draw = ImageDraw.Draw(corner)
                     draw.pieslice((0, 0, radius * 2, radius * 2), 180, 270, fill=fill)
                     return corner
@@ -277,7 +305,7 @@ Example:
                 def round_rectangle(size, radius, fill):
                     #Draw a rounded rectangle
                     width, height = size
-                    rectangle = Image.new('RGB', size, fill)
+                    rectangle = Image.new('RGBA', size, fill)
                     corner = round_corner(radius, fill)
                     rectangle.paste(corner, (0, 0))
                     rectangle.paste(corner.rotate(90), (0, height - radius))  # Rotate the corner and paste it
@@ -287,6 +315,7 @@ Example:
 
                 #image modify function
                 def get_concat_h(back,char):
+
                     back = back.convert('RGBA');
                     char = char.convert('RGBA');
                     #resize backround
@@ -302,7 +331,11 @@ Example:
                     tempIMG = Image.new('RGBA', (NewWidth, NewHeight), color = (0,0,0,0))
                     imgD = ImageDraw.Draw(tempIMG)
                     #Draw rounded rectangle
-                    imgD.rectangle([(25, 25), (750, 526)], fill = (15,15,15,180))
+                    rect = round_rectangle((715, 526),30,(0,0,0,180));
+                    back.paste(rect, (10,25), rect)
+
+
+                    #imgD.rectangle([(25, 25), (750, 526)], fill = (15,15,15,180))
 
                     output = Image.alpha_composite(back,tempIMG);
 
@@ -313,19 +346,19 @@ Example:
                     #get the ships armor type
                     DMGInfo = '';
                     if damageSource == "HE":
-                        DMGInfo = f'HE ({HEDamageMods[0]}/{HEDamageMods[1]}/{HEDamageMods[2]})'
+                        DMGInfo = f'HE ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]})'
                     elif damageSource == "AP":
-                        DMGInfo = f'AP ({APDamageMods[0]}/{APDamageMods[1]}/{APDamageMods[2]})'
+                        DMGInfo = f'AP ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]})'
                     elif damageSource == "Aviation":
-                        DMGInfo = f'Aviation and Torpedo damage ({AviationDamageMods[0]}/{AviationDamageMods[1]}/{AviationDamageMods[2]})'
+                        DMGInfo = f'Aviation damage ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]}) Damage taken is reduced with AA stat.'
+                    elif damageSource == "Torpedo":
+                        DMGInfo = f'Torpedo damage ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]})'
                     elif damageSource == "Crash":
                         DMGInfo = 'crash damage.'
-                    elif damageSource == 'Custom':
-                        DMGInfo = f'{CustomArmorMods[3]} ({CustomArmorMods[0]}/{CustomArmorMods[1]}/{CustomArmorMods[2]})'
 
 
-                    draw.text((40, 27),f"{shipName.title()}'s eHP vs {DMGInfo}",(255,255,255),font=font)
-                    draw.text((40, 47),f"Enemy Hit: {eHit} | Enemy Luck: {eLck} | Battle Duration: {time}s",(255,255,255),font=font)
+                    draw.text((40, 40),f"{shipName.title()}'s eHP vs {DMGInfo}",(255,255,255),font=font)
+                    draw.text((40, 60),f"Enemy Hit: {eHit} | Enemy Luck: {eLck} | Battle Duration: {time}s",(255,255,255),font=font)
 
                     gearArr=[
                         ['No Gear',0,0,0,False],
@@ -344,8 +377,8 @@ Example:
 
                     xSpacing = 75;
                     ySpacing = 35;
-                    xOffset = 50;
-                    yOffset = 75;
+                    xOffset = 35;
+                    yOffset = 90;
                     #Draw gear names
                     for i in range(len(gearArr)):
                         draw.text((xOffset+(i+1)*xSpacing, yOffset),gearArr[i][0],(255,255,255),font=font)
@@ -381,9 +414,9 @@ Example:
                                 color = (134,232,132);
                             draw.text((xOffset+(i+1)*xSpacing, yOffset+(j+1)*ySpacing),ehp,color,font=font)
                     #Draw skills
-                    draw.text((xOffset,400),str(getIncludedSkill()),(255,255,255),font=font)
+                    draw.text((xOffset,450),str(getIncludedSkill()),(255,255,255),font=font)
                     #Draw warning
-                    draw.text((xOffset,400+ySpacing+ySpacing),"This is not an accurate representation of this ship's eHP in PvE.",(255,255,255),font=font)
+                    draw.text((xOffset,460+ySpacing),"This is not an accurate representation of this ship's eHP in PvE.",(255,255,255),font=font)
 
 
                     return output;

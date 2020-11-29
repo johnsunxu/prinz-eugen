@@ -39,7 +39,7 @@ def getNickname(arg):
         "ayaya" : "Ayanami",
         "nimi" : "Z23",
         "monty" : "Montpelier",
-        "pamiat" : "Pamiat Merkuria",
+        "pamiat" : "Pamiat' Merkuria",
         "rossiya" : "Sovetskaya Rossiya",
         "kaga (bb)" : "Kaga(BB)",
         "kaga bb" : "Kaga(BB)",
@@ -49,7 +49,35 @@ def getNickname(arg):
         "formi" : "Formidable",
         "sheffy" : "Sheffield",
         "hms neptune" : "Neptune",
-        "maki" : "Makinami"
+        "maki" : "Makinami",
+
+        #german ships
+        "konigsberg" : "Königsberg",
+        "koln" : "Köln",
+
+        #french ships
+        "algerie" : "Algérie",
+        "la galissonniere" : "La Galissonnière",
+        "l'opiniatre" : "L'Opiniâtre",
+        "le Temeraire" : "Le Téméraire",
+        "emile bertin" : "Émile Bertin",
+
+        #muse ships
+        "roon muse" : "Roon µ",
+        "gascogne muse" : "Gascogne µ",
+        "cleveland muse" : "Cleveland µ",
+        "admiral Hipper muse" : "Admiral Hipper µ",
+        "akagi muse" : "Akagi µ",
+        "sheffield muse" : "Sheffield µ",
+        "illustrious muse" : "Illustrious µ",
+        "le malin muse" : "Le Malin µ",
+        "dido muse" : "Dido µ",
+        "taihou muse" : "Taihou µ",
+        "tashkent muse" : "Tashkent µ",
+        "albacore muse" : "Albacore µ",
+        "baltimore muse" : "Baltimore µ"
+
+
 
 
     }
