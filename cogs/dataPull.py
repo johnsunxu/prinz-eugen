@@ -135,10 +135,10 @@ class CheckPlayer(commands.Cog):
         for i in range(len(entries)):
             #check if no reports found
             if len(entries[i])==0:
-                str+= players[0]+" not found. \n"
+                str+= players[i]+" not found. \n"
                 continue
             #format string
-            str+=players[0]+":```\n"
+            str+=players[i]+":```\n"
             for report in entries[i]: 
                 str+= f"{report[1]}, {report[2]}, {report[3]}\n"
             str+="```"
