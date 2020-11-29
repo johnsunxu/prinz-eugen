@@ -20,7 +20,7 @@ api = AzurAPI()
 #createSwitcher
 def ehpAmagi(hp,eva,source,time):
     return [hp,eva,.1,0,"Efficacious Planning"];
-def ehpAzuma(hp,eva,time):
+def ehpAzuma(hp,eva,source,time):
     time = max(time,1)
     totalEVABoost = 0;
     for i in range(1,time):
