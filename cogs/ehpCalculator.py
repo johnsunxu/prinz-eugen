@@ -255,7 +255,7 @@ Example:
                     realHP *= (100/damageModifiers[tempArmor] if damageModifiers[tempArmor] != 0 else 100)
 
                     #reduce damage taken by AA stat if AVI
-                    if damageSource == 'Aviation':
+                    if damageSource == 'Aviation' or damageSource == 'Crash':
                         realHP *= (1+(aa/150))
 
                     repairHeal = 1+(math.floor(rtime/15) * .01)
