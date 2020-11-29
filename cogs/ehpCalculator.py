@@ -25,10 +25,17 @@ def ehpAzuma(hp,eva,source,time):
     totalEVABoost = 0;
     for i in range(1,time):
         if time % 20 <= 12 and time >= 20:
-            totalEVABoost+=.2
+            totalEVABoost+=.2*.7
     return [hp,eva*(1+(totalEVABoost/time)),0,0,"Mizuho's Intuition"];
 def ehpBremerton(hp,eva,source,time):
-    return [hp,eva,0,.2,"One for the Team"];
+    damReduc = 0;
+    try:
+        damReduc =(min(30/time,1)*1.2 +(1-(min(30/time,1))));
+    except:
+        damReduc = 1.2;
+    return [hp,eva,0,damReduc-1,"One for the Team"];
+def ehpFriedrich(hp,eva,source,time):
+    return [hp,eva,0,.1,"Rhapsody of Darkness"];
 def ehpGrafZeppelin(hp,eva,source,time):
     return [hp,eva,0,.15,"Iron Blood Wings"];
 def ehpJintsuu(hp,eva,source,time):
@@ -36,7 +43,6 @@ def ehpJintsuu(hp,eva,source,time):
 def ehpNoshiro(hp,eva,source,time):
     return [hp,eva,.15,0,"Noshiro's Hoarfrost"];
 def ehpSanrui(hp,eva,source,time):
-    actualEVA=0;
     try:
         actualEVA = eva * (min(50/time,1)*1.35 +(1-(min(50/time,1))));
     except:
@@ -55,6 +61,7 @@ skillSwitch = {
     'Amagi' : ehpAmagi,
     'Azuma' : ehpAzuma,
     'Bremerton' : ehpBremerton,
+    'Friedrich der Große' : ehpFriedrich,
     'Jintsuu' : ehpJintsuu,
     'Noshiro' : ehpNoshiro,
     'Saint Louis' : ehpSanrui,
@@ -130,7 +137,15 @@ Example:
                 #Get damage source
                 damageSource = 'HE'
                 damageModifiers = HEDamageMods
-
+                #set default args
+                evaSkill = 0;
+                eHit = 150;
+                eLck = 50;
+                time = 30;
+                extraHP = 0;
+                extraEva = 0;
+                extraEvaRate = 0;
+                noSkill = False;
 
                 #get arguments
                 for i in args:
@@ -195,16 +210,6 @@ Example:
                 lck = int(shipData['stats'][level]['luck']);
                 aa = int(shipData['stats'][level]['antiair']);
                 armor = shipData['stats'][level]['armor'];
-
-                #set default args
-                evaSkill = 0;
-                eHit = 150;
-                eLck = 50;
-                time = 30;
-                extraHP = 0;
-                extraEva = 0;
-                extraEvaRate = 0;
-                noSkill = False;
 
                 #multiply HP by modifiers
                 if hullType == "Destroyer":
