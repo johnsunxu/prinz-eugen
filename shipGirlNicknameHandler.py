@@ -6,6 +6,7 @@ def getNickname(arg):
         "warpoi" : "Warspite",
         "nanoda" : "Yukikaze",
         "yuki" : "Yukikaze",
+        "ykkz" : "Yukikaze",
         "graf" : "Graf Zeppelin",
         "enty" : "Enterprise",
         "owari da" : "Enterprise",

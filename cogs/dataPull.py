@@ -59,7 +59,7 @@ def updateSpreadsheet(server):
 #     sheet.append_row(data, value_input_option="USER_ENTERED")
 def sendData(server, serverCursor, serverConnection, rusherName, time, date, reporterName):
     #find out entry number
-    serverCursor.execute(f"SELECT * FROM {server.lower()}_entries;")
+    serverCursor.execute(f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
     entryNumber = serverCursor.fetchall()[len(serverCursor.fetchall())-1][0]+1
     print("ENTRY NUM IS", entryNumber)
     print(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
@@ -72,21 +72,49 @@ class CheckPlayer(commands.Cog):
     #init func
     def __init__(self, client):
         self.client = client
+    
+    @commands.command(aliases = ["leaderboards"])
+    async def leaderboard(self, ctx, server):
+        #Check if user entered correct servers
+        print("Checking server")
+        try:
+            if checkServerInput(server)[0] != True:
+                await ctx.send("Server input incorrect!")
+                return
+            else:
+                server = checkServerInput(server)[1]
+                serverCursor = checkServerInput(server)[2]
+                serverConnection = checkServerInput(server)[3]
+        except:
+            await ctx.send("Server input incorrect!")
+            return
+        print(f"Server is: {server}")
+        serverCursor.execute("SELECT * FROM leaderboard ORDER BY entries DESC;")
+        leaderboard = serverCursor.fetchall()
+        str = f"{server}: \n```"
+        for i in range(len(leaderboard)):
+            str+=f"{leaderboard[i][0]} : {leaderboard[i][1]}\n"
+        str += "```"
+        await ctx.send(str)
 
     @commands.command(aliases=["analyzemulti", "analyzeMulti"])
     async def analyze(self, ctx, server, *players):
-        await ctx.send("Sorry this command is currently under maintenance.")
-        return
+        # await ctx.send("Sorry this command is currently under maintenance.")
+        # return
 
         #Check if user entered correct servers
-        if checkServerInput(server)[0] != True:
+        try:
+            if checkServerInput(server)[0] != True:
+                await ctx.send("Server input incorrect!")
+                return
+            else:
+                server = checkServerInput(server)[1]
+                serverCursor = checkServerInput(server)[2]
+                serverConnection = checkServerInput(server)[3]
+        except:
             await ctx.send("Server input incorrect!")
             return
-        else:
-            server = checkServerInput(server)[1]
-            serverCursor = checkServerInput(server)[2]
-            serverConnection = checkServerInput(server)[3]
-
+            
         #Check if user has entered too many arguments
         # if len(extraArgs) != 0:
         #     print(extraArgs)
@@ -94,57 +122,34 @@ class CheckPlayer(commands.Cog):
         #     return
 
         #Receive variables
-        sheet = updateSpreadsheet(server)
-        # sheetData = sheet.get_all_records()
-        serverCursor.execute(f"SELECT * FROM {server}_entries;")
-        sheetData = serverCursor.fetchall()
-        storedPlayerData = []
-        rows = []
-        playerInput = []
-        for player in players:
-            playerInput.append(player)
-        playerOutput = []
-        #add lists for each player inputted
-        for i in range(len(playerInput)):
-            playerOutput.append([])
-
-        #Add rows to variable rows
-        for i in range(len(sheetData)):
-            rows.append([sheetData[i].get("Server"), sheetData[i].get("User"), sheetData[i].get("Time"), sheetData[i].get("Date")])
-        #Create variable to find the column that contains the player
-        for row in range(len(sheetData)):
-            storedPlayerData.append(sheetData[row].get("User"))
-
-        #Loop through number of players
-        for i in range(len(playerInput)):
-            #Loop through the spreadsheet
-            for j in range(len(storedPlayerData)):
-                #Check the player matches
-                # if playerInput[i].strip() == storedPlayerData[j].strip():
-                #     playerOutput[i].append(rows[j])
-                #check percent match
-                if jellyfish.damerau_levenshtein_distance(playerInput[i].strip().lower(), storedPlayerData[j].strip().lower())/len(storedPlayerData[j].strip()) <= 0.18:
-                    playerOutput[i].append(rows[j])
-
+        entries = []
+        for i in range(len(players)):
+            serverCursor.execute(f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
+            reports = serverCursor.fetchall()
+            entries.append(reports)
+        
         #Create output string
         await ctx.send("Reminder: Times are in server time!")
         str = ""
-        for i in range(len(playerInput)):
-            #Check if player isn't found
-            if len(playerOutput[i]) == 0:
-                str += playerInput[i]+" not found. \n"
+
+        for i in range(len(entries)):
+            #check if no reports found
+            if len(entries[i])==0:
+                str+= players[0]+" not found. \n"
                 continue
-            str += playerInput[i]+":```+\n"
-            for report in playerOutput[i]:
-                str += ", ".join(report)+"\n"
-            str += "```"
+            #format string
+            str+=players[0]+":```\n"
+            for report in entries[i]: 
+                str+= f"{report[1]}, {report[2]}, {report[3]}\n"
+            str+="```"
         await ctx.send(str)
+        
 
     @commands.command(aliases=["addplayer"], brief="Add player to spreadsheet in UTC time.")
     async def addPlayer(self, ctx, server, playerName, customTime="0", customDate="0", *extraArgs):
-
-        await ctx.send("Sorry this command is currently under maintenance.")
-        return
+        
+        # await ctx.send("Sorry this command is currently under maintenance.")
+        # return
 
         #Update Spreadsheet
         #updateSpreadsheet()
@@ -203,7 +208,7 @@ class CheckPlayer(commands.Cog):
             print(f"Checking {test[j][0].strip()}")
             #check if already exists
             repeat =False
-            if reporterName.strip()==test[j][0].strip():
+            if reporterName.strip()==test[j][0].strip(): 
                 repeat =True
                 print(f"reporter found, adding to {reporterName.strip()}")
                 #add one to entries if exists
@@ -211,7 +216,7 @@ class CheckPlayer(commands.Cog):
                 entries= test[j][1]
                 serverCursor.execute(f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
                 break
-        if not repeat:
+        if not repeat: 
             #print(f"no name found, creating new name:{reporterValues[i]};{test[i][0].strip()}")
             #else create new entry
             serverCursor.execute(f"INSERT INTO leaderboard(username, entries) VALUES(\'{reporterName}\',1)")
