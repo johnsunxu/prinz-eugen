@@ -26,7 +26,7 @@ def getNickname(arg):
         "urin" : "Specialized Bulin Custom MKIII",
         "ur bulin" : "Specialized Bulin Custom MKIII",
         "hipper" : "Admiral Hipper",
-        "hipper muse" : "Admiral Hipper µ",
+        "hipper muse" : "Admiral Hipper μ",
         "spee" : "Graf Spee",
         "indy" : "Indianapolis",
         "177013" : "Marblehead",
@@ -64,19 +64,19 @@ def getNickname(arg):
         "emile bertin" : "Émile Bertin",
 
         #muse ships
-        "roon muse" : "Roon µ",
-        "gascogne muse" : "Gascogne µ",
-        "cleveland muse" : "Cleveland µ",
-        "admiral Hipper muse" : "Admiral Hipper µ",
-        "akagi muse" : "Akagi µ",
-        "sheffield muse" : "Sheffield µ",
-        "illustrious muse" : "Illustrious µ",
-        "le malin muse" : "Le Malin µ",
-        "dido muse" : "Dido µ",
-        "taihou muse" : "Taihou µ",
-        "tashkent muse" : "Tashkent µ",
-        "albacore muse" : "Albacore µ",
-        "baltimore muse" : "Baltimore µ"
+        "roon muse" : "Roon μ",
+        "gascogne muse" : "Gascogne μ",
+        "cleveland muse" : "Cleveland μ",
+        "admiral Hipper muse" : "Admiral Hipper μ",
+        "akagi muse" : "Akagi μ",
+        "sheffield muse" : "Sheffield μ",
+        "illustrious muse" : "Illustrious μ",
+        "le malin muse" : "Le Malin μ",
+        "dido muse" : "Dido μ",
+        "taihou muse" : "Taihou μ",
+        "tashkent muse" : "Tashkent μ",
+        "albacore muse" : "Albacore μ",
+        "baltimore muse" : "Baltimore μ"
 
 
 

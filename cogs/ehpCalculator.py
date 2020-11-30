@@ -102,7 +102,7 @@ class ehpCalculator(commands.Cog):
     **avi** = View eHP vs aviation damage. 80/100/120 are used as the modifiers.
     **torp** = View eHP vs tor\*\*\*\* damage. 80/100/130 are used as the modifers.
     **crash** = View eHP vs crash damage.
-    **[t,x/y/z]** = View eHP with custom ammo modifiers x/y/z and ammo type t.
+    **[t/x/y/z]** = View eHP with custom ammo modifiers x/y/z and damage type t.
     **retrofit** = use the retrofit version of this ship""", inline = False)
 
                 embed.add_field(name =":small_red_triangle: Examples", value =
@@ -147,7 +147,28 @@ Example:
                 extraEvaRate = 0;
                 noSkill = False;
 
-                #get arguments
+                #check for retrofit
+                for i in args:
+                    if "retro" in i.lower():
+                        retrofit = True;
+
+                level = 'level120'
+                if retrofit:
+                    level = 'level120Retrofit'
+                    try:
+                        shipData['stats'][level]
+                    except:
+                        level = 'level120'
+                        retrofit = False;
+                        await message.channel.send("This ship does not have a retrofit! The normal ship has been used instead.")
+
+                hp = int(shipData['stats'][level]['health']);
+                eva = int(shipData['stats'][level]['evasion']);
+                lck = int(shipData['stats'][level]['luck']);
+                aa = int(shipData['stats'][level]['antiair']);
+                armor = shipData['stats'][level]['armor'];
+
+                #get args
                 for i in args:
                     if "noskill" in i.lower():
                         noSkill = True;
@@ -178,6 +199,8 @@ Example:
                                     damageSource = 'AP'
                                 if 'avi' in m[0]:
                                     damageSource = 'Aviation'
+                                if 'torp' in m[0]:
+                                    damageSource = 'Torpedo'
                             except:
                                 await message.channel.send("The custom armor modifiers are incorrect! HE modifiers have been used instead.");
                                 damageSource = 'HE';
@@ -192,24 +215,7 @@ Example:
                             damageModifiers = AviationDamageMods
                         elif "crash" in i.lower():
                             damageSource = 'Crash'
-                        elif "retro" in i.lower():
-                            retrofit = True;
 
-                level = 'level120'
-                if retrofit:
-                    level = 'level120Retrofit'
-                    try:
-                        shipData['stats'][level]
-                    except:
-                        level = 'level120'
-                        retrofit = False;
-                        await message.channel.send("This ship does not have a retrofit! The normal ship has been used instead.")
-
-                hp = int(shipData['stats'][level]['health']);
-                eva = int(shipData['stats'][level]['evasion']);
-                lck = int(shipData['stats'][level]['luck']);
-                aa = int(shipData['stats'][level]['antiair']);
-                armor = shipData['stats'][level]['armor'];
 
                 #multiply HP by modifiers
                 if hullType == "Destroyer":
