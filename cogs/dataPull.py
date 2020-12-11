@@ -12,7 +12,36 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from pathlib import Path
 
+#procedure to re-establish connections
+def reconnect():
+    global avrora_conn,avrora_cur,amagi_conn,amagi_cur,sandy_conn,sandy_cur,lexington_conn,lexington_cur,washington_conn,washington_cur
+    avrora_conn = psycopg2.connect(avrora_db, sslmode="allow")
+    amagi_conn = psycopg2.connect(amagi_db, sslmode="allow")
+    sandy_conn = psycopg2.connect(sandy_db, sslmode="allow")
+    lexington_conn = psycopg2.connect(lexington_db, sslmode="allow")
+    washington_conn = psycopg2.connect(washington_db, sslmode="allow")
 
+    avrora_cur = avrora_conn.cursor()
+    amagi_cur = amagi_conn.cursor()
+    sandy_cur = sandy_conn.cursor()
+    lexington_cur = lexington_conn.cursor()
+    washington_cur = washington_conn.cursor()
+
+#procedure to execute SQL query while accounting for errors
+def _execute(ctx, server, serverCursor, serverConnection, query):
+    try: 
+        serverCursor.execute(query)
+        serverConnection.commit()
+    #If query fails, reconnect to databases
+    except psycopg2.InterfaceError:
+        ctx.send("Please wait, reconnecting to database.")
+        reconnect()
+        try: 
+            serverCursor.execute(query)
+            serverConnection.commit()
+        #report unaccounted for errors to creator
+        except: 
+            ctx.send("Database error, ping SomeDude#0172")
 
 #Check if user entered correct servers
 def checkServerInput(server):
@@ -42,31 +71,17 @@ def updateTime():
     print(time)
     print(date)
 
-#procedure for updating spreadsheet values
-
-
-def updateSpreadsheet(server):
-    #global storedPlayerData, rows, sheetData
-    #Obtain data
-    sheet = client.open("Azur Lane Avrora PvP Exercise log").worksheet(server)
-
-    return sheet
-
-
-# def sendData(server, data):
-
-#     sheet = updateSpreadsheet(server)
-#     sheet.append_row(data, value_input_option="USER_ENTERED")
-def sendData(server, serverCursor, serverConnection, rusherName, time, date, reporterName):
+#
+def sendData(ctx, server, serverCursor, serverConnection, rusherName, time, date, reporterName):
     #find out entry number
-    serverCursor.execute(f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
+    _execute(ctx, server, serverCursor, serverConnection,f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
+    # serverCursor.execute(f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
     entryNumber = serverCursor.fetchall()[len(serverCursor.fetchall())-1][0]+1
     print("ENTRY NUM IS", entryNumber)
     print(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
-    serverCursor.execute(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
-    serverConnection.commit()
-#create class
-
+    _execute(ctx, server, serverCursor, serverConnection, f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
+    # serverCursor.execute(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
+    # serverConnection.commit()
 
 class CheckPlayer(commands.Cog):
     #init func
@@ -89,7 +104,8 @@ class CheckPlayer(commands.Cog):
             await ctx.send("Server input incorrect!")
             return
         print(f"Server is: {server}")
-        serverCursor.execute("SELECT * FROM leaderboard ORDER BY entries DESC;")
+        _execute(ctx, server, serverCursor, serverConnection, "SELECT * FROM leaderboard ORDER BY entries DESC;")
+        # serverCursor.execute("SELECT * FROM leaderboard ORDER BY entries DESC;")
         leaderboard = serverCursor.fetchall()
         str = f"{server}: \n```"
         for i in range(len(leaderboard)):
@@ -124,7 +140,8 @@ class CheckPlayer(commands.Cog):
         #Receive variables
         entries = []
         for i in range(len(players)):
-            serverCursor.execute(f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
+            _execute(ctx,server,serverCursor,serverConnection, f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
+            # serverCursor.execute(f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
             reports = serverCursor.fetchall()
             entries.append(reports)
         
@@ -151,8 +168,6 @@ class CheckPlayer(commands.Cog):
         # await ctx.send("Sorry this command is currently under maintenance.")
         # return
 
-        #Update Spreadsheet
-        #updateSpreadsheet()
         updateTime()
 
         #Check if player has entered too few arguments
@@ -194,13 +209,13 @@ class CheckPlayer(commands.Cog):
         reporterName = ctx.message.author.name
 
         #Add to sheet
-        sendData(server, serverCursor, serverConnection,playerName,time,date,reporterName)
+        sendData(ctx,server, serverCursor, serverConnection,playerName,time,date,reporterName)
         # sheet.append_row(dataEntry, value_input_option="USER_ENTERED")
         await ctx.send("Data entry successful!")
-        #updateSpreadsheet()
 
         #Add entry to leaderboard
-        serverCursor.execute("SELECT * FROM leaderboard;")
+        _execute(ctx, server, serverCursor, serverConnection,"SELECT * FROM leaderboard;" )
+        # serverCursor.execute("SELECT * FROM leaderboard;")
         test = serverCursor.fetchall()
 
         print("REPORTER VALUE IS", reporterName)
@@ -214,12 +229,14 @@ class CheckPlayer(commands.Cog):
                 #add one to entries if exists
                 #find out current number of entries
                 entries= test[j][1]
-                serverCursor.execute(f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
+                _execute(ctx,server,serverCursor,serverConnection,f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
+                # serverCursor.execute(f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
                 break
         if not repeat: 
             #print(f"no name found, creating new name:{reporterValues[i]};{test[i][0].strip()}")
             #else create new entry
-            serverCursor.execute(f"INSERT INTO leaderboard(username, entries) VALUES(\'{reporterName}\',1)")
+            _execute(ctx, server, serverCursor, serverConnection,f"INSERT INTO leaderboard(username, entries) VALUES(\'{reporterName}\',1)" )
+            # serverCursor.execute(f"INSERT INTO leaderboard(username, entries) VALUES(\'{reporterName}\',1)")
         serverConnection.commit()
         return
 
