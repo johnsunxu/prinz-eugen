@@ -29,18 +29,18 @@ def reconnect():
 
 #procedure to execute SQL query while accounting for errors
 def _execute(ctx, server, serverCursor, serverConnection, query):
-    try: 
+    try:
         serverCursor.execute(query)
         serverConnection.commit()
     #If query fails, reconnect to databases
     except psycopg2.InterfaceError:
         ctx.send("Please wait, reconnecting to database.")
         reconnect()
-        try: 
+        try:
             serverCursor.execute(query)
             serverConnection.commit()
         #report unaccounted for errors to creator
-        except: 
+        except:
             ctx.send("Database error, ping SomeDude#0172")
 
 #Check if user entered correct servers
@@ -87,7 +87,7 @@ class CheckPlayer(commands.Cog):
     #init func
     def __init__(self, client):
         self.client = client
-    
+
     @commands.command(aliases = ["leaderboards"])
     async def leaderboard(self, ctx, server):
         #Check if user entered correct servers
@@ -130,7 +130,7 @@ class CheckPlayer(commands.Cog):
         except:
             await ctx.send("Server input incorrect!")
             return
-            
+
         #Check if user has entered too many arguments
         # if len(extraArgs) != 0:
         #     print(extraArgs)
@@ -144,7 +144,7 @@ class CheckPlayer(commands.Cog):
             # serverCursor.execute(f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
             reports = serverCursor.fetchall()
             entries.append(reports)
-        
+
         #Create output string
         await ctx.send("Reminder: Times are in server time!")
         str = ""
@@ -156,15 +156,15 @@ class CheckPlayer(commands.Cog):
                 continue
             #format string
             str+=players[i]+":```\n"
-            for report in entries[i]: 
+            for report in entries[i]:
                 str+= f"{report[1]}, {report[2]}, {report[3]}\n"
             str+="```"
         await ctx.send(str)
-        
+
 
     @commands.command(aliases=["addplayer"], brief="Add player to spreadsheet in UTC time.")
     async def addPlayer(self, ctx, server, playerName, customTime="0", customDate="0", *extraArgs):
-        
+
         # await ctx.send("Sorry this command is currently under maintenance.")
         # return
 
@@ -223,7 +223,7 @@ class CheckPlayer(commands.Cog):
             print(f"Checking {test[j][0].strip()}")
             #check if already exists
             repeat =False
-            if reporterName.strip()==test[j][0].strip(): 
+            if reporterName.strip()==test[j][0].strip():
                 repeat =True
                 print(f"reporter found, adding to {reporterName.strip()}")
                 #add one to entries if exists
@@ -232,7 +232,7 @@ class CheckPlayer(commands.Cog):
                 _execute(ctx,server,serverCursor,serverConnection,f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
                 # serverCursor.execute(f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
                 break
-        if not repeat: 
+        if not repeat:
             #print(f"no name found, creating new name:{reporterValues[i]};{test[i][0].strip()}")
             #else create new entry
             _execute(ctx, server, serverCursor, serverConnection,f"INSERT INTO leaderboard(username, entries) VALUES(\'{reporterName}\',1)" )

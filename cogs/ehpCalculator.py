@@ -34,6 +34,8 @@ def ehpBremerton(hp,eva,source,time):
     except:
         damReduc = 1.2;
     return [hp,eva,0,damReduc-1,"One for the Team"];
+def ehpCheshire(hp,eva,source,time):
+    return [hp,eva*1.15,0,.15,"Grin and Fire! Buff is assumed to be at max level."];
 def ehpFriedrich(hp,eva,source,time):
     return [hp,eva,0,.1,"Rhapsody of Darkness"];
 def ehpGrafZeppelin(hp,eva,source,time):
@@ -91,6 +93,7 @@ class ehpCalculator(commands.Cog):
 `ship name` - The ship that you want to calculate the eHP of in exercises. Use quotes for character names with a space.""", inline = False)
                 embed.add_field(name =":small_red_triangle: Args", value =
 """`Args`-
+    **PvE** = Switches mode to PvE mode.
     **hitN** = Set enemy hit stat to value N.
     **luckN** = set enemy luck to value N.
     **timeN** = Set battle duration stat to value N.
@@ -141,16 +144,22 @@ Example:
                 evaSkill = 0;
                 eHit = 150;
                 eLck = 50;
-                time = 30;
+                time = 45;
                 extraHP = 0;
                 extraEva = 0;
                 extraEvaRate = 0;
                 noSkill = False;
+                PvEMode = False;
 
                 #check for retrofit
                 for i in args:
                     if "retro" in i.lower():
                         retrofit = True;
+                    elif "pve" in i.lower():
+                        PvEMode = True;
+                        eHit = 75;
+                        eLck = 25;
+                        time = 60;
 
                 level = 'level120'
                 if retrofit:
@@ -218,21 +227,22 @@ Example:
 
 
                 #multiply HP by modifiers
-                if hullType == "Destroyer":
-                    extraEvaRate += .05;
-                    hp /= 1-.25;
+                if PvEMode == False:
+                    if hullType == "Destroyer":
+                        extraEvaRate += .05;
+                        hp /= 1-.25;
 
-                elif hullType == "Light Cruiser":
-                    hp /= 1-.2;
+                    elif hullType == "Light Cruiser":
+                        hp /= 1-.2;
 
-                elif hullType == "Heavy Cruiser":
-                    hp /= 1-.15;
+                    elif hullType == "Heavy Cruiser":
+                        hp /= 1-.15;
 
                 #certain ships need retro for survivability skill
                 needRetro = [
                     "Jintsuu"
                 ]
-                def calcEHP(exHP,exEva,rtime,isVHArmor):
+                def calcEHP(exHP,exEva,rtime,isVHArmor,pve):
                     realHP = hp+exHP;
                     realEva = eva+exEva;
                     #Claculate skills
@@ -269,15 +279,20 @@ Example:
                     if damageSource == 'Aviation' or damageSource == 'Crash':
                         realHP *= (1+(aa/150))
 
+                    PvPMult = 2.34;
+                    if pve:
+                        PvPMult = 1;
+
                     repairHeal = 1+(math.floor(rtime/15) * .01)
                     if damageSource != "Crash":
                         #Claculate accuracy
                         acc = 0.1 + (eHit)/(eHit+realEva+2) + (eLck-lck+0)/(1000) - (e+extraEvaRate);
                         acc = max(acc,.1);
                         #devide HP by acc to get eHP
-                        return round((realHP*2.34*repairHeal)/acc);
+
+                        return round((realHP*PvPMult*repairHeal)/acc);
                     else:
-                        return round(realHP*2.34*repairHeal)
+                        return round(realHP*PvPMult*repairHeal)
 
                 def getIncludedSkill():
                     if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
@@ -365,10 +380,10 @@ Example:
                     elif damageSource == "Torpedo":
                         DMGInfo = f'Torpedo damage ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]})'
                     elif damageSource == "Crash":
-                        DMGInfo = 'crash damage.'
+                        DMGInfo = 'crash damage'
 
 
-                    draw.text((40, 40),f"{shipName.title()}'s eHP vs {DMGInfo}",(255,255,255),font=font)
+                    draw.text((40, 40),f"{shipName.title()}'s eHP vs {DMGInfo} in {'Exercises.' if PvEMode == False else 'PvE.'}",(255,255,255),font=font)
                     draw.text((40, 60),f"Enemy Hit: {eHit} | Enemy Luck: {eLck} | Battle Duration: {time}s",(255,255,255),font=font)
 
                     gearArr=[
@@ -408,7 +423,7 @@ Example:
                             if gearArr[i][0] in bypassDualGear and gearArr[i][0] == gearArr[j][0]:
                                 eHPArray[i][j] = 'N/A'
                             else:
-                                eHPArray[i][j] = calcEHP(gearArr[i][1]+gearArr[j][1],gearArr[i][2]+gearArr[j][2],max(gearArr[i][3],gearArr[j][3]),gearArr[i][4] or gearArr[j][4])
+                                eHPArray[i][j] = calcEHP(gearArr[i][1]+gearArr[j][1],gearArr[i][2]+gearArr[j][2],max(gearArr[i][3],gearArr[j][3]),gearArr[i][4] or gearArr[j][4],PvEMode)
                     #Draw HP amounts
                     maxeHP = max(max(0 if isinstance(i, str) else i for i in x) for x in eHPArray);
                     mineHP = min(min(100000 if isinstance(i, str) else i for i in x) for x in eHPArray);
@@ -427,8 +442,8 @@ Example:
                     #Draw skills
                     draw.text((xOffset,450),str(getIncludedSkill()),(255,255,255),font=font)
                     #Draw warning
-                    draw.text((xOffset,460+ySpacing),"This is not an accurate representation of this ship's eHP in PvE.",(255,255,255),font=font)
-
+                    draw.text((xOffset,460+ySpacing),"""Use Argument "PvE" to switch to PvE mode.""" if PvEMode == False else "This displays this ships eHP in PvE not PvP." ,(255,255,255),font=font)
+                    print(PvEMode)
 
                     return output;
 
