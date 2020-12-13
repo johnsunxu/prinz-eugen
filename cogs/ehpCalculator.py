@@ -255,7 +255,7 @@ Example:
                 needRetro = [
                     "Jintsuu"
                 ]
-                def calcEHP(exHP,exEva,rtime,isVHArmor,pve):
+                def calcEHP(exHP,exEva,exDamReduc,rtime,isVHArmor,pve):
                     realHP = hp+exHP;
                     realEva = eva+exEva;
                     #Claculate skills
@@ -265,9 +265,13 @@ Example:
                     if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
                         func = skillSwitch.get(name, "nothing")
                         result = func(realHP,realEva,damageSource,time);
-                        realHP = result[0]/(1-(result[3]+extraDamReduc))
+                        realHP = result[0]/(1-result[3])
                         realEva = result[1]
                         e = result[2];
+                    #extra damage reduction
+                    print(exDamReduc)
+                    if exDamReduc != 1:
+                        realHP = realHP/(1-exDamReduc)
 
                     #get armor type
                     ArmorModLoc = {
@@ -438,7 +442,7 @@ Example:
                             if gearArr[i][0] in bypassDualGear and gearArr[i][0] == gearArr[j][0]:
                                 eHPArray[i][j] = 'N/A'
                             else:
-                                eHPArray[i][j] = calcEHP(gearArr[i][1]+gearArr[j][1],gearArr[i][2]+gearArr[j][2],max(gearArr[i][3],gearArr[j][3]),gearArr[i][4] or gearArr[j][4],PvEMode)
+                                eHPArray[i][j] = calcEHP(gearArr[i][1]+gearArr[j][1],gearArr[i][2]+gearArr[j][2],extraDamReduc,max(gearArr[i][3],gearArr[j][3]),gearArr[i][4] or gearArr[j][4],PvEMode)
                     #Draw HP amounts
                     maxeHP = max(max(0 if isinstance(i, str) else i for i in x) for x in eHPArray);
                     mineHP = min(min(100000 if isinstance(i, str) else i for i in x) for x in eHPArray);

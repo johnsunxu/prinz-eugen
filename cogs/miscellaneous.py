@@ -46,8 +46,8 @@ class Miscellaneous(commands.Cog):
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
         embed = discord.Embed(title = "Patch Notes - December 12th 2020")
-        embed.add_field(name ="Version 1.83", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**NEW** eHP calculator uses new ammo types for PvE.")
+        embed.add_field(name ="Version 1.84", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**NEW** Fixed a glich with eHP calculator damage reduction.")
         await ctx.send(embed = embed)
 
 def setup(client):
