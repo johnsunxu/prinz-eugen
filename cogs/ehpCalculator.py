@@ -163,7 +163,7 @@ Example:
                         eLck = 25;
                         time = 60;
                         damageSource = 'Typeless';
-                        damageModifiers = [100,100,100];
+                        damageModifiers = [100,80,60];
 
                 level = 'level120'
                 if retrofit:
