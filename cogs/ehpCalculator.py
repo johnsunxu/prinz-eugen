@@ -100,6 +100,7 @@ class ehpCalculator(commands.Cog):
     **hpN** = Add N HP to the ship.
     **evaN** = Add N percent eva to the ship.
     **evaRateN** = Add N percent EVA rate to the ship.
+    **drN** = Add N percent damage reduction to the ship.
     **AP** = Change enemy ammo type to AP. 110/90/70 is used for vanguard ships. 45/130/110 is used for backline ships.
     **HE** = Change enemy ammo type to HE. 135/95/70 is used for vanguard ships. 140/110/90 is used for backline ships.
     **avi** = View eHP vs aviation damage. 80/100/120 are used as the modifiers.
@@ -150,6 +151,7 @@ Example:
                 extraEvaRate = 0;
                 noSkill = False;
                 PvEMode = False;
+                extraDamReduc = 0;
 
                 #check for retrofit
                 for i in args:
@@ -160,6 +162,8 @@ Example:
                         eHit = 75;
                         eLck = 25;
                         time = 60;
+                        damageSource = 'Typeless';
+                        damageModifiers = [100,100,100];
 
                 level = 'level120'
                 if retrofit:
@@ -191,31 +195,39 @@ Example:
                             time = iInt;
                         elif "hp" in i.lower():
                             hp += iInt;
-                        elif "evarate" in i.lower():
+                        elif "evar" in i.lower():
                             extraEvaRate = iInt/100;
                         elif "eva" in i.lower():
                             eva *= (1+iInt/100);
+                        elif "dr" in i.lower():
+                            extraDamReduc = iInt/100;
                         elif "[" in i.lower() and "]" in i.lower():
                             m = i.replace('[','').split('/');
                             try:
                                 damageModifiers[0] = int(''.join(x for x in '0'+m[1] if x.isdigit()));
                                 damageModifiers[1] = int(''.join(x for x in '0'+m[2] if x.isdigit()));
                                 damageModifiers[2] = int(''.join(x for x in '0'+m[3] if x.isdigit()));
-                                damageSource = 'HE';
-                                if 'he' in m[0]:
+                                damageSource = 'Typeless';
+                                if 'he' in m[0].lower():
                                     damageSource = 'HE'
-                                if 'ap' in m[0]:
+                                if 'ap' in m[0].lower():
                                     damageSource = 'AP'
-                                if 'avi' in m[0]:
+                                if 'avi' in m[0].lower():
                                     damageSource = 'Aviation'
-                                if 'torp' in m[0]:
+                                if 'torp' in m[0].lower():
                                     damageSource = 'Torpedo'
+                                if 'typeless' in m[0].lower():
+                                    damageSource = 'Typeless'
                             except:
-                                await message.channel.send("The custom armor modifiers are incorrect! HE modifiers have been used instead.");
-                                damageSource = 'HE';
+                                await message.channel.send("The custom armor modifiers are incorrect! Typeless modifiers have been used instead.");
+                                damageSource = 'Typeless';
+                                damageModifiers = [100,100,100];
                         elif "ap" in i.lower():
                             damageSource = 'AP'
                             damageModifiers = APDamageMods
+                        elif "he" in i.lower():
+                            damageSource = 'HE'
+                            damageModifiers = HEDamageMods
                         elif "torp" in i.lower():
                             damageSource = 'Torpedo'
                             damageModifiers = TorpedoDamageMods
@@ -224,6 +236,7 @@ Example:
                             damageModifiers = AviationDamageMods
                         elif "crash" in i.lower():
                             damageSource = 'Crash'
+
 
 
                 #multiply HP by modifiers
@@ -252,7 +265,7 @@ Example:
                     if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
                         func = skillSwitch.get(name, "nothing")
                         result = func(realHP,realEva,damageSource,time);
-                        realHP = result[0]/(1-result[3])
+                        realHP = result[0]/(1-(result[3]+extraDamReduc))
                         realEva = result[1]
                         e = result[2];
 
@@ -379,6 +392,8 @@ Example:
                         DMGInfo = f'Aviation damage ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]}) Damage taken is reduced with AA stat.'
                     elif damageSource == "Torpedo":
                         DMGInfo = f'Torpedo damage ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]})'
+                    elif damageSource == "Typeless":
+                        DMGInfo = f'Typeless Ammo ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]})'
                     elif damageSource == "Crash":
                         DMGInfo = 'crash damage'
 
@@ -443,7 +458,6 @@ Example:
                     draw.text((xOffset,450),str(getIncludedSkill()),(255,255,255),font=font)
                     #Draw warning
                     draw.text((xOffset,460+ySpacing),"""Use Argument "PvE" to switch to PvE mode.""" if PvEMode == False else "This displays this ships eHP in PvE not PvP." ,(255,255,255),font=font)
-                    print(PvEMode)
 
                     return output;
 
