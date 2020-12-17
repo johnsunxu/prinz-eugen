@@ -227,7 +227,7 @@ class GuessThatShipgirl(commands.Cog):
             await message.channel.send(embed = embed);
 
         #Handle player giving up
-        elif (arg.find('give') != -1 or arg.find('stop') != -1 or arg.find('quit') != -1 or arg.find('give up') != -1 or arg.find('giveup') != -1 or (arg.find('end') != -1 and arg.find('endless') == -1) or arg.find('skip') != -1):
+        elif (arg.find('give') != -1 or arg.find('stop') != -1 or arg.find('quit') != -1 or arg.find('give up') != -1 or arg.find('giveup') != -1 or arg.find('skip') != -1):
             if getChannelData(message) != 0:
                 #Find out what the answer was
                 data = getChannelData(message);
