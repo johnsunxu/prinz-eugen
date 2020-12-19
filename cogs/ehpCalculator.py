@@ -76,9 +76,6 @@ skillSwitch = {
 #Usefull vanguard array
 vanguard = ['Destroyer', 'Light Cruiser', 'Heavy Cruiser', 'Large Cruiser', 'Munition Ship']
 
-def isRetroArg(arg):
-    return "retro" == arg or "kai" == arg or "fit" == arg or "(fit)" == arg;
-
 #create class
 class ehpCalculator(commands.Cog):
     #init func
@@ -110,7 +107,7 @@ class ehpCalculator(commands.Cog):
     **torp** = View eHP vs tor\*\*\*\* damage. 80/100/130 are used as the modifers.
     **crash** = View eHP vs crash damage.
     **[t/x/y/z]** = View eHP with custom ammo modifiers x/y/z and damage type t.
-    **retrofit** = use the retrofit version of this ship""", inline = False)
+    **noRetro** = Do not use the retrofit version of this ship""", inline = False)
 
                 embed.add_field(name =":small_red_triangle: Examples", value =
 """
@@ -141,12 +138,14 @@ Example:
                 noSkill = False;
                 extraDamReduc = 0;
 
+
                 PvEMode = True;
                 eHit = 75;
                 eLck = 25;
                 time = 60;
                 damageSource = 'Typeless';
                 damageModifiers = [100,80,60];
+                retrofit = True;
 
                 #get args
                 for i in args:
@@ -208,8 +207,8 @@ Example:
                             eHit = 150;
                             eLck = 50;
                             time = 45;
-                        elif isRetroArg(i.lower()):
-                            retrofit = True;
+                        elif "noretro" in i.lower() or "nonretro" in i.lower() or "nokai" in i.lower() or "nonkai" in i.lower():
+                            retrofit = False;
                         else:
                             #no arguments so add to name thing
                             nameArray+=[i.lower()];
@@ -224,7 +223,6 @@ Example:
                 name = shipData['names']['en'];
                 sClass = shipData['class'];
                 hullType = shipData['hullType'];
-                retrofit = False;
                 level = 'level120'
                 if retrofit:
                     level = 'level120Retrofit'
@@ -233,7 +231,6 @@ Example:
                     except:
                         level = 'level120'
                         retrofit = False;
-                        await message.channel.send("This ship does not have a retrofit! The normal ship has been used instead.")
 
                 hp = int(shipData['stats'][level]['health'])+extraHP;
                 eva = int(shipData['stats'][level]['evasion'])*evaMultiplier;

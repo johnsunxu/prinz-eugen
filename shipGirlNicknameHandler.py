@@ -1,6 +1,7 @@
 def getNickname(arg):
     nicknameDic = {
         "fdg" : "Friedrich der Große",
+        "freddy" : "Friedrich der Große",
         "bad" : "Izumo",
         "warcorgi" : "Warspite",
         "warpoi" : "Warspite",
@@ -51,6 +52,10 @@ def getNickname(arg):
         "sheffy" : "Sheffield",
         "hms neptune" : "Neptune",
         "maki" : "Makinami",
+        "sodak" : "South Dakota",
+        "<:roon_seal:773751304861253662>" : "Roon μ",
+        "biscuit" : "Bismarck",
+        "spee" : "Admiral Graf Spee",
 
         #german ships
         "konigsberg" : "Königsberg",
