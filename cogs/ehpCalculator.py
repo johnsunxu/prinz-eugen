@@ -76,6 +76,9 @@ skillSwitch = {
 #Usefull vanguard array
 vanguard = ['Destroyer', 'Light Cruiser', 'Heavy Cruiser', 'Large Cruiser', 'Munition Ship']
 
+def isRetroArg(arg):
+    return "retro" == arg or "kai" == arg or "fit" == arg or "(fit)" == arg;
+
 #create class
 class ehpCalculator(commands.Cog):
     #init func
@@ -84,16 +87,16 @@ class ehpCalculator(commands.Cog):
 
     #Main function
     @commands.command()
-    async def ehp(self, message, shipName, *args):
+    async def ehp(self, message, *args):
         try:
-            if (shipName == 'help'):
+            if (args[0] == 'help'):
                 embed = discord.Embed(title = "EHP Help Menu")
                 embed.add_field(name =":small_red_triangle: ;ehp [ship name] [args]", value =
                 """
-`ship name` - The ship that you want to calculate the eHP of in exercises. Use quotes for character names with a space.""", inline = False)
+`ship name` - The ship that you want to calculate the eHP in PvE or exercises. Use argument PvP if you want to switch to PvP mode.""", inline = False)
                 embed.add_field(name =":small_red_triangle: Args", value =
 """`Args`-
-    **PvE** = Switches mode to PvE mode.
+    **PvP** = Switches mode to PvP mode.
     **hitN** = Set enemy hit stat to value N.
     **luckN** = set enemy luck to value N.
     **timeN** = Set battle duration stat to value N.
@@ -122,64 +125,28 @@ Example:
 
                 await message.channel.send(embed = embed);
             else:
-                shipName = shipName.replace('"',"");
-                #nicknames
-                shipName = getNickname(shipName.lower())
-#                print(shipName)
-                shipData = api.getShip(ship=shipName)
-                #get the needed data
-                name = shipData['names']['en'];
-                sClass = shipData['class'];
-                hullType = shipData['hullType'];
-                retrofit = False;
 
+                #name
+                nameArray = [];
                 #damage mods
-                HEDamageMods = [135,95,70] if hullType in vanguard else [140,110,90];
-                APDamageMods = [110,90,70] if hullType in vanguard else [45,130,110];
                 AviationDamageMods = [80,100,120];
                 TorpedoDamageMods = [80,100,130];
-                #Get damage source
-                damageSource = 'HE'
-                damageModifiers = HEDamageMods
                 #set default args
                 evaSkill = 0;
-                eHit = 150;
                 eLck = 50;
-                time = 45;
                 extraHP = 0;
                 extraEva = 0;
                 extraEvaRate = 0;
+                evaMultiplier = 1;
                 noSkill = False;
-                PvEMode = False;
                 extraDamReduc = 0;
 
-                #check for retrofit
-                for i in args:
-                    if "retro" in i.lower():
-                        retrofit = True;
-                    elif "pve" in i.lower():
-                        PvEMode = True;
-                        eHit = 75;
-                        eLck = 25;
-                        time = 60;
-                        damageSource = 'Typeless';
-                        damageModifiers = [100,80,60];
-
-                level = 'level120'
-                if retrofit:
-                    level = 'level120Retrofit'
-                    try:
-                        shipData['stats'][level]
-                    except:
-                        level = 'level120'
-                        retrofit = False;
-                        await message.channel.send("This ship does not have a retrofit! The normal ship has been used instead.")
-
-                hp = int(shipData['stats'][level]['health']);
-                eva = int(shipData['stats'][level]['evasion']);
-                lck = int(shipData['stats'][level]['luck']);
-                aa = int(shipData['stats'][level]['antiair']);
-                armor = shipData['stats'][level]['armor'];
+                PvEMode = True;
+                eHit = 75;
+                eLck = 25;
+                time = 60;
+                damageSource = 'Typeless';
+                damageModifiers = [100,80,60];
 
                 #get args
                 for i in args:
@@ -194,11 +161,11 @@ Example:
                         elif "time" in i.lower():
                             time = iInt;
                         elif "hp" in i.lower():
-                            hp += iInt;
+                            extraHP = iInt;
                         elif "evar" in i.lower():
                             extraEvaRate = iInt/100;
                         elif "eva" in i.lower():
-                            eva *= (1+iInt/100);
+                            evaMultiplier = 1+(1+iInt/100);
                         elif "dr" in i.lower():
                             extraDamReduc = iInt/100;
                         elif "[" in i.lower() and "]" in i.lower():
@@ -219,9 +186,9 @@ Example:
                                 if 'typeless' in m[0].lower():
                                     damageSource = 'Typeless'
                             except:
-                                await message.channel.send("The custom armor modifiers are incorrect! Typeless modifiers have been used instead.");
+                                await message.channel.send("The custom armor modifiers are incorrect! Normal modifiers have been used instead.");
                                 damageSource = 'Typeless';
-                                damageModifiers = [100,100,100];
+                                damageModifiers = [100,80,60];
                         elif "ap" in i.lower():
                             damageSource = 'AP'
                             damageModifiers = APDamageMods
@@ -236,7 +203,53 @@ Example:
                             damageModifiers = AviationDamageMods
                         elif "crash" in i.lower():
                             damageSource = 'Crash'
+                        elif "pvp" in i.lower():
+                            PvEMode = False;
+                            eHit = 150;
+                            eLck = 50;
+                            time = 45;
+                        elif isRetroArg(i.lower()):
+                            retrofit = True;
+                        else:
+                            #no arguments so add to name thing
+                            nameArray+=[i.lower()];
 
+
+                #get ship name
+                shipName = " ".join(nameArray);
+                #nicknames
+                shipName = getNickname(shipName.lower())
+                shipData = api.getShip(ship=shipName)
+                #get the needed data
+                name = shipData['names']['en'];
+                sClass = shipData['class'];
+                hullType = shipData['hullType'];
+                retrofit = False;
+                level = 'level120'
+                if retrofit:
+                    level = 'level120Retrofit'
+                    try:
+                        shipData['stats'][level]
+                    except:
+                        level = 'level120'
+                        retrofit = False;
+                        await message.channel.send("This ship does not have a retrofit! The normal ship has been used instead.")
+
+                hp = int(shipData['stats'][level]['health'])+extraHP;
+                eva = int(shipData['stats'][level]['evasion'])*evaMultiplier;
+                lck = int(shipData['stats'][level]['luck']);
+                aa = int(shipData['stats'][level]['antiair']);
+                armor = shipData['stats'][level]['armor'];
+
+                #recalculate armor mods if PvP mode is turned on
+                if PvEMode == False:
+                    HEDamageMods = [135,95,70] if hullType in vanguard else [140,110,90];
+                    APDamageMods = [110,90,70] if hullType in vanguard else [45,130,110];
+
+                    if damageSource == 'HE':
+                        damageModifiers = HEDamageMods;
+                    if damageSource == 'AP':
+                        damageModifiers = APDamageMods;
 
 
                 #multiply HP by modifiers
@@ -255,7 +268,7 @@ Example:
                 needRetro = [
                     "Jintsuu"
                 ]
-                def calcEHP(exHP,exEva,exDamReduc,rtime,isVHArmor,pve):
+                def calcEHP(exHP,exEva,exDamReduc,rtime,isVHArmor,pve,torpDamageReduc):
                     realHP = hp+exHP;
                     realEva = eva+exEva;
                     #Claculate skills
@@ -269,7 +282,6 @@ Example:
                         realEva = result[1]
                         e = result[2];
                     #extra damage reduction
-                    print(exDamReduc)
                     if exDamReduc != 1:
                         realHP = realHP/(1-exDamReduc)
 
@@ -285,11 +297,12 @@ Example:
                         if armor != 'Heavy':
                             tempArmor = 2
                         else:
-                            if damageSource in "HE" or damageSource in "Normal":
+                            if damageSource in "HE" or damageSource in "Normal" or damageSource in "Typeless":
                                 realHP *= (1/(1-.03))
                             elif damageSource in "AP":
                                 realHP *= (1/(1-.06))
-
+                    if torpDamageReduc and damageSource == "Torpedo":
+                        realHP *= (1/(1-torpDamageReduc));
                     realHP *= (100/damageModifiers[tempArmor] if damageModifiers[tempArmor] != 0 else 100)
 
                     #reduce damage taken by AA stat if AVI
@@ -383,7 +396,10 @@ Example:
                     output = Image.alpha_composite(back,tempIMG);
 
                     #Start drawing the text on the image
-                    font = ImageFont.truetype("ArialUnicodeMS.ttf", 16)
+                    font = ImageFont.truetype("Trebuchet_MS.ttf", 16)
+                    fontSmall = ImageFont.truetype("Trebuchet_MS.ttf", 12)
+                    fontNumbers = ImageFont.truetype("Lato-Regular.ttf", 12)
+
                     draw = ImageDraw.Draw(output)
 
                     #get the ships armor type
@@ -393,11 +409,11 @@ Example:
                     elif damageSource == "AP":
                         DMGInfo = f'AP ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]})'
                     elif damageSource == "Aviation":
-                        DMGInfo = f'Aviation damage ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]}) Damage taken is reduced with AA stat.'
+                        DMGInfo = f'Aviation damage ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]})'
                     elif damageSource == "Torpedo":
                         DMGInfo = f'Torpedo damage ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]})'
                     elif damageSource == "Typeless":
-                        DMGInfo = f'Typeless Ammo ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]})'
+                        DMGInfo = f'Normal Ammo ({damageModifiers[0]}/{damageModifiers[1]}/{damageModifiers[2]})'
                     elif damageSource == "Crash":
                         DMGInfo = 'crash damage'
 
@@ -406,29 +422,35 @@ Example:
                     draw.text((40, 60),f"Enemy Hit: {eHit} | Enemy Luck: {eLck} | Battle Duration: {time}s",(255,255,255),font=font)
 
                     gearArr=[
-                        ['No Gear',0,0,0,False],
-                        ['Rudder',60,40,0,False],
-                        ['Beaver',75,35,0,False],
-                        ['Toolkit',500,0,time,False],
-                        ['Pearl',500,0,0,False],
-                        ['Kicks',0,28,0,False]
+                        ['No Gear',0,0,0,False,0],
+                        ['Rudder',60,40,0,False,0],
+                        ['Beaver',75,35,0,False,0],
+                        ['Toolkit',500,0,time,False,0],
+                        ['Pearl',500,0,0,False,0],
+                        ['Seal',550,0,0,False,0],
+                        ['Kicks',0,28,0,False,0]
                     ]
                     if hullType in ['Battleship', 'Large Cruiser', 'Battlecruiser', 'Aviation Battleship','Aircraft Carrier']:
-                        gearArr.append(['VH',650,0,0,True])
+                        gearArr.append(['VH',650,0,0,True,0])
                     if hullType in vanguard:
-                        gearArr.append(['Fire Sup.',266,0,0,False])
+                        gearArr.append(['Fire Sup.',266,0,0,False,0])
+                        gearArr.append(['Torp Bulge',350,0,0,False,.30])
                     if hullType in ['Aircraft Carrier', 'Light Carrier', 'Aviation Battleship']:
-                        gearArr.append(['Catapult',75,0,0,False])
+                        gearArr.append(['Catapult',75,0,0,False,0])
 
-                    xSpacing = 75;
-                    ySpacing = 35;
+                    xSpacing = 60;
+                    ySpacing = 30;
                     xOffset = 35;
-                    yOffset = 90;
+                    yOffset = 100;
                     #Draw gear names
                     for i in range(len(gearArr)):
-                        draw.text((xOffset+(i+1)*xSpacing, yOffset),gearArr[i][0],(255,255,255),font=font)
+                        draw.text((xOffset+(i+1)*xSpacing, yOffset),gearArr[i][0],(255,255,255),font=fontSmall)
                     for i in range(len(gearArr)):
-                        draw.text((xOffset, yOffset+(i+1)*ySpacing),gearArr[i][0],(255,255,255),font=font)
+                        if gearArr[i][0] == 'Torp Bulge':
+                            text = 'Torp Bg.'
+                        else:
+                            text = gearArr[i][0];
+                        draw.text((xOffset, yOffset+(i+1)*ySpacing),text,(255,255,255),font=fontSmall)
                     #calculate eHP amoutns
                     eHPArray = []
                     for i in range(len(gearArr)):
@@ -442,7 +464,7 @@ Example:
                             if gearArr[i][0] in bypassDualGear and gearArr[i][0] == gearArr[j][0]:
                                 eHPArray[i][j] = 'N/A'
                             else:
-                                eHPArray[i][j] = calcEHP(gearArr[i][1]+gearArr[j][1],gearArr[i][2]+gearArr[j][2],extraDamReduc,max(gearArr[i][3],gearArr[j][3]),gearArr[i][4] or gearArr[j][4],PvEMode)
+                                eHPArray[i][j] = calcEHP(gearArr[i][1]+gearArr[j][1],gearArr[i][2]+gearArr[j][2],extraDamReduc,max(gearArr[i][3],gearArr[j][3]),gearArr[i][4] or gearArr[j][4],PvEMode, max(gearArr[i][5], gearArr[j][5]))
                     #Draw HP amounts
                     maxeHP = max(max(0 if isinstance(i, str) else i for i in x) for x in eHPArray);
                     mineHP = min(min(100000 if isinstance(i, str) else i for i in x) for x in eHPArray);
@@ -457,11 +479,11 @@ Example:
                                 color = (240,125,125);
                             elif ehp == str(maxeHP):
                                 color = (134,232,132);
-                            draw.text((xOffset+(i+1)*xSpacing, yOffset+(j+1)*ySpacing),ehp,color,font=font)
+                            draw.text((xOffset+(i+1)*xSpacing, yOffset+(j+1)*ySpacing),ehp,color,font=fontNumbers)
                     #Draw skills
                     draw.text((xOffset,450),str(getIncludedSkill()),(255,255,255),font=font)
                     #Draw warning
-                    draw.text((xOffset,460+ySpacing),"""Use Argument "PvE" to switch to PvE mode.""" if PvEMode == False else "This displays this ships eHP in PvE not PvP." ,(255,255,255),font=font)
+                    draw.text((xOffset,460+ySpacing),"""This is not not an accurate representation of this ship's eHP in PvE.""" if PvEMode == False else """Use argument "PvP" to switch to PvP mode.""" ,(255,255,255),font=font)
 
                     return output;
 
@@ -483,7 +505,7 @@ Example:
 
 
         except Exception as e:
-            await message.channel.send(f"{shipName.title()} is an invalid ship name! Please try again.");
+            await message.channel.send(f"That shipgirl does not exist! Please try again.");
             raise
 
 

@@ -65,6 +65,7 @@ def getNickname(arg):
 
         #muse ships
         "roon muse" : "Roon μ",
+        "ruse": "Roon μ",
         "gascogne muse" : "Gascogne μ",
         "cleveland muse" : "Cleveland μ",
         "admiral Hipper muse" : "Admiral Hipper μ",
