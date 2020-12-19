@@ -26,6 +26,7 @@ def getNickname(arg):
         "purin" : "Prototype Bulin MKII",
         "urin" : "Specialized Bulin Custom MKIII",
         "ur bulin" : "Specialized Bulin Custom MKIII",
+        "rainbow bulin" : "Specialized Bulin Custom MKIII",
         "hipper" : "Admiral Hipper",
         "hipper muse" : "Admiral Hipper μ",
         "spee" : "Graf Spee",

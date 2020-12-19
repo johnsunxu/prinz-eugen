@@ -16,34 +16,34 @@ import numpy
 api = AzurAPI()
 
 #Structure of return data
-#[HP, Eva, Eva Rate, damage reduction, skill] (make function to format this)
+#[HP, Eva, Eva Rate, Zombie Amount, damage reduction, skill, skillDisc, notes] (make function to format this)
 #createSwitcher
 def ehpAmagi(hp,eva,source,time):
-    return [hp,eva,.1,0,"Efficacious Planning"];
+    return [hp,eva,.1,0,0,"Efficacious Planning"];
 def ehpAzuma(hp,eva,source,time):
     time = max(time,1)
     totalEVABoost = 0;
     for i in range(1,time):
         if time % 20 <= 12 and time >= 20:
             totalEVABoost+=.2*.7
-    return [hp,eva*(1+(totalEVABoost/time)),0,0,"Mizuho's Intuition"];
+    return [hp,eva*(1+(totalEVABoost/time)),0,0,0,"Mizuho's Intuition"];
 def ehpBremerton(hp,eva,source,time):
     damReduc = 0;
     try:
         damReduc =(min(30/time,1)*1.2 +(1-(min(30/time,1))));
     except:
         damReduc = 1.2;
-    return [hp,eva,0,damReduc-1,"One for the Team"];
+    return [hp,eva,0,0,damReduc-1,"One for the Team"];
 def ehpCheshire(hp,eva,source,time):
-    return [hp,eva*1.15,0,.15,"Grin and Fire! Buff is assumed to be at max level."];
+    return [hp,eva*1.15,0,0,.15,"Grin and Fire! Buff is assumed to be at max level."];
 def ehpFriedrich(hp,eva,source,time):
-    return [hp,eva,0,.1,"Rhapsody of Darkness"];
+    return [hp,eva,0,0,.1,"Rhapsody of Darkness"];
 def ehpGrafZeppelin(hp,eva,source,time):
-    return [hp,eva,0,.15,"Iron Blood Wings"];
+    return [hp,eva,0,0,.15,"Iron Blood Wings"];
 def ehpJintsuu(hp,eva,source,time):
-    return [hp,eva,0,.2,"The Unyielding Jintsuu"];
+    return [hp,eva,0,0,.2,"The Unyielding Jintsuu"];
 def ehpNoshiro(hp,eva,source,time):
-    return [hp,eva,.15,0,"Noshiro's Hoarfrost"];
+    return [hp,eva,.15,0,0,"Noshiro's Hoarfrost"];
 def ehpSanrui(hp,eva,source,time):
     try:
         actualEVA = eva * (min(50/time,1)*1.35 +(1-(min(50/time,1))));
@@ -51,13 +51,23 @@ def ehpSanrui(hp,eva,source,time):
         actualEVA = eva;
     return [hp,actualEVA,0,0,"Engine Boost"];
 def ehpSeattle(hp,eva,source,time):
-    return [hp,eva,0,.15,"Dual Nock"];
+    return [hp,eva,0,0,.15,"Dual Nock"];
 def ehpShinano(hp,eva,source,time):
-    return [hp,eva,0,.2 if source != 'Torpedo' else 0,"Protector of the New Moon" if source != 'Torpedo' else -1];
+    return [hp,eva,0,0,.2 if source != 'Torpedo' else 0,"Protector of the New Moon" if source != 'Torpedo' else -1];
 def ehpSuzutsuki(hp,eva,source,time):
-    return [hp*1.15,eva,0,0,"Suzutsuki, Causing Confusion!"];
+    #calculate average evasion rate
+    time = max(time,1)
+    totalEVABoost = 0;
+    for i in range(1,time):
+        if i <= 3:
+            pass;
+        elif i <= 8:
+            totalEVABoost+=.4
+        elif i-8 % 15 <= 5:
+            totalEVABoost+=.4*.3
+    return [hp,eva,totalEVABoost/time,.15,0,"Suzutsuki, Causing Confusion!"];
 def ehpYukikaze(hp,eva,source,time):
-    return [hp,eva,0,.25,"The Unsinkable Lucky Ship"];
+    return [hp,eva,0,0,.25,"The Unsinkable Lucky Ship"];
 
 skillSwitch = {
     'Amagi' : ehpAmagi,
@@ -188,12 +198,10 @@ Example:
                                 await message.channel.send("The custom armor modifiers are incorrect! Normal modifiers have been used instead.");
                                 damageSource = 'Typeless';
                                 damageModifiers = [100,80,60];
-                        elif "ap" in i.lower():
+                        elif "ap" == i.lower():
                             damageSource = 'AP'
-                            damageModifiers = APDamageMods
-                        elif "he" in i.lower():
+                        elif "he" == i.lower():
                             damageSource = 'HE'
-                            damageModifiers = HEDamageMods
                         elif "torp" in i.lower():
                             damageSource = 'Torpedo'
                             damageModifiers = TorpedoDamageMods
@@ -275,7 +283,7 @@ Example:
                     if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
                         func = skillSwitch.get(name, "nothing")
                         result = func(realHP,realEva,damageSource,time);
-                        realHP = result[0]/(1-result[3])
+                        realHP = result[0]/(1-result[4])
                         realEva = result[1]
                         e = result[2];
                     #extra damage reduction
@@ -320,14 +328,22 @@ Example:
                         return round((realHP*PvPMult*repairHeal)/acc);
                     else:
                         return round(realHP*PvPMult*repairHeal)
-
+                def getZombie():
+                    if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
+                        func = skillSwitch.get(name, "nothing")
+                        result = func(0,0,damageSource,0);
+                        if result[4] == -1:
+                            return 0;
+                        return result[3];
+                    else:
+                        return 0;
                 def getIncludedSkill():
                     if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
                         func = skillSwitch.get(name, "nothing")
                         result = func(0,0,damageSource,0);
                         if result[4] == -1:
                             return "No skills are included in this calculation.";
-                        return "Skills included: " + result[4] + "\nAdd noskill as an argument to ignore this skill.";
+                        return "Skills included: " + result[5] + "\nAdd noskill as an argument to ignore this skill.";
                     else:
                         return "No skills are included in this calculation.";
 
@@ -396,6 +412,8 @@ Example:
                     font = ImageFont.truetype("Trebuchet_MS.ttf", 16)
                     fontSmall = ImageFont.truetype("Trebuchet_MS.ttf", 12)
                     fontNumbers = ImageFont.truetype("Lato-Regular.ttf", 12)
+                    fontNumbersBold = ImageFont.truetype("Lato-Bold.ttf", 12)
+                    fontNumbersSmall = ImageFont.truetype("Lato-Regular.ttf", 9);
 
                     draw = ImageDraw.Draw(output)
 
@@ -450,6 +468,7 @@ Example:
                         draw.text((xOffset, yOffset+(i+1)*ySpacing),text,(255,255,255),font=fontSmall)
                     #calculate eHP amoutns
                     eHPArray = []
+                    zombiePercent = getZombie();
                     for i in range(len(gearArr)):
                         eHPArray.append([])
                         for j in range(len(gearArr)):
@@ -467,16 +486,29 @@ Example:
                     mineHP = min(min(100000 if isinstance(i, str) else i for i in x) for x in eHPArray);
                     for i in range(len(gearArr)):
                         for j in range(len(gearArr)):
+                            f = fontNumbers;
                             if isinstance(eHPArray[i][j], str):
                                 ehp = eHPArray[i][j]
                             else:
-                                ehp = str(eHPArray[i][j]);
+                                ehp = eHPArray[i][j];
+                                zombieAmount = str(round(ehp*zombiePercent));
+                                #draw Zombie text:
+                                color = (150,220,150)
+                                if zombiePercent != 0:
+                                    #get text size to calculate offset
+                                    zombieText = "+"+zombieAmount;
+                                    zw, zh = draw.textsize(zombieText)
+                                    draw.text((xOffset+(i+1)*xSpacing+xSpacing-zw-20, yOffset+13+(j+1)*ySpacing),zombieText,color,font=fontNumbersSmall)
+                                ehp = str(ehp);
                             color = (255,255,255)
                             if ehp == str(mineHP):
                                 color = (240,125,125);
+                                f = fontNumbersBold
                             elif ehp == str(maxeHP):
-                                color = (134,232,132);
-                            draw.text((xOffset+(i+1)*xSpacing, yOffset+(j+1)*ySpacing),ehp,color,font=fontNumbers)
+                                f = fontNumbersBold
+                                color = (150,220,150);
+                            draw.text((xOffset+(i+1)*xSpacing, yOffset+(j+1)*ySpacing),ehp,color,font=f)
+
                     #Draw skills
                     draw.text((xOffset,450),str(getIncludedSkill()),(255,255,255),font=font)
                     #Draw warning
