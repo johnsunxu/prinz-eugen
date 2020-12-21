@@ -45,9 +45,9 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
-        embed = discord.Embed(title = "Patch Notes - December 12th 2020")
-        embed.add_field(name ="Version 1.84", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**NEW** Fixed a glich with eHP calculator damage reduction.")
+        embed = discord.Embed(title = "Patch Notes - December 20th 2020")
+        embed.add_field(name ="Version 1.9", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**NEW** Added `;g hint`.")
         await ctx.send(embed = embed)
 
 def setup(client):
