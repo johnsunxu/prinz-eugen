@@ -33,15 +33,15 @@ def _execute(ctx, server, serverCursor, serverConnection, query):
         serverCursor.execute(query)
         serverConnection.commit()
     #If query fails, reconnect to databases
-    except psycopg2.InterfaceError:
-        ctx.send("Please wait, reconnecting to database.")
+    except (psycopg2.InterfaceError, psycopg2.OperationalError):
+        await ctx.send("Please wait, reconnecting to database.")
         reconnect()
         try:
             serverCursor.execute(query)
             serverConnection.commit()
         #report unaccounted for errors to creator
         except:
-            ctx.send("Database error, ping SomeDude#0172")
+            await ctx.send("Database error, ping SomeDude#0172")
 
 #Check if user entered correct servers
 def checkServerInput(server):
