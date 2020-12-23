@@ -146,7 +146,7 @@ async def startGame(message,encodedMessage, args):
             shipData['name'] = randomShip['names']['en']
             shipData['skin'] = random.choice(skinsArr)
 
-            global curShip 
+            global curShip
             curShip = shipData
 
             #Create Image
@@ -232,7 +232,7 @@ class GuessThatShipgirl(commands.Cog):
             await message.channel.send(embed = embed)
 
         #Handle player giving up
-        elif (arg.find('give') != -1 or arg.find('stop') != -1 or arg.find('quit') != -1 or arg.find('give up') != -1 or arg.find('giveup') != -1 or (arg.find('end') != -1 and arg.find('endless') == -1) or arg.find('skip') != -1):
+        elif (arg.find('give') != -1 or arg.find('stop') != -1 or arg.find('quit') != -1 or arg.find('give up') != -1 or arg.find('giveup') != -1 or arg.find('skip') != -1):
             if getChannelData(message) != 0:
                 #Find out what the answer was
                 data = getChannelData(message)
@@ -272,7 +272,7 @@ class GuessThatShipgirl(commands.Cog):
                 if r.status_code != requests.codes.ok:
                     assert False, 'Status code error: {}.'.format(r.status_code)
                 #save to outfile
-                # saveChannelDataEncoded(message,[])            
+                # saveChannelDataEncoded(message,[])
                 with Image.open(io.BytesIO(r.content)) as image:
                     #modify the image to make it a silhouette
                     image.convert("RGBA")
@@ -288,11 +288,11 @@ class GuessThatShipgirl(commands.Cog):
                         if pixels[randX,randY][3] !=0:
                             points.append((randX,randY))
                     print("Points:")
-                    for point in points: 
+                    for point in points:
                         print(point)
                     print(f"Size of image is {image.size[0]} by {image.size[1]}")
-                            
-                    #save a list of points and their pixel values 
+
+                    #save a list of points and their pixel values
                     # distance =int(image.size[0] * 0.15)
                     distance =int(125)
                     savedPixels =  []
@@ -307,7 +307,7 @@ class GuessThatShipgirl(commands.Cog):
                                     print(e)
                     print("pixels saved:",len(savedPixels))
 
-                    #create the silhouette 
+                    #create the silhouette
                     x = np.array(image)
                     r, g, b, a = np.rollaxis(x, axis=-1)
                     r[a!=0] = 0
@@ -318,7 +318,7 @@ class GuessThatShipgirl(commands.Cog):
                     pixels = image.load()
                     #change back points
                     temp = 0
-                    for savedPixel in savedPixels: 
+                    for savedPixel in savedPixels:
                         # temp = (savedPixel[1][0],savedPixel[1][1],savedPixel[1][2],savedPixel[1][3])
                         # pixels[savedPixel[0][0],savedPixel[0][1]] = temp
                         image.putpixel((savedPixel[0][0],savedPixel[0][1]), savedPixel[1])
@@ -326,7 +326,7 @@ class GuessThatShipgirl(commands.Cog):
                     print("pixels changed:",temp)
                     with io.BytesIO() as image_binary:
                         desc = "Here is the hint."
-                        
+
                         #send the embed
                         file = discord.File(fp=image_binary, filename='dont_try_to_cheat_hint.png')
                         embedVar = discord.Embed(title="Hint!", description=desc,color=embedColor)

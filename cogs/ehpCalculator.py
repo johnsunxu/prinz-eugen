@@ -19,37 +19,48 @@ api = AzurAPI()
 #[HP, Eva, Eva Rate, Zombie Amount, damage reduction, skill, skillDisc, notes] (make function to format this)
 #createSwitcher
 def ehpAmagi(hp,eva,source,time):
-    return [hp,eva,.1,0,0,"Efficacious Planning"];
+    return [hp,eva,.1,0,0,"Efficacious Planning","While alive in fleet, reduces Burn damage taken by the Main Fleet by 5% (15%) and increases their Evasion Rate by 4% (10%)."];
 def ehpAzuma(hp,eva,source,time):
     time = max(time,1)
     totalEVABoost = 0;
     for i in range(1,time):
         if time % 20 <= 12 and time >= 20:
             totalEVABoost+=.2*.7
-    return [hp,eva*(1+(totalEVABoost/time)),0,0,0,"Mizuho's Intuition"];
+    return [hp,eva*(1+(totalEVABoost/time)),0,0,0,"Mizuho's Intuition","Every 20 seconds: 30% (70%) chance to increase own Evasion by 10% (20%) and Accuracy by 20% (50%) for 12 seconds."];
 def ehpBremerton(hp,eva,source,time):
     damReduc = 0;
     try:
         damReduc =(min(30/time,1)*1.2 +(1-(min(30/time,1))));
     except:
         damReduc = 1.2;
-    return [hp,eva,0,0,damReduc-1,"One for the Team"];
+    return [hp,eva,0,0,damReduc-1,"One for the Team","At the start of the battle, if this ship is in the frontmost position of your Vanguard: decreases this ship's DMG taken by 5.0% (20.0%) for 30s; If not in this position, increases this ship's AA by 15.0% (25.0%) until the end of the battle."];
 def ehpCheshire(hp,eva,source,time):
-    return [hp,eva*1.15,0,0,.15,"Grin and Fire! Buff is assumed to be at max level."];
+    return [hp,eva*1.15,0,0,.15,"Grin and Fire! and Bounce Right Back","Decrease this ship's DMG taken by 5% (15.0%). Every 12s after the start of the battle: 50% (100%) chance to fire a special barrage (DMG is based on the skill's level). Decrease the loading time of this ship's first wave of torpedoes by 40% (70.0%). When this ship takes DMG: 15.0% chance to increase this ship's FP, EVA, and AA by 1% (5.0%) until the end of the battle. Can be stacked up to 3 times.","Bounce Right Back is assumed to be at max level."];
 def ehpFriedrich(hp,eva,source,time):
-    return [hp,eva,0,0,.1,"Rhapsody of Darkness"];
+    return [hp,eva,0,0,.1,"Rhapsody of Darkness","""When own HP is between:
+100% and 70% of max HP: increases own Firepower by 10% (20%).
+70% and 30% of max HP: increases own Firepower by 4% (10%) and decreases damage taken by self by 4% (10%).
+30% and 1% of max HP: decreases damage taken by self by 10% (20%)."""];
 def ehpGrafZeppelin(hp,eva,source,time):
     return [hp,eva,0,0,.15,"Iron Blood Wings"];
 def ehpJintsuu(hp,eva,source,time):
     return [hp,eva,0,0,.2,"The Unyielding Jintsuu"];
+def ehpMinneapolis(hp,eva,source,time):
+    return [hp,eva,0,.2,0,"Dullahan","Once per battle, when this ship's HP falls below 30%: decreases the DMG it takes by 5% (10%) for the rest of the battle and for 16s: decreases its Speed by 2 and recovers 1% (4%) of its max HP every 3s."];
+def ehpNingHai(hp,eva,source,time):
+    return [hp,eva,.3,0,.2,"Dragon Empery Bond","When sortied with Ning Hai and/or Ping Hai, Yat Sen and the aforementioned ships have their damage taken decreased by 8% (20%) and Evasion Rate increased by 15% (30%).","This is skill is Yat Sen's."];
 def ehpNoshiro(hp,eva,source,time):
     return [hp,eva,.15,0,0,"Noshiro's Hoarfrost"];
+def ehpPhoenix(hp,eva,source,time):
+    return [hp,eva,0,.25,0,"Red Phoenix","When Health falls under 20%, heals 15% (25%) of max Health and increase own Firepower by 30% for 15 seconds. Can only occur once per battle."];
+def ehpPingHai(hp,eva,source,time):
+    return [hp,eva,.3,0,.2,"Dragon Empery Bond","When sortied with Ning Hai and/or Ping Hai, Yat Sen and the aforementioned ships have their damage taken decreased by 8% (20%) and Evasion Rate increased by 15% (30%).","This is skill is Yat Sen's."];
 def ehpSanrui(hp,eva,source,time):
     try:
         actualEVA = eva * (min(50/time,1)*1.35 +(1-(min(50/time,1))));
     except:
         actualEVA = eva;
-    return [hp,actualEVA,0,0,"Engine Boost"];
+    return [hp,actualEVA,0,0,0,"Engine Boost"];
 def ehpSeattle(hp,eva,source,time):
     return [hp,eva,0,0,.15,"Dual Nock"];
 def ehpShinano(hp,eva,source,time):
@@ -66,6 +77,8 @@ def ehpSuzutsuki(hp,eva,source,time):
         elif i-8 % 15 <= 5:
             totalEVABoost+=.4*.3
     return [hp,eva,totalEVABoost/time,.15,0,"Suzutsuki, Causing Confusion!"];
+def ehpYatSen(hp,eva,source,time):
+    return [hp,eva,.3,0,.2,"Dragon Empery Bond","When sortied with Ning Hai and/or Ping Hai, Yat Sen and the aforementioned ships have their damage taken decreased by 8% (20%) and Evasion Rate increased by 15% (30%)."];
 def ehpYukikaze(hp,eva,source,time):
     return [hp,eva,0,0,.25,"The Unsinkable Lucky Ship"];
 
@@ -75,11 +88,16 @@ skillSwitch = {
     'Bremerton' : ehpBremerton,
     'Friedrich der Große' : ehpFriedrich,
     'Jintsuu' : ehpJintsuu,
+    'Minneapolis' : ehpMinneapolis,
+    'Ning Hai' : ehpNingHai,
     'Noshiro' : ehpNoshiro,
+    'Phoenix' : ehpPhoenix,
+    'Ping Hai' : ehpPingHai,
     'Saint Louis' : ehpSanrui,
     'Seattle' : ehpSeattle,
     'Shinano' : ehpShinano,
     'Suzutsuki' : ehpSuzutsuki,
+    'Yat Sen' : ehpYatSen,
     'Yukikaze' : ehpYukikaze
 }
 
