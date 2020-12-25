@@ -28,7 +28,7 @@ def reconnect():
     washington_cur = washington_conn.cursor()
 
 #procedure to execute SQL query while accounting for errors
-def _execute(ctx, server, serverCursor, serverConnection, query):
+async def _execute(ctx, server, serverCursor, serverConnection, query):
     try:
         serverCursor.execute(query)
         serverConnection.commit()
@@ -72,14 +72,14 @@ def updateTime():
     print(date)
 
 #
-def sendData(ctx, server, serverCursor, serverConnection, rusherName, time, date, reporterName):
+async def sendData(ctx, server, serverCursor, serverConnection, rusherName, time, date, reporterName):
     #find out entry number
-    _execute(ctx, server, serverCursor, serverConnection,f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
+    await _execute(ctx, server, serverCursor, serverConnection,f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
     # serverCursor.execute(f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
     entryNumber = serverCursor.fetchall()[len(serverCursor.fetchall())-1][0]+1
     print("ENTRY NUM IS", entryNumber)
     print(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
-    _execute(ctx, server, serverCursor, serverConnection, f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
+    await _execute(ctx, server, serverCursor, serverConnection, f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
     # serverCursor.execute(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
     # serverConnection.commit()
 
@@ -104,7 +104,7 @@ class CheckPlayer(commands.Cog):
             await ctx.send("Server input incorrect!")
             return
         print(f"Server is: {server}")
-        _execute(ctx, server, serverCursor, serverConnection, "SELECT * FROM leaderboard ORDER BY entries DESC;")
+        await _execute(ctx, server, serverCursor, serverConnection, "SELECT * FROM leaderboard ORDER BY entries DESC;")
         # serverCursor.execute("SELECT * FROM leaderboard ORDER BY entries DESC;")
         leaderboard = serverCursor.fetchall()
         str = f"{server}: \n```"
@@ -140,13 +140,15 @@ class CheckPlayer(commands.Cog):
         #Receive variables
         entries = []
         for i in range(len(players)):
-            _execute(ctx,server,serverCursor,serverConnection, f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
+            await _execute(ctx,server,serverCursor,serverConnection, f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
             # serverCursor.execute(f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
             reports = serverCursor.fetchall()
             entries.append(reports)
 
         #Create output string
-        await ctx.send("Reminder: Times are in server time!")
+        updateTime()
+        global time
+        await ctx.send(f"Reminder: Times are in server time!\nCurrent server time is `{time}`")
         str = ""
 
         for i in range(len(entries)):
@@ -188,6 +190,11 @@ class CheckPlayer(commands.Cog):
         except:
             await ctx.send("No spaces! Use \" \" for names with spaces.")
             return
+        
+        #check for negative numbers
+        if customTime <0 or customDate<0: 
+            await ctx.send("No negative numbers! Custom time is for minutes passed.")
+            return
 
         #Check if user entered correct servers
         if checkServerInput(server)[0] != True:
@@ -209,12 +216,12 @@ class CheckPlayer(commands.Cog):
         reporterName = ctx.message.author.name
 
         #Add to sheet
-        sendData(ctx,server, serverCursor, serverConnection,playerName,time,date,reporterName)
+        await sendData(ctx,server, serverCursor, serverConnection,playerName,time,date,reporterName)
         # sheet.append_row(dataEntry, value_input_option="USER_ENTERED")
         await ctx.send("Data entry successful!")
 
         #Add entry to leaderboard
-        _execute(ctx, server, serverCursor, serverConnection,"SELECT * FROM leaderboard;" )
+        await _execute(ctx, server, serverCursor, serverConnection,"SELECT * FROM leaderboard;" )
         # serverCursor.execute("SELECT * FROM leaderboard;")
         test = serverCursor.fetchall()
 
@@ -229,13 +236,13 @@ class CheckPlayer(commands.Cog):
                 #add one to entries if exists
                 #find out current number of entries
                 entries= test[j][1]
-                _execute(ctx,server,serverCursor,serverConnection,f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
+                await _execute(ctx,server,serverCursor,serverConnection,f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
                 # serverCursor.execute(f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
                 break
         if not repeat:
             #print(f"no name found, creating new name:{reporterValues[i]};{test[i][0].strip()}")
             #else create new entry
-            _execute(ctx, server, serverCursor, serverConnection,f"INSERT INTO leaderboard(username, entries) VALUES(\'{reporterName}\',1)" )
+            await _execute(ctx, server, serverCursor, serverConnection,f"INSERT INTO leaderboard(username, entries) VALUES(\'{reporterName}\',1)" )
             # serverCursor.execute(f"INSERT INTO leaderboard(username, entries) VALUES(\'{reporterName}\',1)")
         serverConnection.commit()
         return
