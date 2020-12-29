@@ -135,6 +135,7 @@ class ehpCalculator(commands.Cog):
     **torp** = View eHP vs tor\*\*\*\* damage. 80/100/130 are used as the modifers.
     **crash** = View eHP vs crash damage.
     **[t/x/y/z]** = View eHP with custom ammo modifiers x/y/z and damage type t.
+    **siren** = set damage source to sirens.
     **noRetro** = Do not use the retrofit version of this ship""", inline = False)
 
                 embed.add_field(name =":small_red_triangle: Examples", value =
@@ -174,6 +175,8 @@ Example:
                 damageSource = 'Typeless';
                 damageModifiers = [100,80,60];
                 retrofit = True;
+
+                siren = False;
 
                 #get args
                 for i in args:
@@ -235,6 +238,8 @@ Example:
                             time = 45;
                         elif "noretro" in i.lower() or "nonretro" in i.lower() or "nokai" in i.lower() or "nonkai" in i.lower():
                             retrofit = False;
+                        elif "siren" in i.lower():
+                            siren = True;
                         else:
                             #no arguments so add to name thing
                             nameArray+=[i.lower()];
@@ -291,7 +296,7 @@ Example:
                 needRetro = [
                     "Jintsuu"
                 ]
-                def calcEHP(exHP,exEva,exDamReduc,rtime,isVHArmor,pve,torpDamageReduc):
+                def calcEHP(nameX,nameY,exHP,exEva,exDamReduc,rtime,isVHArmor,pve,torpDamageReduc):
                     realHP = hp+exHP;
                     realEva = eva+exEva;
                     #Claculate skills
@@ -307,6 +312,9 @@ Example:
                     #extra damage reduction
                     if exDamReduc != 1:
                         realHP = realHP/(1-exDamReduc)
+                    #add siren damage reduction if costal report
+                    if nameX == "Recon Report" or nameY == "Recon Report":
+                        realHP = realHP/(1-.06)
 
                     #get armor type
                     ArmorModLoc = {
@@ -459,15 +467,19 @@ Example:
                         ['Rudder',60,40,0,False,0],
                         ['Beaver',75,35,0,False,0],
                         ['Toolkit',500,0,time,False,0],
-                        ['Pearl',500,0,0,False,0],
-                        ['Seal',550,0,0,False,0],
+                        ['500 HP',500,0,0,False,0],
+                        ['550 HP',550,0,0,False,0],
                         ['Kicks',0,28,0,False,0]
                     ]
                     if hullType in ['Battleship', 'Large Cruiser', 'Battlecruiser', 'Aviation Battleship','Aircraft Carrier']:
                         gearArr.append(['VH',650,0,0,True,0])
+
                     if hullType in vanguard:
-                        gearArr.append(['Fire Sup.',266,0,0,False,0])
-                        gearArr.append(['Torp Bulge',350,0,0,False,.30])
+                        if hullType not in ['Large Cruiser']:
+                            gearArr.append(['Fire Sup.',266,0,0,False,0])
+                        gearArr.append(['Torp Bg.',350,0,0,False,.30])
+                        if siren:
+                            gearArr.append(['Recon Report',120,15,0,False,0])
                     if hullType in ['Aircraft Carrier', 'Light Carrier', 'Aviation Battleship']:
                         gearArr.append(['Catapult',75,0,0,False,0])
 
@@ -479,8 +491,8 @@ Example:
                     for i in range(len(gearArr)):
                         draw.text((xOffset+(i+1)*xSpacing, yOffset),gearArr[i][0],(255,255,255),font=fontSmall)
                     for i in range(len(gearArr)):
-                        if gearArr[i][0] == 'Torp Bulge':
-                            text = 'Torp Bg.'
+                        if gearArr[i][0] == 'Recon Report':
+                            text = 'Recon Rp.'
                         else:
                             text = gearArr[i][0];
                         draw.text((xOffset, yOffset+(i+1)*ySpacing),text,(255,255,255),font=fontSmall)
@@ -498,7 +510,7 @@ Example:
                             if gearArr[i][0] in bypassDualGear and gearArr[i][0] == gearArr[j][0]:
                                 eHPArray[i][j] = 'N/A'
                             else:
-                                eHPArray[i][j] = calcEHP(gearArr[i][1]+gearArr[j][1],gearArr[i][2]+gearArr[j][2],extraDamReduc,max(gearArr[i][3],gearArr[j][3]),gearArr[i][4] or gearArr[j][4],PvEMode, max(gearArr[i][5], gearArr[j][5]))
+                                eHPArray[i][j] = calcEHP(gearArr[i][0],gearArr[j][0],gearArr[i][1]+gearArr[j][1],gearArr[i][2]+gearArr[j][2],extraDamReduc,max(gearArr[i][3],gearArr[j][3]),gearArr[i][4] or gearArr[j][4],PvEMode, max(gearArr[i][5], gearArr[j][5]))
                     #Draw HP amounts
                     maxeHP = max(max(0 if isinstance(i, str) else i for i in x) for x in eHPArray);
                     mineHP = min(min(100000 if isinstance(i, str) else i for i in x) for x in eHPArray);
