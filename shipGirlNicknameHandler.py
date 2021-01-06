@@ -57,6 +57,7 @@ def getNickname(arg):
         "<:roon_seal:773751304861253662>" : "Roon μ",
         "biscuit" : "Bismarck",
         "spee" : "Admiral Graf Spee",
+        "suzu" : "Suzutsuki",
 
         #german ships
         "konigsberg" : "Königsberg",

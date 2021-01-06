@@ -433,6 +433,7 @@ Example:
                     #imgD.rectangle([(25, 25), (750, 526)], fill = (15,15,15,180))
 
                     output = Image.alpha_composite(back,tempIMG);
+                    output = output.convert('RGB');
 
                     #Start drawing the text on the image
                     font = ImageFont.truetype("Trebuchet_MS.ttf", 16)
