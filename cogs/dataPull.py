@@ -28,10 +28,13 @@ def reconnect():
     washington_cur = washington_conn.cursor()
 
 #procedure to execute SQL query while accounting for errors
-async def _execute(ctx, server, serverCursor, serverConnection, query):
+async def _execute(ctx, server, serverCursor, serverConnection, query, returning = False):
     try:
         serverCursor.execute(query)
         serverConnection.commit()
+        #return the printout from the query
+        if returning == True:
+            return serverCursor.fetchall()
     #If query fails, reconnect to databases
     except (psycopg2.InterfaceError, psycopg2.OperationalError):
         await ctx.send("Please wait, reconnecting to database.")
@@ -73,10 +76,10 @@ def updateTime():
 
 #
 async def sendData(ctx, server, serverCursor, serverConnection, rusherName, time, date, reporterName):
-    #find out entry number
-    await _execute(ctx, server, serverCursor, serverConnection,f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
+    #find out entry number abd send query
+    entryNumber = await _execute(ctx, server, serverCursor, serverConnection, f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;", returning=True)[len(serverCursor.fetchall())-1][0]+1
     # serverCursor.execute(f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
-    entryNumber = serverCursor.fetchall()[len(serverCursor.fetchall())-1][0]+1
+    #entryNumber = serverCursor.fetchall()[len(serverCursor.fetchall())-1][0]+1    
     print("ENTRY NUM IS", entryNumber)
     print(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
     await _execute(ctx, server, serverCursor, serverConnection, f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
