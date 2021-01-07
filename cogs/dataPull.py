@@ -77,7 +77,8 @@ def updateTime():
 #
 async def sendData(ctx, server, serverCursor, serverConnection, rusherName, time, date, reporterName):
     #find out entry number abd send query
-    entryNumber = await _execute(ctx, server, serverCursor, serverConnection, f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;", returning=True)[len(serverCursor.fetchall())-1][0]+1
+    entryNumber = await _execute(ctx, server, serverCursor, serverConnection, f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;", returning=True)
+    entryNumber = [len(entryNumber)-1][0]+1
     # serverCursor.execute(f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
     #entryNumber = serverCursor.fetchall()[len(serverCursor.fetchall())-1][0]+1    
     print("ENTRY NUM IS", entryNumber)
