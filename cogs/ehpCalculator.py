@@ -46,7 +46,9 @@ def ehpGrafZeppelin(hp,eva,source,time):
 def ehpJintsuu(hp,eva,source,time):
     return [hp,eva,0,0,.2,"The Unyielding Jintsuu"];
 def ehpMinneapolis(hp,eva,source,time):
-    return [hp,eva,0,.2,0,"Dullahan","Once per battle, when this ship's HP falls below 30%: decreases the DMG it takes by 5% (10%) for the rest of the battle and for 16s: decreases its Speed by 2 and recovers 1% (4%) of its max HP every 3s."];
+    return [hp,eva,0,.2,0,"Dullahan"];
+def ehpMogami(hp,eva,source,time):
+    return [hp,eva,0,0,.2 if source == 'AP' else 0,"AP Protection" if source == 'AP' else -1];
 def ehpNingHai(hp,eva,source,time):
     return [hp,eva,.3,0,.2,"Dragon Empery Bond","When sortied with Ning Hai and/or Ping Hai, Yat Sen and the aforementioned ships have their damage taken decreased by 8% (20%) and Evasion Rate increased by 15% (30%).","This is skill is Yat Sen's."];
 def ehpNoshiro(hp,eva,source,time):
@@ -89,6 +91,7 @@ skillSwitch = {
     'Friedrich der Große' : ehpFriedrich,
     'Jintsuu' : ehpJintsuu,
     'Minneapolis' : ehpMinneapolis,
+    'Mogami' : ehpMogami,
     'Ning Hai' : ehpNingHai,
     'Noshiro' : ehpNoshiro,
     'Phoenix' : ehpPhoenix,
@@ -367,15 +370,21 @@ Example:
                     if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
                         func = skillSwitch.get(name, "nothing")
                         result = func(0,0,damageSource,0);
-                        if result[4] == -1:
-                            return "No skills are included in this calculation.";
-                        return "Skills included: " + result[5] + "\nAdd noskill as an argument to ignore this skill.";
+                        if result[5] != -1:
+                            return "Skills included: " + result[5] + "\nAdd noskill as an argument to ignore this skill.";
+                        return "No skills are included in this calculation.";
                     else:
                         return "No skills are included in this calculation.";
 
                 #choose skin
+                skin = {
+                    'name' : 0,
+                };
                 if retrofit:
-                    skin = shipData["skins"][1]
+                    i = 0;
+                    while skin['name'] != "Retrofit":
+                        skin = shipData["skins"][i]
+                        i+=1;
                 else:
                     skin = shipData["skins"][0]
                 #Create Image
@@ -541,9 +550,9 @@ Example:
                             draw.text((xOffset+(i+1)*xSpacing, yOffset+(j+1)*ySpacing),ehp,color,font=f)
 
                     #Draw skills
-                    draw.text((xOffset,450),str(getIncludedSkill()),(255,255,255),font=font)
+                    draw.text((xOffset,450),str(getIncludedSkill()),(255,255,255),font=fontSmall)
                     #Draw warning
-                    draw.text((xOffset,460+ySpacing),"""This is not not an accurate representation of this ship's eHP in PvE.""" if PvEMode == False else """Use argument "PvP" to switch to PvP mode.""" ,(255,255,255),font=font)
+                    draw.text((xOffset,460+ySpacing-8),"""This is not not an accurate representation of this ship's eHP in PvE.""" if PvEMode == False else """Use argument "PvP" to switch to PvP mode.""" ,(255,255,255),font=fontSmall)
 
                     return output;
 
