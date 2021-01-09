@@ -35,12 +35,12 @@ def ehpBremerton(hp,eva,source,time):
         damReduc = 1.2;
     return [hp,eva,0,0,damReduc-1,"One for the Team","At the start of the battle, if this ship is in the frontmost position of your Vanguard: decreases this ship's DMG taken by 5.0% (20.0%) for 30s; If not in this position, increases this ship's AA by 15.0% (25.0%) until the end of the battle."];
 def ehpCheshire(hp,eva,source,time):
-    return [hp,eva*1.15,0,0,.15,"Grin and Fire! and Bounce Right Back","Decrease this ship's DMG taken by 5% (15.0%). Every 12s after the start of the battle: 50% (100%) chance to fire a special barrage (DMG is based on the skill's level). Decrease the loading time of this ship's first wave of torpedoes by 40% (70.0%). When this ship takes DMG: 15.0% chance to increase this ship's FP, EVA, and AA by 1% (5.0%) until the end of the battle. Can be stacked up to 3 times.","Bounce Right Back is assumed to be at max level."];
+    return [hp,eva*1.15,0,0,.15,"Grin and Fire! and Bounce Right Back","Bounce Right Back is assumed to be at max level."];
+def ehpDrake(hp,eva,source,time):
+    hpBoost = 0.0284131968948*math.floor(time/20)
+    return [hp,eva*1.15,0,hpBoost,0,"Flintlock Burst","Sortied as lead vanguard. Barrage is assumed to have 100% accuracy"];
 def ehpFriedrich(hp,eva,source,time):
-    return [hp,eva,0,0,.1,"Rhapsody of Darkness","""When own HP is between:
-100% and 70% of max HP: increases own Firepower by 10% (20%).
-70% and 30% of max HP: increases own Firepower by 4% (10%) and decreases damage taken by self by 4% (10%).
-30% and 1% of max HP: decreases damage taken by self by 10% (20%)."""];
+    return [hp,eva,0,0,.1,"Rhapsody of Darkness"];
 def ehpGrafZeppelin(hp,eva,source,time):
     return [hp,eva,0,0,.15,"Iron Blood Wings"];
 def ehpJintsuu(hp,eva,source,time):
@@ -88,6 +88,7 @@ skillSwitch = {
     'Amagi' : ehpAmagi,
     'Azuma' : ehpAzuma,
     'Bremerton' : ehpBremerton,
+    'Drake' : ehpDrake,
     'Friedrich der Große' : ehpFriedrich,
     'Jintsuu' : ehpJintsuu,
     'Minneapolis' : ehpMinneapolis,
@@ -123,8 +124,7 @@ class ehpCalculator(commands.Cog):
                 """
 `ship name` - The ship that you want to calculate the eHP in PvE or exercises. Use argument PvP if you want to switch to PvP mode.""", inline = False)
                 embed.add_field(name =":small_red_triangle: Args", value =
-"""`Args`-
-    **PvP** = Switches mode to PvP mode.
+"""**PvP** = Switches mode to PvP mode.
     **hitN** = Set enemy hit stat to value N.
     **luckN** = set enemy luck to value N.
     **timeN** = Set battle duration stat to value N.
@@ -142,9 +142,7 @@ class ehpCalculator(commands.Cog):
     **noRetro** = Do not use the retrofit version of this ship""", inline = False)
 
                 embed.add_field(name =":small_red_triangle: Examples", value =
-"""
-Example:
-    `;ehp Akagi` - get Akagi's eHP.
+"""`;ehp Akagi` - get Akagi's eHP.
     `;ehp "Graf Zeppelin" hit100` - get Graf Zeppelin's eHP with an enemy hit stat of 100.
     `;ehp "Prinz Eugen" time30 HE` - get Prinz Eugen's eHP with a battle time of 30s seconds vs HE ammo.
     `;ehp Amagi [AP/45/130/115]` - get Amagi's eHP vs custom AP ammo with the modifers 45/130/115.
@@ -187,19 +185,20 @@ Example:
                         noSkill = True;
                     else:
                         iInt = int(''.join(x for x in '0'+i if x.isdigit()));
-                        if "hit" in i.lower():
+                        stringNumberless = ''.join([j for j in i.lower() if not j.isdigit()])
+                        if "hit" == stringNumberless:
                             eHit = iInt;
-                        elif "luck" in i.lower():
+                        elif "luck" == stringNumberless:
                             eLck = iInt;
-                        elif "time" in i.lower():
+                        elif "time" == stringNumberless:
                             time = iInt;
-                        elif "hp" in i.lower():
+                        elif "hp" == stringNumberless:
                             extraHP = iInt;
-                        elif "evar" in i.lower():
+                        elif "evar" == stringNumberless:
                             extraEvaRate = iInt/100;
-                        elif "eva" in i.lower():
+                        elif "eva" == stringNumberless:
                             evaMultiplier = 1+(1+iInt/100);
-                        elif "dr" in i.lower():
+                        elif "dr" == stringNumberless:
                             extraDamReduc = iInt/100;
                         elif "[" in i.lower() and "]" in i.lower():
                             m = i.replace('[','').split('/');
@@ -222,30 +221,30 @@ Example:
                                 await message.channel.send("The custom armor modifiers are incorrect! Normal modifiers have been used instead.");
                                 damageSource = 'Typeless';
                                 damageModifiers = [100,80,60];
-                        elif "ap" == i.lower():
+                        elif "ap" == stringNumberless:
                             damageSource = 'AP'
-                        elif "he" == i.lower():
+                        elif "he" == stringNumberless:
                             damageSource = 'HE'
-                        elif "torp" in i.lower():
+                        elif "torp" == stringNumberless:
                             damageSource = 'Torpedo'
                             damageModifiers = TorpedoDamageMods
-                        elif "avi" in i.lower():
+                        elif "avi" == stringNumberless:
                             damageSource = 'Aviation'
                             damageModifiers = AviationDamageMods
-                        elif "crash" in i.lower():
+                        elif "crash" == stringNumberless:
                             damageSource = 'Crash'
-                        elif "pvp" in i.lower():
+                        elif "pvp" == stringNumberless:
                             PvEMode = False;
                             eHit = 150;
                             eLck = 50;
                             time = 45;
-                        elif "noretro" in i.lower() or "nonretro" in i.lower() or "nokai" in i.lower() or "nonkai" in i.lower():
+                        elif "noretro" in stringNumberless or "nonretro" in stringNumberless or "nokai" in stringNumberless or "nonkai" in stringNumberless:
                             retrofit = False;
-                        elif "siren" in i.lower():
+                        elif "siren" == stringNumberless:
                             siren = True;
                         else:
                             #no arguments so add to name thing
-                            nameArray+=[i.lower()];
+                            nameArray+=[stringNumberless];
 
 
                 #get ship name
@@ -360,7 +359,7 @@ Example:
                 def getZombie():
                     if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
                         func = skillSwitch.get(name, "nothing")
-                        result = func(0,0,damageSource,0);
+                        result = func(0,0,damageSource,time);
                         if result[4] == -1:
                             return 0;
                         return result[3];
