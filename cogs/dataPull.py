@@ -80,7 +80,7 @@ async def sendData(ctx, server, serverCursor, serverConnection, rusherName, time
     entryNumber = await _execute(ctx, server, serverCursor, serverConnection, f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;", returning=True)
     entryNumber = len(entryNumber)+1
     # serverCursor.execute(f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
-    #entryNumber = serverCursor.fetchall()[len(serverCursor.fetchall())-1][0]+1    
+    #entryNumber = serverCursor.fetchall()[len(serverCursor.fetchall())-1][0]+1
     print("ENTRY NUM IS", entryNumber)
     print(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
     await _execute(ctx, server, serverCursor, serverConnection, f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
@@ -171,6 +171,13 @@ class CheckPlayer(commands.Cog):
     @commands.command(aliases=["addplayer"], brief="Add player to spreadsheet in UTC time.")
     async def addPlayer(self, ctx, server, playerName, customTime="0", customDate="0", *extraArgs):
 
+        #quick check to make sure the user is on ALM's sever
+        #servers besides that one are banned to prevent trolling
+        if (ctx.guild.name != "Azur Lane Meta"):
+            await ctx.channel.send("Sorry, you can only use this command on Azur Lane Meta's server. Join at discord.gg/AzurLaneMeta.");
+            #it probably is stopped with the return
+            return;
+
         # await ctx.send("Sorry this command is currently under maintenance.")
         # return
 
@@ -194,9 +201,9 @@ class CheckPlayer(commands.Cog):
         except:
             await ctx.send("No spaces! Use \" \" for names with spaces.")
             return
-        
+
         #check for negative numbers
-        if customTime <0 or customDate<0: 
+        if customTime <0 or customDate<0:
             await ctx.send("No negative numbers! Custom time is for minutes passed.")
             return
 
