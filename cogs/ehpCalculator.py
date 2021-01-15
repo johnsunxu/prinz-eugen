@@ -43,6 +43,8 @@ def ehpFriedrich(hp,eva,source,time):
     return [hp,eva,0,0,.1,"Rhapsody of Darkness"];
 def ehpGrafZeppelin(hp,eva,source,time):
     return [hp,eva,0,0,.15,"Iron Blood Wings"];
+def ehpHelena(hp,eva,source,time):
+    return [hp,eva,0,0,0,"Radar Scan Plus"];
 def ehpJintsuu(hp,eva,source,time):
     return [hp,eva,0,0,.2,"The Unyielding Jintsuu"];
 def ehpMinneapolis(hp,eva,source,time):
@@ -54,7 +56,7 @@ def ehpNingHai(hp,eva,source,time):
 def ehpNoshiro(hp,eva,source,time):
     return [hp,eva,.15,0,0,"Noshiro's Hoarfrost"];
 def ehpPhoenix(hp,eva,source,time):
-    return [hp,eva,0,.25,0,"Red Phoenix","When Health falls under 20%, heals 15% (25%) of max Health and increase own Firepower by 30% for 15 seconds. Can only occur once per battle."];
+    return [hp,eva,0,.25,0,"Red Phoenix"];
 def ehpPingHai(hp,eva,source,time):
     return [hp,eva,.3,0,.2,"Dragon Empery Bond","When sortied with Ning Hai and/or Ping Hai, Yat Sen and the aforementioned ships have their damage taken decreased by 8% (20%) and Evasion Rate increased by 15% (30%).","This is skill is Yat Sen's."];
 def ehpSanrui(hp,eva,source,time):
@@ -88,8 +90,10 @@ skillSwitch = {
     'Amagi' : ehpAmagi,
     'Azuma' : ehpAzuma,
     'Bremerton' : ehpBremerton,
+    'Cheshire' : ehpCheshire,
     'Drake' : ehpDrake,
     'Friedrich der Große' : ehpFriedrich,
+    'Helena' : ehpHelena,
     'Jintsuu' : ehpJintsuu,
     'Minneapolis' : ehpMinneapolis,
     'Mogami' : ehpMogami,
@@ -298,7 +302,7 @@ class ehpCalculator(commands.Cog):
                 needRetro = [
                     "Jintsuu"
                 ]
-                def calcEHP(nameX,nameY,exHP,exEva,exDamReduc,rtime,isVHArmor,pve,torpDamageReduc):
+                def calcEHP(nameX,nameY,exHP,exEva,exDamReduc,rtime,pve,torpDamageReduc,name):
                     realHP = hp+exHP;
                     realEva = eva+exEva;
                     #Claculate skills
@@ -326,7 +330,7 @@ class ehpCalculator(commands.Cog):
                     }
                     tempArmor = ArmorModLoc[armor]
                     #switch armor to heavy is the VH armor is used
-                    if isVHArmor:
+                    if nameX == "VH" or nameY == "VH":
                         if armor != 'Heavy':
                             tempArmor = 2
                         else:
@@ -337,6 +341,12 @@ class ehpCalculator(commands.Cog):
                     if torpDamageReduc and damageSource == "Torpedo":
                         realHP *= (1/(1-torpDamageReduc));
                     realHP *= (100/damageModifiers[tempArmor] if damageModifiers[tempArmor] != 0 else 100)
+
+                    #SG radar helena interaction
+                    if name == "Helena":
+                        print("helena");
+                        if nameX == "SG Radar" or nameY == "SG Radar":
+                            realEva*=1.1;
 
                     #reduce damage taken by AA stat if AVI
                     if damageSource == 'Aviation' or damageSource == 'Crash':
@@ -444,11 +454,11 @@ class ehpCalculator(commands.Cog):
                     output = output.convert('RGB');
 
                     #Start drawing the text on the image
-                    font = ImageFont.truetype("Trebuchet_MS.ttf", 16)
-                    fontSmall = ImageFont.truetype("Trebuchet_MS.ttf", 12)
-                    fontNumbers = ImageFont.truetype("Lato-Regular.ttf", 12)
-                    fontNumbersBold = ImageFont.truetype("Lato-Bold.ttf", 12)
-                    fontNumbersSmall = ImageFont.truetype("Lato-Regular.ttf", 9);
+                    font = ImageFont.truetype("resources/Trebuchet_MS.ttf", 16)
+                    fontSmall = ImageFont.truetype("resources/Trebuchet_MS.ttf", 12)
+                    fontNumbers = ImageFont.truetype("resources/Lato-Regular.ttf", 12)
+                    fontNumbersBold = ImageFont.truetype("resources/Lato-Bold.ttf", 12)
+                    fontNumbersSmall = ImageFont.truetype("resources/Lato-Regular.ttf", 9);
 
                     draw = ImageDraw.Draw(output)
 
@@ -472,25 +482,25 @@ class ehpCalculator(commands.Cog):
                     draw.text((40, 60),f"Enemy Hit: {eHit} | Enemy Luck: {eLck} | Battle Duration: {time}s",(255,255,255),font=font)
 
                     gearArr=[
-                        ['No Gear',0,0,0,False,0],
-                        ['Rudder',60,40,0,False,0],
-                        ['Beaver',75,35,0,False,0],
-                        ['Toolkit',500,0,time,False,0],
-                        ['500 HP',500,0,0,False,0],
-                        ['550 HP',550,0,0,False,0],
-                        ['Kicks',0,28,0,False,0]
+                        ['No Gear',0,0,0,0],
+                        ['Rudder',60,40,0,0],
+                        ['Beaver',75,35,0,0],
+                        ['Toolkit',500,0,time,0],
+                        ['500 HP',500,0,0,0],
+                        ['550 HP',550,0,0,0],
+                        ['Kicks',0,28,0,0]
                     ]
                     if hullType in ['Battleship', 'Large Cruiser', 'Battlecruiser', 'Aviation Battleship','Aircraft Carrier']:
-                        gearArr.append(['VH',650,0,0,True,0])
+                        gearArr.append(['VH',650,0,0,0])
 
                     if hullType in vanguard:
                         if hullType not in ['Large Cruiser']:
-                            gearArr.append(['Fire Sup.',266,0,0,False,0])
-                        gearArr.append(['Torp Bg.',350,0,0,False,.30])
+                            gearArr.append(['Fire Sup.',266,0,0,0])
+                        gearArr.append(['Torp Bg.',350,0,0,.30])
                         if siren:
-                            gearArr.append(['Recon Report',120,15,0,False,0])
+                            gearArr.append(['Recon Report',120,15,0,0])
                     if hullType in ['Aircraft Carrier', 'Light Carrier', 'Aviation Battleship']:
-                        gearArr.append(['Catapult',75,0,0,False,0])
+                        gearArr.append(['Catapult',75,0,0,0])
 
                     xSpacing = 60;
                     ySpacing = 30;
@@ -515,11 +525,11 @@ class ehpCalculator(commands.Cog):
                     for i in range(len(gearArr)):
                         for j in range(len(gearArr)):
                             #Bypass
-                            bypassDualGear = ['Rudder', 'Beaver', 'VH Armor', 'Pearl', 'Kicks'];
+                            bypassDualGear = ['Rudder', 'Beaver', 'VH', 'Pearl', 'Kicks'];
                             if gearArr[i][0] in bypassDualGear and gearArr[i][0] == gearArr[j][0]:
                                 eHPArray[i][j] = 'N/A'
                             else:
-                                eHPArray[i][j] = calcEHP(gearArr[i][0],gearArr[j][0],gearArr[i][1]+gearArr[j][1],gearArr[i][2]+gearArr[j][2],extraDamReduc,max(gearArr[i][3],gearArr[j][3]),gearArr[i][4] or gearArr[j][4],PvEMode, max(gearArr[i][5], gearArr[j][5]))
+                                eHPArray[i][j] = calcEHP(gearArr[i][0],gearArr[j][0],gearArr[i][1]+gearArr[j][1],gearArr[i][2]+gearArr[j][2],extraDamReduc,max(gearArr[i][3],gearArr[j][3]),PvEMode, max(gearArr[i][4], gearArr[j][4]),shipName)
                     #Draw HP amounts
                     maxeHP = max(max(0 if isinstance(i, str) else i for i in x) for x in eHPArray);
                     mineHP = min(min(100000 if isinstance(i, str) else i for i in x) for x in eHPArray);

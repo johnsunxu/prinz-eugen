@@ -60,6 +60,7 @@ def getNickname(arg):
         "suzu" : "Suzutsuki",
 
         #german ships
+        "nurnberg" : "Nürnberg",
         "konigsberg" : "Königsberg",
         "koln" : "Köln",
 
