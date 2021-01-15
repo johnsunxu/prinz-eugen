@@ -11,5 +11,3 @@ numpy
 psycopg2-binary
 python-dotenv
 pathlib
-selenium
-bs4
