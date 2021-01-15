@@ -444,11 +444,11 @@ class ehpCalculator(commands.Cog):
                     output = output.convert('RGB');
 
                     #Start drawing the text on the image
-                    font = ImageFont.truetype("Trebuchet_MS.ttf", 16)
-                    fontSmall = ImageFont.truetype("Trebuchet_MS.ttf", 12)
-                    fontNumbers = ImageFont.truetype("Lato-Regular.ttf", 12)
-                    fontNumbersBold = ImageFont.truetype("Lato-Bold.ttf", 12)
-                    fontNumbersSmall = ImageFont.truetype("Lato-Regular.ttf", 9);
+                    font = ImageFont.truetype("resources/Trebuchet_MS.ttf", 16)
+                    fontSmall = ImageFont.truetype("resources/Trebuchet_MS.ttf", 12)
+                    fontNumbers = ImageFont.truetype("resources/Lato-Regular.ttf", 12)
+                    fontNumbersBold = ImageFont.truetype("resources/Lato-Bold.ttf", 12)
+                    fontNumbersSmall = ImageFont.truetype("resources/Lato-Regular.ttf", 9);
 
                     draw = ImageDraw.Draw(output)
 

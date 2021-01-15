@@ -41,6 +41,8 @@ class Miscellaneous(commands.Cog):
 
         embed.add_field(name = ":small_red_triangle: ;ehp help", value = "Shows how to calculate eHP for a ship in exercises.", inline = False)
 
+        embed.add_field(name = ":small_red_triangle: ;gear [ship name]", value = "Shows the suggested gear loadout for a ship. Loadouts are from https://slaimuda.github.io/ectl/#/home.", inline = False)
+
         embed.add_field(name = ":small_red_triangle: ;flipcoin", value = "Displays the result of a unbiased coin flip.", inline = False)
 
         embed.add_field(name = ":small_red_triangle: ;patchNotes", value = "Displays patch notes.", inline = False)
@@ -51,9 +53,9 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
-        embed = discord.Embed(title = "Patch Notes - January 10th 2021")
+        embed = discord.Embed(title = "Patch Notes - January 15th 2021")
         embed.add_field(name ="Version 2.0", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**NEW** Added the credits function and made bot useable on every discord server.")
+        embed.add_field(name = "** **", value = "**NEW** Added ;gear.")
         await ctx.send(embed = embed)
 
     @commands.command()
@@ -61,6 +63,7 @@ class Miscellaneous(commands.Cog):
         embed = discord.Embed(title = "Credits")
         embed.add_field(name ="Developers", value = "SomeDude and Drakomire", inline = False)
         embed.add_field(name = "Azur API", value = "Special thanks to XhacKX and Kumo")
+        embed.add_field(name = "Azur Lane's EN Community Tier List", value = "Thanks for the gear loadouts.")
         await ctx.send(embed = embed)
 
 def setup(client):
