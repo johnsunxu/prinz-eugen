@@ -43,7 +43,8 @@ async def _execute(ctx, server, serverCursor, serverConnection, query, returning
             serverCursor.execute(query)
             serverConnection.commit()
         #report unaccounted for errors to creator
-        except:
+        except Exception as e:
+            print("ERROR:", e )
             await ctx.send("Database error, ping SomeDude#0172")
 
 #Check if user entered correct servers
