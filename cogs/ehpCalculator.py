@@ -544,7 +544,7 @@ class ehpCalculator(commands.Cog):
                     #Draw gear pictures
                     for i in range(1,len(gearArr)+1):
 #                        draw.text((xOffset+(i+1)*spacing, yOffset),gearArr[i][0],(255,255,255),font=fontSmall)
-                        gearImage = Image.open(f"resources\images\Gear\{gearArr[i-1][0]}.png").resize((70,70));
+                        gearImage = Image.open(f"resources/images/Gear/{gearArr[i-1][0]}.png").resize((70,70));
 
                         output.paste(gearImage,(xOffset+spacing*i,yOffset))
                         output.paste(gearImage,(xOffset,yOffset+spacing*i))
