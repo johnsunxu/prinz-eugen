@@ -162,7 +162,7 @@ class shipGearFinder(commands.Cog):
                         imageContent = response.content;
                     imgBack = None;
                     if gearClass[3] == "rarity-ultra-rare":
-                        imgBack = Image.open('resources/images/Gear_Rairity/rarityBlue70x70.png')
+                        imgBack = Image.open('resources/images/Gear_Rairity/rarityRainbow70x70.png')
                     elif gearClass[3] == "rarity-super-rare":
                         imgBack = Image.open('resources/images/Gear_Rairity/rarityGold70x70.png')
                     elif gearClass[3] == "rarity-elite":
