@@ -46,8 +46,11 @@ class shipGearFinder(commands.Cog):
 
 
         shipName = " ".join(args);
+        #Get nicknames
         shipName = getNickname(shipName.lower())
+        #AzurAPI needs the name as written
         shipNameAPI = shipName;
+        #Replace certain characters with the code thing slime uses. For some reason urllib didn't work so I had to do this.
         shipName = shipName.replace(" ","_").replace("ü","%FC").replace("ö","%F6").replace("é","%E9").replace("â","%E2").replace("É","%E9").replace("ß","%DF").replace("μ","%B5")
 
         try:
@@ -159,13 +162,13 @@ class shipGearFinder(commands.Cog):
                         imageContent = response.content;
                     imgBack = None;
                     if gearClass[3] == "rarity-ultra-rare":
-                        imgBack = Image.open('resources/rarityRainbow.png')
+                        imgBack = Image.open('resources/images/Gear_Rairity/rarityBlue70x70.png')
                     elif gearClass[3] == "rarity-super-rare":
-                        imgBack = Image.open('resources/rarityGold.png')
+                        imgBack = Image.open('resources/images/Gear_Rairity/rarityGold70x70.png')
                     elif gearClass[3] == "rarity-elite":
-                        imgBack = Image.open('resources/rarityPurple.png')
+                        imgBack = Image.open('resources/images/Gear_Rairity/rarityPurple70x70.png')
                     else:
-                        imgBack = Image.open('resources/rarityBlue.png')
+                        imgBack = Image.open('resources/images/Gear_Rairity/rarityBlue70x70.png')
                     image_bytes = BytesIO(imageContent)
                     img = Image.open(image_bytes)
                     #image is now open. Add a background depending on rarity.
@@ -191,8 +194,8 @@ class shipGearFinder(commands.Cog):
             img = Image.new('RGBA', (85+(max(longestCatagory,6)+1)*(imageSize+imagePaddding)+15,480),color = 'rgb(45,54,69)');
 
             #create font
-            font = ImageFont.truetype("resources/Trebuchet_MS.ttf", 16)
-            fontName = ImageFont.truetype("resources/Trebuchet_MS.ttf", 28)
+            font = ImageFont.truetype("resources/fonts/Trebuchet_MS.ttf", 16)
+            fontName = ImageFont.truetype("resources/fonts/Trebuchet_MS.ttf", 28)
 
             #Get the art from Azur API
             shipData = api.getShip(ship=shipNameAPI)
