@@ -35,6 +35,10 @@ async def _execute(ctx, server, serverCursor, serverConnection, query, returning
         #return the printout from the query
         if returning == True:
             return serverCursor.fetchall()
+    #In case of bad query, definitely not the best way to solve this error
+    except psycopg2.InternalError:
+        serverCursor.rollback()
+        _execute(ctx, server, serverCursor, serverConnection, query, returning)
     #If query fails, reconnect to databases
     except (psycopg2.InterfaceError, psycopg2.OperationalError):
         await ctx.send("Please wait, reconnecting to database.")
