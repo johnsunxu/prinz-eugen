@@ -15,59 +15,94 @@ import numpy
 
 api = AzurAPI()
 
+skillBoostDict = {
+    'hp' : 0,
+    'eva' : 1,
+    'evaRate' : 2,
+    'zombie' : 3,
+    'damageReduction' : 4,
+    'luck' : 5,
+    'name' : 6,
+    'description' : 7,
+    'notes' : 8
+}
+
 #Structure of return data
-#[HP, Eva, Eva Rate, Zombie Amount, damage reduction, skill, skillDisc, notes] (make function to format this)
+#[HP, Eva, Eva Rate, Zombie Amount, damage reduction, skill, notes] (make function to format this)
+def skillBoost(hp=0,eva=0,evaRate=0,zombie=0,damageReduction=0,luck=0,name="",description="",notes=""):
+    return {
+        'hp' : hp,
+        'eva' : eva,
+        'evaRate' : evaRate,
+        'zombie' : zombie,
+        'damageReduction' : damageReduction,
+        'luck' : luck,
+        'name' : name,
+        'description' : description,
+        'notes' : notes
+    }
+
 #createSwitcher
-def ehpAmagi(hp,eva,source,time):
-    return [hp,eva,.1,0,0,"Efficacious Planning","While alive in fleet, reduces Burn damage taken by the Main Fleet by 5% (15%) and increases their Evasion Rate by 4% (10%)."];
-def ehpAzuma(hp,eva,source,time):
+def ehpAmagi(source,time,rld):
+    return skillBoost(evaRate=.1,name="Efficacious Planning",description="While alive in fleet, reduces Burn damage taken by the Main Fleet by 5% (15%) and increases their Evasion Rate by 4% (10%).");
+def ehpAzuma(source,time,rld):
     time = max(time,1)
     totalEVABoost = 0;
     for i in range(1,time):
         if time % 20 <= 12 and time >= 20:
             totalEVABoost+=.2*.7
-    return [hp,eva*(1+(totalEVABoost/time)),0,0,0,"Mizuho's Intuition","Every 20 seconds: 30% (70%) chance to increase own Evasion by 10% (20%) and Accuracy by 20% (50%) for 12 seconds."];
-def ehpBremerton(hp,eva,source,time):
+    return skillBoost(eva=totalEVABoost/time,name="Mizuho's Intuition",description="Every 20 seconds: 30% (70%) chance to increase own Evasion by 10% (20%) and Accuracy by 20% (50%) for 12 seconds.")
+def ehpBremerton(source,time,rld):
     damReduc = 0;
     try:
         damReduc =(min(30/time,1)*1.2 +(1-(min(30/time,1))));
     except:
         damReduc = 1.2;
-    return [hp,eva,0,0,damReduc-1,"One for the Team","At the start of the battle, if this ship is in the frontmost position of your Vanguard: decreases this ship's DMG taken by 5.0% (20.0%) for 30s; If not in this position, increases this ship's AA by 15.0% (25.0%) until the end of the battle."];
-def ehpCheshire(hp,eva,source,time):
-    return [hp,eva*1.15,0,0,.15,"Grin and Fire! and Bounce Right Back","Bounce Right Back is assumed to be at max level."];
-def ehpDrake(hp,eva,source,time):
+    return skillBoost(damageReduction=damReduc-1,name="One for the Team",description="At the start of the battle, if this ship is in the frontmost position of your Vanguard: decreases this ship's DMG taken by 5.0% (20.0%) for 30s; If not in this position, increases this ship's AA by 15.0% (25.0%) until the end of the battle.")
+def ehpCheshire(source,time,rld):
+    return skillBoost(eva=.15,damageReduction=.15,name="Grin and Fire! and Bounce Right Back",notes="Bounce Right Back is assumed to be at max level.");
+def ehpDrake(source,time,rld):
     hpBoost = 0.0284131968948*math.floor(time/20)
-    return [hp,eva*1.15,0,hpBoost,0,"Flintlock Burst","Sortied as lead vanguard. Barrage is assumed to have 100% accuracy"];
-def ehpFriedrich(hp,eva,source,time):
-    return [hp,eva,0,0,.1,"Rhapsody of Darkness"];
-def ehpGrafZeppelin(hp,eva,source,time):
-    return [hp,eva,0,0,.15,"Iron Blood Wings"];
-def ehpJintsuu(hp,eva,source,time):
-    return [hp,eva,0,0,.2,"The Unyielding Jintsuu"];
-def ehpMinneapolis(hp,eva,source,time):
-    return [hp,eva,0,.2,0,"Dullahan"];
-def ehpMogami(hp,eva,source,time):
-    return [hp,eva,0,0,.2 if source == 'AP' else 0,"AP Protection" if source == 'AP' else -1];
-def ehpNingHai(hp,eva,source,time):
-    return [hp,eva,.3,0,.2,"Dragon Empery Bond","When sortied with Ning Hai and/or Ping Hai, Yat Sen and the aforementioned ships have their damage taken decreased by 8% (20%) and Evasion Rate increased by 15% (30%).","This is skill is Yat Sen's."];
-def ehpNoshiro(hp,eva,source,time):
-    return [hp,eva,.15,0,0,"Noshiro's Hoarfrost"];
-def ehpPhoenix(hp,eva,source,time):
-    return [hp,eva,0,.25,0,"Red Phoenix","When Health falls under 20%, heals 15% (25%) of max Health and increase own Firepower by 30% for 15 seconds. Can only occur once per battle."];
-def ehpPingHai(hp,eva,source,time):
-    return [hp,eva,.3,0,.2,"Dragon Empery Bond","When sortied with Ning Hai and/or Ping Hai, Yat Sen and the aforementioned ships have their damage taken decreased by 8% (20%) and Evasion Rate increased by 15% (30%).","This is skill is Yat Sen's."];
-def ehpSanrui(hp,eva,source,time):
+    return skillBoost(eva=.15,zombie=hpBoost,name="Flintlock Burst",notes="Sortied as lead vanguard. Barrage is assumed to have 100% accuracy")
+def ehpFriedrich(source,time,rld):
+    return skillBoost(damageReduction=.1,name="Rhapsody of Darkness")
+def ehpGrafZeppelin(source,time,rld):
+    return skillBoost(damageReduction=.15,name="Iron Blood Wings");
+def ehpHelena(source,time,rld):
+    return skillBoost(name="Radar Scan Plus");
+def ehpJintsuu(source,time,rld):
+    return skillBoost(damageReduction=.2,name="The Unyielding Jintsuu");
+def ehpMinneapolis(source,time,rld):
+    return skillBoost(zombie=.2,name="Dullahan");
+def ehpMogami(source,time,rld):
+    return skillBoost(damageReduction=(.2 if source == 'AP' else 0),name=("AP Protection" if source == 'AP' else -1));
+def ehpNingHai(source,time,rld):
+    return skillBoost(evaRate=.3,damageReduction=.2,name="Dragon Empery Bond",description="When sortied with Ning Hai and/or Ping Hai, Yat Sen and the aforementioned ships have their damage taken decreased by 8% (20%) and Evasion Rate increased by 15% (30%).",notes="This is skill is Yat Sen's.");
+def ehpNoshiro(source,time,rld):
+    return skillBoost(evaRate=.15,name="Noshiro's Hoarfrost");
+def ehpPhoenix(source,time,rld):
+    return skillBoost(zombie=.25,name="Red Phoenix",description="When Health falls under 20%, heals 15% (25%) of max Health and increase own Firepower by 30% for 15 seconds. Can only occur once per battle.")
+def ehpPingHai(source,time,rld):
+    return skillBoost(evaRate=.3,damageReduction=.2,name="Dragon Empery Bond",description="When sortied with Ning Hai and/or Ping Hai, Yat Sen and the aforementioned ships have their damage taken decreased by 8% (20%) and Evasion Rate increased by 15% (30%).",notes="This is skill is Yat Sen's.");
+def ehpPola(source,time,rld):
     try:
-        actualEVA = eva * (min(50/time,1)*1.35 +(1-(min(50/time,1))));
+        actualEVA = eva * (min(45/time,1)*1.15 +(1-(min(45/time,1))));
     except:
         actualEVA = eva;
-    return [hp,actualEVA,0,0,0,"Engine Boost"];
-def ehpSeattle(hp,eva,source,time):
-    return [hp,eva,0,0,.15,"Dual Nock"];
-def ehpShinano(hp,eva,source,time):
-    return [hp,eva,0,0,.2 if source != 'Torpedo' else 0,"Protector of the New Moon" if source != 'Torpedo' else -1];
-def ehpSuzutsuki(hp,eva,source,time):
+    return skillBoost(eva=actualEVA-1,damageReduction=6,name="Audacious Challenger");
+def ehpPrinzHeinrich(source,time,rld):
+    return skillBoost(eva=.15,name="Heinrich's Hunch Punch");
+def ehpSanrui(source,time,rld):
+    try:
+        actualEVA = 1 * (min(50/time,1)*1.35 +(1-(min(50/time,1))));
+    except:
+        actualEVA = 1;
+    return skillBoost(eva=actualEVA-1,name="Engine Boost");
+def ehpSeattle(source,time,rld):
+    return skillBoost(damageReduction=.15,name="Dual Nock");
+def ehpShinano(source,time,rld):
+    return skillBoost(damageReduction=(.2 if source != 'Torpedo' else 0),name=("Protector of the New Moon" if source != 'Torpedo' else -1));
+def ehpSuzutsuki(source,time,rld):
     #calculate average evasion rate
     time = max(time,1)
     totalEVABoost = 0;
@@ -78,35 +113,86 @@ def ehpSuzutsuki(hp,eva,source,time):
             totalEVABoost+=.4
         elif i-8 % 15 <= 5:
             totalEVABoost+=.4*.3
-    return [hp,eva,totalEVABoost/time,.15,0,"Suzutsuki, Causing Confusion!"];
-def ehpYatSen(hp,eva,source,time):
-    return [hp,eva,.3,0,.2,"Dragon Empery Bond","When sortied with Ning Hai and/or Ping Hai, Yat Sen and the aforementioned ships have their damage taken decreased by 8% (20%) and Evasion Rate increased by 15% (30%)."];
-def ehpYukikaze(hp,eva,source,time):
-    return [hp,eva,0,0,.25,"The Unsinkable Lucky Ship"];
+    return skillBoost(evaRate=totalEVABoost/time,zombie=.15,name="Suzutsuki, Causing Confusion!");
+def ehpTakatoClass(source,time,rld):
+    AoAProcTime = rld*4;
+    try:
+        evaRate = 1 * (min(AoAProcTime/time,1) + (1-(min(AoAProcTime/time,1)))*1.1);
+    except:
+        evaRate = 1;
+    return skillBoost(evaRate=evaRate-1,name="All out Assualt");
+def ehpYatSen(source,time,rld):
+    return skillBoost(evaRate=.3,damageReduction=.2,name="Dragon Empery Bond",description="When sortied with Ning Hai and/or Ping Hai, Yat Sen and the aforementioned ships have their damage taken decreased by 8% (20%) and Evasion Rate increased by 15% (30%).");
+def ehpYukikaze(source,time,rld):
+    return skillBoost(damageReduction=.25,name="The Unsinkable Lucky Ship");
 
 skillSwitch = {
     'Amagi' : ehpAmagi,
+    'Atago' :ehpTakatoClass,
     'Azuma' : ehpAzuma,
     'Bremerton' : ehpBremerton,
+    'Choukai' :ehpTakatoClass,
     'Drake' : ehpDrake,
     'Friedrich der Große' : ehpFriedrich,
     'Jintsuu' : ehpJintsuu,
+    'Maya' :ehpTakatoClass,
     'Minneapolis' : ehpMinneapolis,
     'Mogami' : ehpMogami,
     'Ning Hai' : ehpNingHai,
     'Noshiro' : ehpNoshiro,
     'Phoenix' : ehpPhoenix,
     'Ping Hai' : ehpPingHai,
+    'Prinz Heinrich' : ehpPrinzHeinrich,
     'Saint Louis' : ehpSanrui,
     'Seattle' : ehpSeattle,
     'Shinano' : ehpShinano,
     'Suzutsuki' : ehpSuzutsuki,
+    'Takao' :ehpTakatoClass,
     'Yat Sen' : ehpYatSen,
     'Yukikaze' : ehpYukikaze
 }
 
 #Usefull vanguard array
 vanguard = ['Destroyer', 'Light Cruiser', 'Heavy Cruiser', 'Large Cruiser', 'Munition Ship']
+
+#multiline text function
+def text_wrap(text, font, max_width):
+        """Wrap text base on specified width.
+        This is to enable text of width more than the image width to be display
+        nicely.
+        @params:
+            text: str
+                text to wrap
+            font: obj
+                font of the text
+            max_width: int
+                width to split the text with
+        @return
+            lines: list[str]
+                list of sub-strings
+        """
+        lines = []
+
+        # If the text width is smaller than the image width, then no need to split
+        # just add it to the line list and return
+        if font.getsize(text)[0]  <= max_width:
+            lines.append(text)
+        else:
+            #split the line by spaces to get words
+            words = text.split(' ')
+            i = 0
+            # append every word to a line while its width is shorter than the image width
+            while i < len(words):
+                line = ''
+                while i < len(words) and font.getsize(line + words[i])[0] <= max_width:
+                    line = line + words[i]+ " "
+                    i += 1
+                if not line:
+                    line = words[i]
+                    i += 1
+                lines.append(line)
+        return lines
+
 
 #create class
 class ehpCalculator(commands.Cog):
@@ -132,13 +218,13 @@ class ehpCalculator(commands.Cog):
     **evaN** = Add N percent eva to the ship.
     **evaRateN** = Add N percent EVA rate to the ship.
     **drN** = Add N percent damage reduction to the ship.
+    **rldN** = Set gun reload to value N.
     **AP** = Change enemy ammo type to AP. 110/90/70 is used for vanguard ships. 45/130/110 is used for backline ships.
     **HE** = Change enemy ammo type to HE. 135/95/70 is used for vanguard ships. 140/110/90 is used for backline ships.
     **avi** = View eHP vs aviation damage. 80/100/120 are used as the modifiers.
     **torp** = View eHP vs tor\*\*\*\* damage. 80/100/130 are used as the modifers.
     **crash** = View eHP vs crash damage.
     **[t/x/y/z]** = View eHP with custom ammo modifiers x/y/z and damage type t.
-    **siren** = set damage source to sirens.
     **noRetro** = Do not use the retrofit version of this ship""", inline = False)
 
                 embed.add_field(name =":small_red_triangle: Examples", value =
@@ -170,12 +256,14 @@ class ehpCalculator(commands.Cog):
 
 
                 PvEMode = True;
-                eHit = 75;
-                eLck = 25;
-                time = 60;
+                #set to invalid value so it can be checked if a custom value was used
+                eHit = -1;
+                eLck = -1;
+                time = -1;
                 damageSource = 'Typeless';
                 damageModifiers = [100,80,60];
                 retrofit = True;
+                rld = 5.0;
 
                 siren = False;
 
@@ -184,8 +272,8 @@ class ehpCalculator(commands.Cog):
                     if "noskill" in i.lower():
                         noSkill = True;
                     else:
-                        iInt = int(''.join(x for x in '0'+i if x.isdigit()));
-                        stringNumberless = ''.join([j for j in i.lower() if not j.isdigit()])
+                        iInt = float(''.join(x for x in '0'+i if x.isdigit() or x == "."));
+                        stringNumberless = ''.join([j for j in i.lower() if not j.isdigit() and j != "."])
                         if "hit" == stringNumberless:
                             eHit = iInt;
                         elif "luck" == stringNumberless:
@@ -197,9 +285,11 @@ class ehpCalculator(commands.Cog):
                         elif "evar" == stringNumberless:
                             extraEvaRate = iInt/100;
                         elif "eva" == stringNumberless:
-                            evaMultiplier = 1+(1+iInt/100);
+                            evaMultiplier = 1+(iInt/100);
                         elif "dr" == stringNumberless:
                             extraDamReduc = iInt/100;
+                        elif "rld" == stringNumberless:
+                            rld = iInt;
                         elif "[" in i.lower() and "]" in i.lower():
                             m = i.replace('[','').split('/');
                             try:
@@ -235,9 +325,13 @@ class ehpCalculator(commands.Cog):
                             damageSource = 'Crash'
                         elif "pvp" == stringNumberless:
                             PvEMode = False;
-                            eHit = 150;
-                            eLck = 50;
-                            time = 45;
+                            #set defualt eva,time,hit if not set yet
+                            if eHit == -1:
+                                eHit = 150
+                            if eLck == -1:
+                                eLck = 50
+                            if time == -1:
+                                time = 45
                         elif "noretro" in stringNumberless or "nonretro" in stringNumberless or "nokai" in stringNumberless or "nonkai" in stringNumberless:
                             retrofit = False;
                         elif "siren" == stringNumberless:
@@ -249,6 +343,9 @@ class ehpCalculator(commands.Cog):
 
                 #get ship name
                 shipName = " ".join(nameArray);
+                #sometimes people try writing (fit) cause of Agano so that has to be removed
+                shipName.replace("(fit)","");
+
                 #nicknames
                 shipName = getNickname(shipName.lower())
                 shipData = api.getShip(ship=shipName)
@@ -273,6 +370,7 @@ class ehpCalculator(commands.Cog):
 
                 #recalculate armor mods if PvP mode is turned on
                 if PvEMode == False:
+
                     HEDamageMods = [135,95,70] if hullType in vanguard else [140,110,90];
                     APDamageMods = [110,90,70] if hullType in vanguard else [45,130,110];
 
@@ -280,12 +378,18 @@ class ehpCalculator(commands.Cog):
                         damageModifiers = HEDamageMods;
                     if damageSource == 'AP':
                         damageModifiers = APDamageMods;
-
+                else:
+                    #set defualt eva,time,hit if not set yet
+                    if eHit == -1:
+                        eHit = 75
+                    if eLck == -1:
+                        eLck = 25
+                    if time == -1:
+                        time = 60
 
                 #multiply HP by modifiers
                 if PvEMode == False:
                     if hullType == "Destroyer":
-                        extraEvaRate += .05;
                         hp /= 1-.25;
 
                     elif hullType == "Light Cruiser":
@@ -298,24 +402,33 @@ class ehpCalculator(commands.Cog):
                 needRetro = [
                     "Jintsuu"
                 ]
-                def calcEHP(nameX,nameY,exHP,exEva,exDamReduc,rtime,isVHArmor,pve,torpDamageReduc):
+                def getSkillBoost():
+                    if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
+                        func = skillSwitch.get(name, [0,0,0,0,0])
+                        return func(damageSource,time,rld);
+                    else:
+                        return skillBoost()
+
+                def calcEHP(nameX,nameY,exHP,exEva,exDamReduc,pve):
                     realHP = hp+exHP;
                     realEva = eva+exEva;
                     #Claculate skills
                     e = 0;
                     #switcher
                     #bypass switcher if in retrofitless skill
-                    if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
-                        func = skillSwitch.get(name, "nothing")
-                        result = func(realHP,realEva,damageSource,time);
-                        realHP = result[0]/(1-result[4])
-                        realEva = result[1]
-                        e = result[2];
+                    result = getSkillBoost()
+                    realHP = (realHP+result['hp'])/(1-result['damageReduction'])
+                    realEva *= (1+result['eva'])
+                    e = result['evaRate'];
+
+                    def isGearName(gearName):
+                        return nameX == gearName or nameY == gearName;
+
                     #extra damage reduction
                     if exDamReduc != 1:
                         realHP = realHP/(1-exDamReduc)
                     #add siren damage reduction if costal report
-                    if nameX == "Recon Report" or nameY == "Recon Report":
+                    if isGearName("Recon Report"):
                         realHP = realHP/(1-.06)
 
                     #get armor type
@@ -326,7 +439,7 @@ class ehpCalculator(commands.Cog):
                     }
                     tempArmor = ArmorModLoc[armor]
                     #switch armor to heavy is the VH armor is used
-                    if isVHArmor:
+                    if isGearName("VH_Armor_Plating"):
                         if armor != 'Heavy':
                             tempArmor = 2
                         else:
@@ -334,6 +447,9 @@ class ehpCalculator(commands.Cog):
                                 realHP *= (1/(1-.03))
                             elif damageSource in "AP":
                                 realHP *= (1/(1-.06))
+                    torpDamageReduc = 0;
+                    if isGearName("Anti-Torpedo_Bulge"):
+                        torpDamageReduc = .3;
                     if torpDamageReduc and damageSource == "Torpedo":
                         realHP *= (1/(1-torpDamageReduc));
                     realHP *= (100/damageModifiers[tempArmor] if damageModifiers[tempArmor] != 0 else 100)
@@ -346,7 +462,15 @@ class ehpCalculator(commands.Cog):
                     if pve:
                         PvPMult = 1;
 
-                    repairHeal = 1+(math.floor(rtime/15) * .01)
+                    repairHeal = 1;
+                    if isGearName("Repair_Toolkit"):
+                        repairHeal = 1+(math.floor(time/15) * .01);
+
+                    #speical gear interaction with helena
+                    if isGearName("SG_Radar") and name == 'Helena':
+                    #    print("helena SG");
+                        realEva*=1.1
+
                     if damageSource != "Crash":
                         #Claculate accuracy
                         acc = 0.1 + (eHit)/(eHit+realEva+2) + (eLck-lck+0)/(1000) - (e+extraEvaRate);
@@ -359,98 +483,37 @@ class ehpCalculator(commands.Cog):
                 def getZombie():
                     if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
                         func = skillSwitch.get(name, "nothing")
-                        result = func(0,0,damageSource,time);
-                        if result[4] == -1:
+                        result = func(damageSource,time,0);
+                        if result['name'] == -1:
                             return 0;
-                        return result[3];
+                        return result['zombie'];
                     else:
                         return 0;
                 def getIncludedSkill():
                     if name in skillSwitch and noSkill == False and (name in needRetro and retrofit or not name in needRetro):
                         func = skillSwitch.get(name, "nothing")
-                        result = func(0,0,damageSource,0);
-                        if result[5] != -1:
-                            return "Skills included: " + result[5] + "\nAdd noskill as an argument to ignore this skill.";
-                        return "No skills are included in this calculation.";
+                        result = func(damageSource,0,0);
+                        if result['name'] != -1:
+                            return "Skills included: " + result['name'];
+                        return 'No Skill is included.';
                     else:
-                        return "No skills are included in this calculation.";
+                        return "No Skill is included.";
 
-                #choose skin
-                skin = {
-                    'name' : 0,
-                };
-                if retrofit:
-                    i = 0;
-                    while skin['name'] != "Retrofit":
-                        skin = shipData["skins"][i]
-                        i+=1;
-                else:
-                    skin = shipData["skins"][0]
-                #Create Image
-                url = skin['background']
-                background = requests.get(url, timeout=4.0)
-                if background.status_code != requests.codes.ok:
-                    assert False, 'Status code error: {}.'.format(r.status_code)
-                url = skin['image']
-                character = requests.get(url, timeout=4.0)
-                if background.status_code != requests.codes.ok:
-                    assert False, 'Status code error: {}.'.format(r.status_code)
-
-                #Create rouned rectangle functions
-                def round_corner(radius, fill):
-                    #Draw a round corner
-                    corner = Image.new('RGBA', (radius, radius), (0, 0, 0, 0))
-                    draw = ImageDraw.Draw(corner)
-                    draw.pieslice((0, 0, radius * 2, radius * 2), 180, 270, fill=fill)
-                    return corner
-
-
-                def round_rectangle(size, radius, fill):
-                    #Draw a rounded rectangle
-                    width, height = size
-                    rectangle = Image.new('RGBA', size, fill)
-                    corner = round_corner(radius, fill)
-                    rectangle.paste(corner, (0, 0))
-                    rectangle.paste(corner.rotate(90), (0, height - radius))  # Rotate the corner and paste it
-                    rectangle.paste(corner.rotate(180), (width - radius, height - radius))
-                    rectangle.paste(corner.rotate(270), (width - radius, 0))
-                    return rectangle
+                def drawRectangleOutline(draw, coordinates, color, borderColor, width):
+                    draw.rectangle((coordinates[0][0],coordinates[1][0],coordinates[0][1],coordinates[1][1]), fill = color)
+                    for i in range(width):
+                        rect_start = (coordinates[0][0] - i, coordinates[0][1] - i)
+                        rect_end = (coordinates[1][0] + i, coordinates[1][1] + i)
+                        draw.rectangle((rect_start[0], rect_end[0],rect_start[1],rect_end[1]), outline = borderColor)
 
                 #image modify function
-                def get_concat_h(back,char):
-
-                    back = back.convert('RGBA');
-                    char = char.convert('RGBA');
-                    #resize backround
-                    back = back.resize((1024,576));
-
-                    OldWidth, OldHeight = char.size
-                    NewWidth, NewHeight = back.size
-                    imageWidth = int(OldWidth*(NewHeight/OldHeight));
-                    char = char.resize((imageWidth,NewHeight));
-
-                    back.paste(char, (875-int(imageWidth/2), 0), char)
-
-                    tempIMG = Image.new('RGBA', (NewWidth, NewHeight), color = (0,0,0,0))
-                    imgD = ImageDraw.Draw(tempIMG)
-                    #Draw rounded rectangle
-                    rect = round_rectangle((715, 526),30,(0,0,0,180));
-                    back.paste(rect, (10,25), rect)
-
-
-                    #imgD.rectangle([(25, 25), (750, 526)], fill = (15,15,15,180))
-
-                    output = Image.alpha_composite(back,tempIMG);
-                    output = output.convert('RGB');
-
+                def make_image():
                     #Start drawing the text on the image
-                    font = ImageFont.truetype("resources/Trebuchet_MS.ttf", 16)
-                    fontSmall = ImageFont.truetype("resources/Trebuchet_MS.ttf", 12)
-                    fontNumbers = ImageFont.truetype("resources/Lato-Regular.ttf", 12)
-                    fontNumbersBold = ImageFont.truetype("resources/Lato-Bold.ttf", 12)
-                    fontNumbersSmall = ImageFont.truetype("resources/Lato-Regular.ttf", 9);
-
-                    draw = ImageDraw.Draw(output)
+                    font = ImageFont.truetype("resources/fonts/Trebuchet_MS.ttf", 24)
+                    fontSmall = ImageFont.truetype("resources/fonts/Trebuchet_MS.ttf", 20)
+                    fontNumbers = ImageFont.truetype("resources/fonts/Lato-Regular.ttf", 20)
+                    fontNumbersBold = ImageFont.truetype("resources/fonts/Lato-Bold.ttf", 20)
+                    fontNumbersSmall = ImageFont.truetype("resources/fonts/Lato-Regular.ttf", 20)
 
                     #get the ships armor type
                     DMGInfo = '';
@@ -467,44 +530,87 @@ class ehpCalculator(commands.Cog):
                     elif damageSource == "Crash":
                         DMGInfo = 'crash damage'
 
-
-                    draw.text((40, 40),f"{shipName.title()}'s eHP vs {DMGInfo} in {'Exercises.' if PvEMode == False else 'PvE.'}",(255,255,255),font=font)
-                    draw.text((40, 60),f"Enemy Hit: {eHit} | Enemy Luck: {eLck} | Battle Duration: {time}s",(255,255,255),font=font)
-
+                    #Name, +10 Stats, +13 Stats
                     gearArr=[
-                        ['No Gear',0,0,0,False,0],
-                        ['Rudder',60,40,0,False,0],
-                        ['Beaver',75,35,0,False,0],
-                        ['Toolkit',500,0,time,False,0],
-                        ['500 HP',500,0,0,False,0],
-                        ['550 HP',550,0,0,False,0],
-                        ['Kicks',0,28,0,False,0]
+                        ['No_Gear',[0,0],[0,0]],
+                        ['Improved_Hydraulic_Rudder',[60,49],[72,49]],
+                        ['Little_Beaver_Squadron_Tag',[75,35],[90,44]],
+                        ['Pearl_Tears',[500,0],[590,0]],
+                        ['Celestial_Body',[550,0],[640,0]],
+                        ['Cosmic_Kicks',[0,28],[0,34]],
+                        ['SG_Radar',[0,15],[0,18]],
+                        ['Repair_Toolkit',[500,0],[530,0]],
+                        ['Anti-Torpedo_Bulge',[350,0],[371,0]],
+                        ['Improved_Boiler',[245,0],[260,0]],
+                        ['Fuel_Filter',[350,5],[371,6]],
+                        ['Ocean_Soul_Camouflage',[100,18],[110,19]],
+                        ['Fire_Extinguisher',[287,0],[287,0]],
+                        ['Naval_Camouflage',[48,19],[48,19]],
+                        ['Hydraulic_Steering_Gear',[48,19],[48,19]],
+
+                        #['Recon Report',120,15,0,False,0]
+
                     ]
                     if hullType in ['Battleship', 'Large Cruiser', 'Battlecruiser', 'Aviation Battleship','Aircraft Carrier']:
-                        gearArr.append(['VH',650,0,0,True,0])
-
-                    if hullType in vanguard:
-                        if hullType not in ['Large Cruiser']:
-                            gearArr.append(['Fire Sup.',266,0,0,False,0])
-                        gearArr.append(['Torp Bg.',350,0,0,False,.30])
-                        if siren:
-                            gearArr.append(['Recon Report',120,15,0,False,0])
+                        gearArr.insert(3,['VH_Armor_Plating',[650,0],[740,0]])
                     if hullType in ['Aircraft Carrier', 'Light Carrier', 'Aviation Battleship']:
-                        gearArr.append(['Catapult',75,0,0,False,0])
+                        gearArr.insert(3,['Steam_Catapult',[75,0],[90,0]])
 
-                    xSpacing = 60;
-                    ySpacing = 30;
-                    xOffset = 35;
-                    yOffset = 100;
-                    #Draw gear names
-                    for i in range(len(gearArr)):
-                        draw.text((xOffset+(i+1)*xSpacing, yOffset),gearArr[i][0],(255,255,255),font=fontSmall)
-                    for i in range(len(gearArr)):
-                        if gearArr[i][0] == 'Recon Report':
-                            text = 'Recon Rp.'
-                        else:
-                            text = gearArr[i][0];
-                        draw.text((xOffset, yOffset+(i+1)*ySpacing),text,(255,255,255),font=fontSmall)
+                    gearImageSize = 70;
+                    gearImagePadding = 10;
+                    spacing = gearImageSize+gearImagePadding;
+                    xOffset = 10;
+                    yOffset = 116+20;
+
+                    #Create the backround
+                    #find grid size so image size can be made in relation to it
+                    gridSize = (len(gearArr)+1)*spacing
+                    isSpecialTextNeeded = False;
+                    result = getSkillBoost()
+                    if (extraHP !=0):
+                        isSpecialTextNeeded = True;
+                    #evasion
+                    if (result['eva'] != 0 or evaMultiplier != 1):
+                        isSpecialTextNeeded = True;
+                    #evasion rate
+                    if (result['evaRate'] != 0 or extraEvaRate != 0):
+                        isSpecialTextNeeded = True;
+                    #zombie
+                    if (result['zombie'] != 0):
+                        isSpecialTextNeeded = True;
+                    #damage reduction
+                    if (result['damageReduction'] != 0 or extraDamReduc != 0):
+                        isSpecialTextNeeded = True;
+                    if (noSkill == False and (name in ["Takao", "Atago", "Choukai", "Maya"])):
+                        isSpecialTextNeeded = True;
+
+                    output = Image.new('RGBA', (xOffset+gridSize+450,yOffset+gridSize+50),color = 'rgb(45,54,69)');
+                    draw = ImageDraw.Draw(output)
+                    def drawCenteredText(loc,text,fill,font,align):
+                        draw.text((loc[0]-font.getsize(text)[0]/2,loc[1]), text, fill=fill, font=font,align=align);
+
+                    # #Get thumbnail image
+                    # thumbnail = requests.get(shipData['thumbnail']).content;
+                    # image_bytes = io.BytesIO(thumbnail)
+                    # thumbnailImage = Image.open(image_bytes).convert('RGB');
+                    #Draw thumbnail in corner
+                    # output.paste(thumbnailImage,(10,10))
+                    #Draw backround rectangle
+                    drawRectangleOutline(draw,((xOffset,xOffset+gridSize-10),(20,100)),'rgb(76,86,102)','rgb(0,0,0)',3);
+                    #Draw header text
+                    lineSpacing = 25;
+                    drawCenteredText((xOffset+gridSize/2, 33),f"{shipName.title()+(' Kai' if retrofit else '')}'s eHP vs {DMGInfo} in {'Exercises.' if PvEMode == False else 'PvE.'}",(255,255,255),font,"center")
+                    drawCenteredText((xOffset+gridSize/2, 33+25),f"Enemy Hit: {eHit} | Enemy Luck: {eLck} | Battle Duration: {time}s",(255,255,255),font,"center")
+
+
+                    #Draw gear pictures
+                    for i in range(1,len(gearArr)+1):
+#                        draw.text((xOffset+(i+1)*spacing, yOffset),gearArr[i][0],(255,255,255),font=fontSmall)
+                        gearImage = Image.open(f"resources/images/Gear/{gearArr[i-1][0]}.png").resize((70,70));
+
+                        output.paste(gearImage,(xOffset+spacing*i,yOffset))
+                        output.paste(gearImage,(xOffset,yOffset+spacing*i))
+
                     #calculate eHP amoutns
                     eHPArray = []
                     zombiePercent = getZombie();
@@ -515,11 +621,13 @@ class ehpCalculator(commands.Cog):
                     for i in range(len(gearArr)):
                         for j in range(len(gearArr)):
                             #Bypass
-                            bypassDualGear = ['Rudder', 'Beaver', 'VH Armor', 'Pearl', 'Kicks'];
+                            bypassDualGear = ['Improved_Hydraulic_Rudder', 'Little_Beaver_Squadron_Tag', 'VH VH_Armor_Plating', 'Pearl_Tears', 'Cosmic_Kicks'];
                             if gearArr[i][0] in bypassDualGear and gearArr[i][0] == gearArr[j][0]:
                                 eHPArray[i][j] = 'N/A'
                             else:
-                                eHPArray[i][j] = calcEHP(gearArr[i][0],gearArr[j][0],gearArr[i][1]+gearArr[j][1],gearArr[i][2]+gearArr[j][2],extraDamReduc,max(gearArr[i][3],gearArr[j][3]),gearArr[i][4] or gearArr[j][4],PvEMode, max(gearArr[i][5], gearArr[j][5]))
+                                gearLevel = 1
+                                eHPArray[i][j] = calcEHP(gearArr[i][0],gearArr[j][0],gearArr[i][gearLevel][0]+gearArr[j][gearLevel][0],gearArr[i][gearLevel][1]+gearArr[j][gearLevel][1],extraDamReduc,PvEMode)
+
                     #Draw HP amounts
                     maxeHP = max(max(0 if isinstance(i, str) else i for i in x) for x in eHPArray);
                     mineHP = min(min(100000 if isinstance(i, str) else i for i in x) for x in eHPArray);
@@ -532,13 +640,17 @@ class ehpCalculator(commands.Cog):
                                 ehp = eHPArray[i][j];
                                 zombieAmount = str(round(ehp*zombiePercent));
                                 #draw Zombie text:
-                                color = (150,220,150)
+                                color = (200,200,200)
+                                ehp = str(ehp);
+                                tSize = font.getsize(ehp);
+                                textOffset = 0
                                 if zombiePercent != 0:
                                     #get text size to calculate offset
                                     zombieText = "+"+zombieAmount;
                                     zw, zh = draw.textsize(zombieText)
-                                    draw.text((xOffset+(i+1)*xSpacing+xSpacing-zw-20, yOffset+13+(j+1)*ySpacing),zombieText,color,font=fontNumbersSmall)
-                                ehp = str(ehp);
+                                    draw.text((xOffset+(i+1)*spacing+(gearImageSize-tSize[0]+5)/2, yOffset+(j+1)*spacing+gearImageSize/2),zombieText,color,font=fontNumbersSmall)
+                                    textOffset = tSize[1]/-2
+
                             color = (255,255,255)
                             if ehp == str(mineHP):
                                 color = (240,125,125);
@@ -546,16 +658,92 @@ class ehpCalculator(commands.Cog):
                             elif ehp == str(maxeHP):
                                 f = fontNumbersBold
                                 color = (150,220,150);
-                            draw.text((xOffset+(i+1)*xSpacing, yOffset+(j+1)*ySpacing),ehp,color,font=f)
+                            elif maxeHP*.95 < float(''.join(x for x in '0'+ehp if x.isdigit())):
+                                f = fontNumbersBold
+                                color = (21,158,57);
+                            #i have no idea why i need the 5 to center it. I've been debugging for an hour so im done with this.
+                            draw.text((xOffset+(i+1)*spacing+(gearImageSize-tSize[0]+5)/2, yOffset+(j+1)*spacing+gearImageSize/2-tSize[1]/2+ textOffset),ehp,color,font=f)
+
+                    #Draw backround rectangle
+                    drawRectangleOutline(draw,((xOffset+gridSize+20,xOffset+gridSize+430),(20,630 if isSpecialTextNeeded else 100)),'rgb(76,86,102)','rgb(0,0,0)',3);
 
                     #Draw skills
-                    draw.text((xOffset,450),str(getIncludedSkill()),(255,255,255),font=fontSmall)
+                    lines = text_wrap(str(getIncludedSkill()),font,380);
+                    color = 'rgb(255,255,255)'
+                    x = xOffset+gridSize+20
+                    y = 33
+                    for line in lines:
+                        drawCenteredText((x+10+192,y), line, fill=color, font=font,align="left")
+                        y = y + 30    # update y-axis for new line
+
+                    #Draw stat boosts
+                    if isSpecialTextNeeded:
+                        y = yOffset
+                        draw.text(tuple([65+x+380/2-font.getsize("Stat Boosts")[0]/2,y]), "Stat Boosts", fill=color, font=font,align="cener")
+                        y+=lineSpacing
+                        #Draw catagory text
+                        skillCenter = 380/2-80+50
+                        extraCenter = 380/2+110+50
+                        draw.text((x+skillCenter-font.getsize("Skills")[0]/2,y+10), "Skills", fill=color, font=font,align="left")
+                        draw.text((x+extraCenter-font.getsize("Extra")[0]/2,y+10), "Extra", fill=color, font=font,align="left")
+
+                        def roundToPlaceValue(n,p):
+                            p=pow(10,p+1)
+                            return round(n*p)/p
+
+                        y+=70
+
+                        #HP
+                        if (extraHP !=0):
+                            draw.text((x+10,y), "Health", fill=color, font=font,align="left")
+                            drawCenteredText((x+skillCenter,y), "N/A", fill=color, font=font,align="left")
+                            drawCenteredText((x+extraCenter,y), str(extraHP), fill=color, font=font,align="left")
+                            y+=80
+
+                        #evasion
+                        if (result['eva'] != 0 or evaMultiplier != 1):
+                            draw.text((x+10,y), "Evasion", fill=color, font=font,align="left")
+                            drawCenteredText((x+skillCenter,y), str(roundToPlaceValue(result['eva']*100,2))+"%", fill=color, font=font,align="left")
+                            drawCenteredText((x+extraCenter,y), str(roundToPlaceValue((evaMultiplier-1)*100,2))+"%", fill=color, font=font,align="left")
+                            y+=80
+
+                        #evasion rate
+                        if (result['evaRate'] != 0 or extraEvaRate != 0):
+                            draw.text((x+10,y), "Evasion\nRate", fill=color, font=font,align="left")
+                            drawCenteredText((x+skillCenter,y), str(roundToPlaceValue(result['evaRate']*100,2))+"%", fill=color, font=font,align="left")
+                            drawCenteredText((x+extraCenter,y), str(roundToPlaceValue(extraEvaRate*100,2))+"%", fill=color, font=font,align="left")
+                            y+=80
+
+                        #zombie
+                        if (result['zombie'] != 0):
+                            draw.text((x+10,y), "Zombie", fill=color, font=font,align="left")
+                            drawCenteredText((x+skillCenter,y), str(roundToPlaceValue(result['zombie']*100,2))+"%", fill=color, font=font,align="left")
+                            drawCenteredText((x+extraCenter,y), "N/A", fill=color, font=font,align="left")
+                            y+=80
+
+                        #damage reduction
+                        if (result['damageReduction'] != 0 or extraDamReduc != 0):
+                            draw.text((x+10,y), "Damage\nReduction", fill=color, font=font,align="left")
+                            drawCenteredText((x+skillCenter,y), str(roundToPlaceValue(result['damageReduction']*100,2))+"%", fill=color, font=font,align="left")
+                            drawCenteredText((x+extraCenter,y), str(roundToPlaceValue(extraDamReduc*100,2))+"%", fill=color, font=font,align="left")
+                            y+=80
+
+                        #Gun Reload
+                        if (noSkill == False and (name in ["Takao", "Atago", "Choukai", "Maya"])):
+                            draw.text((x+10,y), "Main Gun\nReload", fill=color, font=font,align="left")
+                            drawCenteredText((x+skillCenter,y), "N/A", fill=color, font=font,align="left")
+                            drawCenteredText((x+extraCenter,y), str(rld)+"s", fill=color, font=font, align="left")
+                            warning += ' Reload does not account for Absolute Cooldown, Volley Time, or Reload Stat.'
+                            y+=80
+
                     #Draw warning
-                    draw.text((xOffset,460+ySpacing-8),"""This is not not an accurate representation of this ship's eHP in PvE.""" if PvEMode == False else """Use argument "PvP" to switch to PvP mode.""" ,(255,255,255),font=fontSmall)
+                    #warning text
+                    warning = """This is not not an accurate representation of this ship's eHP in PvE.""" if PvEMode == False else """Use argument "PvP" to switch to PvP mode."""
+                    draw.text((xOffset,yOffset+gridSize+10), warning,(255,255,255),font=font)
 
                     return output;
 
-                imCat = get_concat_h(Image.open(io.BytesIO(background.content)), Image.open(io.BytesIO(character.content)))
+                imCat = make_image()
 
                 with imCat as img:
                     #upload to discord
