@@ -62,6 +62,7 @@ def getNickname(arg):
         #german ships
         "konigsberg" : "Königsberg",
         "koln" : "Köln",
+        "nurnberg" : "Nürnberg",
 
         #french ships
         "algerie" : "Algérie",
