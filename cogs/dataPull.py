@@ -188,32 +188,34 @@ class CheckPlayer(commands.Cog):
                     return user == ctx.message.author and str(reaction.emoji) in ["⬅️", "➡️"]
                 
                 await asyncio.sleep(0.5)
-                try:
-                    reaction, user = await self.client.wait_for("reaction_add", check = reaction_check)
-                    if reaction.emoji == "⬅️" : 
+                reaction, user = await self.client.wait_for("reaction_add", check = reaction_check)
+                if reaction.emoji == "⬅️" : 
+                    try:
                         await msg.remove_reaction("⬅️", ctx.author)
-                        #flip page
-                        if page - 1 <0: 
-                            page = len(players) - 1
-                        else: 
-                            page = page-1
+                    except:
+                        pass
+                    #flip page
+                    if page - 1 <0: 
+                        page = len(players) - 1
+                    else: 
+                        page = page-1
 
-                        #Edit message
-                        await msg.edit(embed = embedList[page])
+                    #Edit message
+                    await msg.edit(embed = embedList[page])
 
-                    elif reaction.emoji == "➡️":
+                elif reaction.emoji == "➡️":
+                    try:
                         await msg.remove_reaction("➡️", ctx.author)
-                        #flip page
-                        if page + 1 >= len(players):
-                            page = 0
-                        else:
-                            page += 1
-                        #Edit message
-                        await msg.edit(embed = embedList[page])
-                except (discord.errors.Forbidden) as e:
-                    print(e)
-                    ctx.send("Permissions Error")
-
+                    except:
+                        pass
+                    #flip page
+                    if page + 1 >= len(players):
+                        page = 0
+                    else:
+                        page += 1
+                    #Edit message
+                    await msg.edit(embed = embedList[page])
+            
             await msg.clear_reactions()
 
     @commands.command(aliases=["addplayer"], brief="Add player to spreadsheet in UTC time.")
