@@ -5,6 +5,7 @@ import jellyfish
 import psycopg2
 import sys
 import os
+import asyncio
 from datetime import datetime
 from datetime import timedelta
 from oauth2client.service_account import ServiceAccountCredentials
@@ -140,12 +141,6 @@ class CheckPlayer(commands.Cog):
             await ctx.send("Server input incorrect!")
             return
 
-        #Check if user has entered too many arguments
-        # if len(extraArgs) != 0:
-        #     print(extraArgs)
-        #     await ctx.send("No spaces! Use \" \" for names with spaces.")
-        #     return
-
         #Receive variables
         entries = []
         for i in range(len(players)):
@@ -158,20 +153,68 @@ class CheckPlayer(commands.Cog):
         updateTime()
         global time
         await ctx.send(f"Reminder: Times are in server time!\nCurrent server time is `{time}`")
-        str = ""
 
+        embedList = []
+
+        output = ""
         for i in range(len(entries)):
             #check if no reports found
             if len(entries[i])==0:
-                str+= players[i]+" not found. \n"
+                output+= players[i]+" not found. \n"
                 continue
             #format string
-            str+=players[i]+":```\n"
+            output+="```\n"
+            #sort by time
+            entries[i].sort(key = lambda x : x[2])
             for report in entries[i]:
-                str+= f"{report[1]}, {report[2]}, {report[3]}\n"
-            str+="```"
-        await ctx.send(str)
+                output+= f"{report[2]} {report[3]}\n"
+            output+="```"
+            embed = discord.Embed(title = "Analysis", color = embedColor)    
+            embed.add_field(name = f"{players[i]}", value = output)
+            output=""
+            embedList.append(embed)
 
+        #Variable to flip around pages in embed message
+        page = 0 
+
+        msg = await ctx.send(embed = embedList[page])
+
+        if len(players)>1:
+            await msg.add_reaction("⬅️")
+            await msg.add_reaction("➡️")
+
+            for i in range(0,240):
+                def reaction_check(reaction, user):
+                    return user == ctx.message.author and str(reaction.emoji) in ["⬅️", "➡️"]
+                
+                await asyncio.sleep(0.5)
+                try:
+                    reaction, user = await self.client.wait_for("reaction_add", check = reaction_check)
+                    if reaction.emoji == "⬅️" : 
+                        await msg.remove_reaction("⬅️", ctx.author)
+                        #flip page
+                        if page - 1 <0: 
+                            page = len(players) - 1
+                        else: 
+                            page = page-1
+
+                        #Edit message
+                        await msg.edit(embed = embedList[page])
+
+                    elif reaction.emoji == "➡️":
+                        await msg.remove_reaction("➡️", ctx.author)
+                        #flip page
+                        if page + 1 >= len(players):
+                            page = 0
+                        else:
+                            page += 1
+                        #Edit message
+                        await msg.edit(embed = embedList[page])
+                except (discord.errors.Forbidden) as e:
+                    print(e)
+                    ctx.send("Permissions Error")
+
+            await msg.clear_reactions()
 
     @commands.command(aliases=["addplayer"], brief="Add player to spreadsheet in UTC time.")
     async def addPlayer(self, ctx, server, playerName, customTime="0", customDate="0", *extraArgs):
@@ -179,9 +222,9 @@ class CheckPlayer(commands.Cog):
         #quick check to make sure the user is on ALM's sever
         #servers besides that one are banned to prevent trolling
         if (ctx.guild.name != "Azur Lane Meta"):
-            await ctx.channel.send("Sorry, you can only use this command on Azur Lane Meta's server. Join at discord.gg/AzurLaneMeta.");
+            await ctx.channel.send("Sorry, you can only use this command on Azur Lane Meta's server. Join at discord.gg/AzurLaneMeta.")
             #it probably is stopped with the return
-            return;
+            return
 
         # await ctx.send("Sorry this command is currently under maintenance.")
         # return
@@ -267,6 +310,10 @@ class CheckPlayer(commands.Cog):
 def setup(client):
     client.add_cog(CheckPlayer(client))
 
+
+#Misc vars
+embedColor = 0xf01111
+
 #Database connections
 load_dotenv(dotenv_path="./dev.env")
 DATABASE_URL = os.getenv('DATABASE_URL')
@@ -299,20 +346,3 @@ scope = ["https://spreadsheets.google.com/feeds",
 creds = ServiceAccountCredentials.from_json_keyfile_name(
     "client_secret.json", scope)
 client = gspread.authorize(creds)
-
-
-#Open sheet
-# sheet = client.open("Azur Lane Avrora PvP Exercise log").sheet1
-
-# #Obtain data
-# sheetData = sheet.get_all_records()
-
-# storedPlayerData = []
-# rows = []
-#Add rows to variable rows
-# for i in range(len(sheetData)):
-#     rows.append([sheetData[i].get("Server"), sheetData[i].get("User"), sheetData[i].get("Time"), sheetData[i].get("Date")])
-
-# #Create variable to find the column that contains the player
-# for row in range(len(sheetData)):
-#     storedPlayerData.append(sheetData[row].get("User"))
