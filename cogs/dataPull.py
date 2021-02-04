@@ -161,14 +161,14 @@ class CheckPlayer(commands.Cog):
             #check if no reports found
             if len(entries[i])==0:
                 output+= players[i]+" not found. \n"
-                continue
-            #format string
-            output+="```\n"
-            #sort by time
-            entries[i].sort(key = lambda x : x[2])
-            for report in entries[i]:
-                output+= f"{report[2]} {report[3]}\n"
-            output+="```"
+            else:
+                #format string
+                output+="```\n"
+                #sort by time
+                entries[i].sort(key = lambda x : x[2])
+                for report in entries[i]:
+                    output+= f"{report[2]} {report[3]}\n"
+                output+="```"
             embed = discord.Embed(title = "Analysis", color = embedColor)    
             embed.add_field(name = f"{players[i]}", value = output)
             output=""
