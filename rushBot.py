@@ -9,7 +9,7 @@ client.remove_command("help")
 @client.event
 async def on_message(message):
     # do some extra stuff here
-    if not message.author.bot and message != None and message.content.startswith(';'):
+    if message.author.bot == False and message != None and message.content.startswith(';'):
         await client.process_commands(message)
         print(message.guild)
     else:
