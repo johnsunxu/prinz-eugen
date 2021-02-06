@@ -5,6 +5,16 @@ from discord.ext import commands
 
 client = commands.Bot(command_prefix = ";")
 client.remove_command("help")
+
+@client.event
+async def on_message(message):
+    # do some extra stuff here
+    if not message.author.bot and message != None and message.content.startswith(';'):
+        await client.process_commands(message)
+        print(message.guild)
+    else:
+        pass;
+
 #Load cogs
 @client.command()
 async def load(ctx, extension):
