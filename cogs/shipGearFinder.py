@@ -14,6 +14,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import concurrent.futures
 
+import sys
+sys.path.append('resources')
+import colors
+
 
 #get api
 api = AzurAPI()
@@ -191,7 +195,7 @@ class shipGearFinder(commands.Cog):
             #create the new image to specifications
             imageSize = 70;
             imagePaddding = 5;
-            img = Image.new('RGBA', (85+(max(longestCatagory,6)+1)*(imageSize+imagePaddding)+15,480),color = 'rgb(45,54,69)');
+            img = Image.new('RGBA', (85+(max(longestCatagory,6)+1)*(imageSize+imagePaddding)+15,480),color = colors.getBackgroundColor());
 
             #create font
             font = ImageFont.truetype("resources/fonts/Trebuchet_MS.ttf", 16)
