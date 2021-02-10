@@ -44,6 +44,22 @@ async def _execute(ctx, server, serverCursor, serverConnection, query, returning
     except (psycopg2.InterfaceError, psycopg2.OperationalError):
         await ctx.send("Please wait, reconnecting to database.")
         reconnect()
+        #re define variables
+        if server == "avrora": 
+            serverCursor= avrora_cur
+            serverConnection = avrora_conn
+        elif server == "lexington": 
+            serverCursor = lexington_cur
+            serverConnection = lexington_conn
+        elif server == "washington": 
+            serverCursor = washington_cur
+            serverConnection = washington_conn
+        elif server == "sandy": 
+            serverCursor = sandy_cur
+            serverConnection = sandy_conn
+        elif server == "amagi": 
+            serverCursor = amagi_cur
+            serverCursor = amagi_conn
         try:
             serverCursor.execute(query)
             serverConnection.commit()
@@ -183,7 +199,7 @@ class CheckPlayer(commands.Cog):
             await msg.add_reaction("⬅️")
             await msg.add_reaction("➡️")
 
-            for i in range(0,240):
+            for i in range(0,60):
                 def reaction_check(reaction, user):
                     return user == ctx.message.author and str(reaction.emoji) in ["⬅️", "➡️"]
                 
