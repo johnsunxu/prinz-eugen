@@ -132,6 +132,7 @@ skillSwitch = {
     'Azuma' : ehpAzuma,
     'Bremerton' : ehpBremerton,
     'Choukai' :ehpTakatoClass,
+    'Cheshire' : ehpCheshire,
     'Drake' : ehpDrake,
     'Friedrich der Große' : ehpFriedrich,
     'Jintsuu' : ehpJintsuu,
@@ -264,6 +265,7 @@ class ehpCalculator(commands.Cog):
                 damageModifiers = [100,80,60];
                 retrofit = True;
                 rld = 5.0;
+                levelThirteenEquipment = False;
 
                 siren = False;
 
@@ -336,6 +338,8 @@ class ehpCalculator(commands.Cog):
                             retrofit = False;
                         elif "siren" == stringNumberless:
                             siren = True;
+                        elif '+13' == i:
+                            levelThirteenEquipment = True;
                         else:
                             #no arguments so add to name thing
                             nameArray+=[stringNumberless];
@@ -621,11 +625,13 @@ class ehpCalculator(commands.Cog):
                     for i in range(len(gearArr)):
                         for j in range(len(gearArr)):
                             #Bypass
-                            bypassDualGear = ['Improved_Hydraulic_Rudder', 'Little_Beaver_Squadron_Tag', 'VH VH_Armor_Plating', 'Pearl_Tears', 'Cosmic_Kicks'];
+                            bypassDualGear = ['Improved_Hydraulic_Rudder', 'Little_Beaver_Squadron_Tag', 'VH VH_Armor_Plating', 'Pearl_Tears', 'Cosmic_Kicks', 'Naval_Camouflage'];
                             if gearArr[i][0] in bypassDualGear and gearArr[i][0] == gearArr[j][0]:
                                 eHPArray[i][j] = 'N/A'
                             else:
                                 gearLevel = 1
+                                if levelThirteenEquipment:
+                                    gearLevel=2;
                                 eHPArray[i][j] = calcEHP(gearArr[i][0],gearArr[j][0],gearArr[i][gearLevel][0]+gearArr[j][gearLevel][0],gearArr[i][gearLevel][1]+gearArr[j][gearLevel][1],extraDamReduc,PvEMode)
 
                     #Draw HP amounts
@@ -739,6 +745,8 @@ class ehpCalculator(commands.Cog):
                     #Draw warning
                     #warning text
                     warning = """This is not not an accurate representation of this ship's eHP in PvE.""" if PvEMode == False else """Use argument "PvP" to switch to PvP mode."""
+                    warning += " "
+                    warning += "Use Argument '+13' to switch to +13 equips." if levelThirteenEquipment == False else "Equipment is +13."
                     draw.text((xOffset,yOffset+gridSize+10), warning,(255,255,255),font=font)
 
                     return output;
