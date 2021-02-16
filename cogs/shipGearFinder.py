@@ -56,6 +56,9 @@ class shipGearFinder(commands.Cog):
         shipNameAPI = shipName;
         #Replace certain characters with the code thing slime uses. For some reason urllib didn't work so I had to do this.
         shipName = shipName.replace(" ","_").replace("ü","%FC").replace("ö","%F6").replace("é","%E9").replace("â","%E2").replace("É","%E9").replace("ß","%DF").replace("μ","%B5")
+        #neptune needs to be HMS neptune
+        if (shipName == 'neptune'):
+            shipName = 'hms_neptune';
 
         try:
             def text_wrap(text, font, max_width):
@@ -97,6 +100,7 @@ class shipGearFinder(commands.Cog):
 
 
             #Get data from chrome driver
+
 
             url = f"https://slaimuda.github.io/ectl/#/home?ship={shipName}"
             driver.get(url)

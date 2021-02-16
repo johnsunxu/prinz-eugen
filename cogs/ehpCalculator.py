@@ -225,6 +225,7 @@ class ehpCalculator(commands.Cog):
     **avi** = View eHP vs aviation damage. 80/100/120 are used as the modifiers.
     **torp** = View eHP vs tor\*\*\*\* damage. 80/100/130 are used as the modifers.
     **crash** = View eHP vs crash damage.
+    **oath** = shows the eHP if the ship is oathed.
     **[t/x/y/z]** = View eHP with custom ammo modifiers x/y/z and damage type t.
     **noRetro** = Do not use the retrofit version of this ship""", inline = False)
 
@@ -254,6 +255,7 @@ class ehpCalculator(commands.Cog):
                 evaMultiplier = 1;
                 noSkill = False;
                 extraDamReduc = 0;
+                oath = False;
 
 
                 PvEMode = True;
@@ -340,8 +342,13 @@ class ehpCalculator(commands.Cog):
                             siren = True;
                         elif '+13' == i:
                             levelThirteenEquipment = True;
+                        elif 'oath' == stringNumberless:
+                            oath = True;
                         else:
                             #no arguments so add to name thing
+                            stringNumberless.replace('fit','');
+                            stringNumberless.replace('(fit)','');
+                            stringNumberless.replace('retrofit','');
                             nameArray+=[stringNumberless];
 
 
@@ -371,6 +378,11 @@ class ehpCalculator(commands.Cog):
                 lck = int(shipData['stats'][level]['luck']);
                 aa = int(shipData['stats'][level]['antiair']);
                 armor = shipData['stats'][level]['armor'];
+
+                if oath:
+                    hp = (hp/1.06)*1.12;
+                    eva = (eva/1.06)*1.12;
+                    aa = (aa/1.06)*1.12;
 
                 #recalculate armor mods if PvP mode is turned on
                 if PvEMode == False:
@@ -413,9 +425,10 @@ class ehpCalculator(commands.Cog):
                     else:
                         return skillBoost()
 
-                def calcEHP(nameX,nameY,exHP,exEva,exDamReduc,pve):
+                def calcEHP(nameX,nameY,exHP,exEva,exAA,exDamReduc,pve):
                     realHP = hp+exHP;
                     realEva = eva+exEva;
+                    #aa = aa+exAA;
                     #Claculate skills
                     e = 0;
                     #switcher
@@ -460,7 +473,7 @@ class ehpCalculator(commands.Cog):
 
                     #reduce damage taken by AA stat if AVI
                     if damageSource == 'Aviation' or damageSource == 'Crash':
-                        realHP *= (1+(aa/150))
+                        realHP *= (1+((aa+exAA)/150))
 
                     PvPMult = 2.34;
                     if pve:
@@ -536,29 +549,30 @@ class ehpCalculator(commands.Cog):
 
                     #Name, +10 Stats, +13 Stats
                     gearArr=[
-                        ['No_Gear',[0,0],[0,0]],
-                        ['Improved_Hydraulic_Rudder',[60,49],[72,49]],
-                        ['Little_Beaver_Squadron_Tag',[75,35],[90,44]],
-                        ['Pearl_Tears',[500,0],[590,0]],
-                        ['Celestial_Body',[550,0],[640,0]],
-                        ['Cosmic_Kicks',[0,28],[0,34]],
-                        ['SG_Radar',[0,15],[0,18]],
-                        ['Repair_Toolkit',[500,0],[530,0]],
-                        ['Anti-Torpedo_Bulge',[350,0],[371,0]],
-                        ['Improved_Boiler',[245,0],[260,0]],
-                        ['Fuel_Filter',[350,5],[371,6]],
-                        ['Ocean_Soul_Camouflage',[100,18],[110,19]],
-                        ['Fire_Extinguisher',[287,0],[287,0]],
-                        ['Naval_Camouflage',[48,19],[48,19]],
-                        ['Hydraulic_Steering_Gear',[48,19],[48,19]],
+                        ['No_Gear',[0,0,0],[0,0,0]],
+                        ['Improved_Hydraulic_Rudder',[60,49,0],[72,49,0]],
+                        ['Little_Beaver_Squadron_Tag',[75,35,0],[90,44,0]],
+                        ['Pearl_Tears',[500,0,0],[590,0,0]],
+                        ['Celestial_Body',[550,0,0],[640,0,0]],
+                        ['Cosmic_Kicks',[0,28,0],[0,34,0]],
+                        ['SG_Radar',[0,15,0],[0,18,0]],
+                        ['High_Performance_Anti-Air_Radar',[0,0,100],[0,0,118]],
+                        ['Repair_Toolkit',[500,0,0],[530,0,0]],
+                        ['Anti-Torpedo_Bulge',[350,0,0],[371,0,0]],
+                        ['Improved_Boiler',[245,0,0],[260,0,0]],
+                        ['Fuel_Filter',[350,5,0],[371,6,0]],
+                        ['Ocean_Soul_Camouflage',[100,18,0],[110,19,0]],
+                        ['Fire_Extinguisher',[287,0,0],[287,0,0]],
+                        ['Naval_Camouflage',[48,19,0],[48,19,0]],
+                        ['Hydraulic_Steering_Gear',[48,19,0],[48,19,0]],
 
                         #['Recon Report',120,15,0,False,0]
 
                     ]
                     if hullType in ['Battleship', 'Large Cruiser', 'Battlecruiser', 'Aviation Battleship','Aircraft Carrier']:
-                        gearArr.insert(3,['VH_Armor_Plating',[650,0],[740,0]])
+                        gearArr.insert(3,['VH_Armor_Plating',[650,0,0],[740,0,0]])
                     if hullType in ['Aircraft Carrier', 'Light Carrier', 'Aviation Battleship']:
-                        gearArr.insert(3,['Steam_Catapult',[75,0],[90,0]])
+                        gearArr.insert(3,['Steam_Catapult',[75,0,0],[90,0,0]])
 
                     gearImageSize = 70;
                     gearImagePadding = 10;
@@ -632,7 +646,7 @@ class ehpCalculator(commands.Cog):
                                 gearLevel = 1
                                 if levelThirteenEquipment:
                                     gearLevel=2;
-                                eHPArray[i][j] = calcEHP(gearArr[i][0],gearArr[j][0],gearArr[i][gearLevel][0]+gearArr[j][gearLevel][0],gearArr[i][gearLevel][1]+gearArr[j][gearLevel][1],extraDamReduc,PvEMode)
+                                eHPArray[i][j] = calcEHP(gearArr[i][0],gearArr[j][0],gearArr[i][gearLevel][0]+gearArr[j][gearLevel][0],gearArr[i][gearLevel][1]+gearArr[j][gearLevel][1],gearArr[i][gearLevel][2]+gearArr[j][gearLevel][2],extraDamReduc,PvEMode)
 
                     #Draw HP amounts
                     maxeHP = max(max(0 if isinstance(i, str) else i for i in x) for x in eHPArray);
