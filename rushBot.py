@@ -12,11 +12,10 @@ async def on_message(message):
     if message.author.bot == False and message != None and message.content.startswith(';') and message.guild:
         await client.process_commands(message)
         print(message.guild)
-    else:
-        return;
 
     #yell at people in #meta-help
-    if message.channel.id == 643697081210503168:
+    if message.channel.id == 643697081210503168 and message.author.bot == True and message.content != "Dont use bots in #meta-help-discussion! <:Shinei:820504358071828492>":
+        print(message.content);
         await message.channel.send("Dont use bots in #meta-help-discussion! <:Shinei:820504358071828492>");
 
 #Load cogs
