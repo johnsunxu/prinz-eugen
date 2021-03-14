@@ -246,7 +246,8 @@ class CheckPlayer(commands.Cog):
 
         # await ctx.send("Sorry this command is currently under maintenance.")
         # return
-
+        await ctx.send("Sorry this command is currently disabled.")
+        return
         updateTime()
 
         #Check if player has entered too few arguments
