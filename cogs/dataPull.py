@@ -90,7 +90,7 @@ def checkServerInput(server):
 #procedure for updating the time the bot is at in PST/MOUNTAIN
 def updateTime():
     global serverTime, time, date
-    serverTime = datetime.now(pytz.timezone("US/Mountain"))
+    serverTime = datetime.now(pytz.timezone("US/Pacific"))
     time = serverTime.strftime("%H:%M:%S")
     date = serverTime.strftime("%d/%m/%Y")
     print(time)
@@ -246,8 +246,8 @@ class CheckPlayer(commands.Cog):
 
         # await ctx.send("Sorry this command is currently under maintenance.")
         # return
-        await ctx.send("Sorry this command is currently disabled.")
-        return
+        # await ctx.send("Sorry this command is currently disabled.")
+        # return
         updateTime()
 
         #Check if player has entered too few arguments
