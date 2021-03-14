@@ -28,9 +28,9 @@ chrome_prefs["profile.managed_default_content_settings"] = {"images": 2}
 opt.add_argument("--disable-dev-shm-usage")
 opt.add_argument("--no-sandbox")
 #start driver
-driver = webdriver.Chrome(executable_path = ChromeDriverManager().install(),options = opt)
+#driver = webdriver.Chrome(executable_path = ChromeDriverManager().install(),options = opt)
 #old version of getting chrome driver
-#driver = webdriver.Chrome(executable_path = os.environ.get("CHROMEDRIVER_PATH"),options = opt)
+driver = webdriver.Chrome(executable_path = os.environ.get("CHROMEDRIVER_PATH"),options = opt)
 
 #create class
 class shipGearFinder(commands.Cog):
