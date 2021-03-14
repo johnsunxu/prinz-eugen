@@ -41,6 +41,8 @@ class Miscellaneous(commands.Cog):
 
         embed.add_field(name = ":small_red_triangle: ;ehp help", value = "Shows how to calculate eHP for a ship in exercises.", inline = False)
 
+        embed.add_field(name = ":small_red_triangle: ;pace [exercises left] [current score]", value = "Shows your predicted EOS score for the season.", inline = False)
+
         embed.add_field(name = ":small_red_triangle: ;gear [ship name]", value = "Shows the suggested gear loadout for a ship. Loadouts are from https://slaimuda.github.io/ectl/#/home.", inline = False)
 
         embed.add_field(name = ":small_red_triangle: ;flipcoin", value = "Displays the result of a unbiased coin flip.", inline = False)
@@ -53,9 +55,9 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
-        embed = discord.Embed(title = "Patch Notes - February 3rd 2021")
-        embed.add_field(name ="Version 2.1", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**UPDATE** ;analyze output.")
+        embed = discord.Embed(title = "Patch Notes - March 13th 2021")
+        embed.add_field(name ="Version 2.2", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "Added ;pace. Also yells at people who use bots in the wrong place.")
         await ctx.send(embed = embed)
 
     @commands.command()

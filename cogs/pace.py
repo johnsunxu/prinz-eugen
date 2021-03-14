@@ -4,6 +4,7 @@ from discord.ext import commands
 import json
 from datetime import datetime
 import math
+from rushBot import client
 
 
 #create class
@@ -16,9 +17,18 @@ class Pace(commands.Cog):
     async def pace(self, message, exercisesLeft, score):
         now = datetime.now()
         seconds = now.timestamp()
-        exercisesStored = int(exercisesLeft);
-        exercisesLeft = int(exercisesLeft);
+
+        if not (exercisesLeft.isdigit() and score.isdigit()):
+            await message.channel.send("This command only takes numbers you pepega!");
+            return;
+
+        exercisesLeft = min(10,int(exercisesLeft));
+        exercisesStored = exercisesLeft;
         score = int(score);
+
+        if (score > 9999 or  exercisesLeft > 9999):
+            await message.channel.send(f"Stop trying to break the bot <:Shinei:820504358071828492>");
+            return;
 
         minutes = math.floor(seconds/60);
         hours = math.floor(minutes/60);
@@ -27,8 +37,8 @@ class Pace(commands.Cog):
         hoursElapsed = (hours-7) %24;
         daysElapsed = (days+3)%14;
 
-        print("Hours Elapsed " + str(hoursElapsed));
-        print("Days Elapsed " + str(daysElapsed));
+        # print("Hours Elapsed " + str(hoursElapsed));
+        # print("Days Elapsed " + str(daysElapsed));
 
         resets = 0;
         if (hours > 0):
@@ -40,11 +50,11 @@ class Pace(commands.Cog):
         if (hours >= 12):
             resets += 1;
 
-        print("Resets " +str(resets));
+        #print("Resets " +str(resets));
 
 
         exercisesLeft += (14-daysElapsed)*3*5 + (3-resets)*5;
-        print("Exercises left " + str(exercisesLeft));
+        #print("Exercises left " + str(exercisesLeft));
 
         for i in range(0,exercisesLeft):
             if score < 100:
@@ -75,7 +85,12 @@ class Pace(commands.Cog):
         Days Left: {14-daysElapsed+1}
         Resets Left: {math.floor((exercisesLeft-exercisesStored)/5)}
         ''', inline = False)
-        embed.add_field(name = "Predicted EOS Score:", value = str(score), inline = False)
+        embed.add_field(name = "Predicted EOS Scores:", value = f'''
+        `-1:` {score - math.floor(exercisesLeft/5)}
+        `+0:` {score}
+        `+1:` {score + math.floor(exercisesLeft/5)}
+        `+2:` {score + 2*math.floor(exercisesLeft/5)}
+        ''', inline = False)
 
         await message.channel.send(embed = embed);
 
