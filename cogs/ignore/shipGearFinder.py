@@ -9,7 +9,7 @@ from discord.ext import commands
 import os
 from shipGirlNicknameHandler import getNickname
 
-
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import concurrent.futures
@@ -28,9 +28,9 @@ chrome_prefs["profile.managed_default_content_settings"] = {"images": 2}
 opt.add_argument("--disable-dev-shm-usage")
 opt.add_argument("--no-sandbox")
 #start driver
+#driver = webdriver.Chrome(executable_path = ChromeDriverManager().install(),options = opt)
+#old version of getting chrome driver
 driver = webdriver.Chrome(executable_path = os.environ.get("CHROMEDRIVER_PATH"),options = opt)
-
-
 
 #create class
 class shipGearFinder(commands.Cog):

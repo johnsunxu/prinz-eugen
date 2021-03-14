@@ -13,3 +13,4 @@ python-dotenv
 pathlib
 bs4
 selenium
+webdriver_manager

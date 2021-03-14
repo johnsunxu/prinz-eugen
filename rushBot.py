@@ -9,11 +9,13 @@ client.remove_command("help")
 @client.event
 async def on_message(message):
     # do some extra stuff here
-    if message.author.bot == False and message != None and message.content.startswith(';'):
+    if message.author.bot == False and message != None and message.content.startswith(';') and message.guild:
         await client.process_commands(message)
         print(message.guild)
-    else:
-        pass;
+
+    #yell at people in #meta-help
+    if message.channel.id == 643697081210503168 and message.author.bot == True and message.content != "Dont use bots in #meta-help-discussion!":
+        await message.channel.send("Dont use bots in #meta-help-discussion!");
 
 #Load cogs
 @client.command()

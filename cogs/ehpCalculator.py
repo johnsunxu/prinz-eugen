@@ -211,23 +211,30 @@ class ehpCalculator(commands.Cog):
                 """
 `ship name` - The ship that you want to calculate the eHP in PvE or exercises. Use argument PvP if you want to switch to PvP mode.""", inline = False)
                 embed.add_field(name =":small_red_triangle: Args", value =
-"""**PvP** = Switches mode to PvP mode.
-    **hitN** = Set enemy hit stat to value N.
-    **luckN** = set enemy luck to value N.
-    **timeN** = Set battle duration stat to value N.
-    **hpN** = Add N HP to the ship.
-    **evaN** = Add N percent eva to the ship.
-    **evaRateN** = Add N percent EVA rate to the ship.
-    **drN** = Add N percent damage reduction to the ship.
-    **rldN** = Set gun reload to value N.
-    **AP** = Change enemy ammo type to AP. 110/90/70 is used for vanguard ships. 45/130/110 is used for backline ships.
-    **HE** = Change enemy ammo type to HE. 135/95/70 is used for vanguard ships. 140/110/90 is used for backline ships.
-    **avi** = View eHP vs aviation damage. 80/100/120 are used as the modifiers.
-    **torp** = View eHP vs tor\*\*\*\* damage. 80/100/130 are used as the modifers.
-    **crash** = View eHP vs crash damage.
-    **oath** = shows the eHP if the ship is oathed.
-    **[t/x/y/z]** = View eHP with custom ammo modifiers x/y/z and damage type t.
-    **noRetro** = Do not use the retrofit version of this ship""", inline = False)
+"""
+    **PvP** = Switches to PvP mode
+    **hitN** = Set enemy hit stat to "N"
+    **luckN** = set enemy luck to "N"
+    **timeN** = Set battle duration stat to "N"
+    **hpN** = Add N HP to the ship
+    **evaN** = Add N% eva to the ship
+    **evaRateN** = Add N% EVA rate to the ship
+    **drN** = Add N% damage reduction to the ship
+    **rldN** = Set gun reload to "N"
+    **AP** = Change enemy ammo to AP with 110/90/70 modifiers for vanguard ships and 45/130/110 for backline ships
+    **HE** = Change enemy ammo type to HE with 135/95/70 modifiers for vanguard ships and 140/110/90 for backline ships
+    **avi** = View eHP vs aviation damage using 80/100/120 as modifiers
+    **torp** = View eHP vs tor\*\*\*\* damage using 80/100/130 as the modifers
+    **crash** = View eHP vs crash damage
+    **[t/x/y/z]** = View eHP with custom ammo modifiers x/y/z and damage type t
+    **oath** = shows the eHP if the ship is oathed
+    **noRetro** = Do not use the retrofit version of this ship
+    """, inline = False)
+                embed.add_field(name ="⠀", value =
+"""**+13** = Switch equip enhancement level from +10 to +13.
+    **tryhard** = Enable +13 gear, oaths, and PvP mode. Can be written as `t`.
+    """, inline = False)
+
 
                 embed.add_field(name =":small_red_triangle: Examples", value =
 """`;ehp Akagi` - get Akagi's eHP.
@@ -344,6 +351,18 @@ class ehpCalculator(commands.Cog):
                             levelThirteenEquipment = True;
                         elif 'oath' == stringNumberless:
                             oath = True;
+                        elif 'tryhard' == stringNumberless or 'avrora' == stringNumberless or 't' == stringNumberless:
+                            oath = True;
+                            levelThirteenEquipment = True;
+                            #I really shouldn't copy this code :why:
+                            PvEMode = False;
+                            #set defualt eva,time,hit if not set yet
+                            if eHit == -1:
+                                eHit = 150
+                            if eLck == -1:
+                                eLck = 50
+                            if time == -1:
+                                time = 45
                         else:
                             #no arguments so add to name thing
                             stringNumberless.replace('fit','');
