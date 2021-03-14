@@ -14,9 +14,8 @@ async def on_message(message):
         print(message.guild)
 
     #yell at people in #meta-help
-    if message.channel.id == 643697081210503168 and message.author.bot == True and message.content != "Dont use bots in #meta-help-discussion! <:Shinei:820504358071828492>":
-        print(message.content);
-        await message.channel.send("Dont use bots in #meta-help-discussion! <:Shinei:820504358071828492>");
+    if message.channel.id == 643697081210503168 and message.author.bot == True and message.content != "Dont use bots in #meta-help-discussion!":
+        await message.channel.send("Dont use bots in #meta-help-discussion!");
 
 #Load cogs
 @client.command()
