@@ -35,26 +35,27 @@ class Pace(commands.Cog):
         days = math.floor(hours/24);
 
         hoursElapsed = (hours-7) %24;
+        # print("Days " + str(days));
         daysElapsed = (days+3)%14;
 
         # print("Hours Elapsed " + str(hoursElapsed));
         # print("Days Elapsed " + str(daysElapsed));
 
         resets = 0;
-        if (hours > 0):
+        if (hoursElapsed >= 0):
             resets += 1;
 
-        if (hours >= 6):
+        if (hoursElapsed >= 6):
             resets += 1;
 
-        if (hours >= 12):
+        if (hoursElapsed >= 12):
             resets += 1;
 
-        #print("Resets " +str(resets));
+        # print("Resets " +str(resets));
 
 
-        exercisesLeft += (14-daysElapsed)*3*5 + (3-resets)*5;
-        #print("Exercises left " + str(exercisesLeft));
+        exercisesLeft += (13-daysElapsed)*3*5 + (3-resets)*5;
+        # print("Exercises left " + str(exercisesLeft));
 
         for i in range(0,exercisesLeft):
             if score < 100:
@@ -82,7 +83,7 @@ class Pace(commands.Cog):
 
         embed.add_field(name = "Season Stats:", value = f'''
         Exercises Left: {exercisesLeft}
-        Days Left: {14-daysElapsed+1}
+        Days Left: {14-daysElapsed}
         Resets Left: {math.floor((exercisesLeft-exercisesStored)/5)}
         ''', inline = False)
         embed.add_field(name = "Predicted EOS Scores:", value = f'''
