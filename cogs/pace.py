@@ -45,10 +45,10 @@ class Pace(commands.Cog):
         if (hoursElapsed >= 0):
             resets += 1;
 
-        if (hoursElapsed >= 6):
+        if (hoursElapsed >= 12):
             resets += 1;
 
-        if (hoursElapsed >= 12):
+        if (hoursElapsed >= 18):
             resets += 1;
 
         # print("Resets " +str(resets));
