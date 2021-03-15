@@ -56,8 +56,8 @@ class Miscellaneous(commands.Cog):
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
         embed = discord.Embed(title = "Patch Notes - March 13th 2021")
-        embed.add_field(name ="Version 2.2", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "Added ;pace. Also yells at people who use bots in the wrong place.")
+        embed.add_field(name ="Version 2.2.1", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = ";pace fixed for the 100th time")
         await ctx.send(embed = embed)
 
     @commands.command()

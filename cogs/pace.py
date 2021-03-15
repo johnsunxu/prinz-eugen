@@ -36,7 +36,8 @@ class Pace(commands.Cog):
 
         hoursElapsed = (hours-7) %24;
         # print("Days " + str(days));
-        daysElapsed = (days+3)%14;
+
+        daysElapsed = (days+2)%14+1;
 
         # print("Hours Elapsed " + str(hoursElapsed));
         # print("Days Elapsed " + str(daysElapsed));
@@ -54,7 +55,7 @@ class Pace(commands.Cog):
         # print("Resets " +str(resets));
 
 
-        exercisesLeft += (13-daysElapsed)*3*5 + (3-resets)*5;
+        exercisesLeft += (14-daysElapsed)*3*5 + (3-resets)*5;
         # print("Exercises left " + str(exercisesLeft));
 
         for i in range(0,exercisesLeft):
@@ -83,7 +84,7 @@ class Pace(commands.Cog):
 
         embed.add_field(name = "Season Stats:", value = f'''
         Exercises Left: {exercisesLeft}
-        Days Left: {14-daysElapsed}
+        Full Days Left: {14-daysElapsed}
         Resets Left: {math.floor((exercisesLeft-exercisesStored)/5)}
         ''', inline = False)
         embed.add_field(name = "Predicted EOS Scores:", value = f'''
