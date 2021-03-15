@@ -18,6 +18,9 @@ class Pace(commands.Cog):
         now = datetime.now()
         seconds = now.timestamp()
 
+        # seconds -= 10 * 60 * 60 * 24;
+        # seconds -= 60 * 60;
+
         if not (exercisesLeft.isdigit() and score.isdigit()):
             await message.channel.send("This command only takes numbers you pepega!");
             return;
@@ -31,13 +34,13 @@ class Pace(commands.Cog):
             return;
 
         minutes = math.floor(seconds/60);
-        hours = math.floor(minutes/60);
+        hours = math.floor(minutes/60)-7;
         days = math.floor(hours/24);
 
-        hoursElapsed = (hours-7) %24;
+        hoursElapsed = (hours) %24;
         # print("Days " + str(days));
 
-        daysElapsed = (days+2)%14+1;
+        daysElapsed = (days+3)%14+1;
 
         # print("Hours Elapsed " + str(hoursElapsed));
         # print("Days Elapsed " + str(daysElapsed));
