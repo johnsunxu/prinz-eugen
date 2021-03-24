@@ -29,10 +29,11 @@ skillBoostDict = {
 
 #Structure of return data
 #[HP, Eva, Eva Rate, Zombie Amount, damage reduction, skill, notes] (make function to format this)
-def skillBoost(hp=0,eva=0,evaRate=0,zombie=0,damageReduction=0,luck=0,name="",description="",notes=""):
+def skillBoost(hp=0,aa=0,eva=0,evaRate=0,zombie=0,damageReduction=0,luck=0,name="",description="",notes=""):
     return {
         'hp' : hp,
         'eva' : eva,
+        'aa' : aa,
         'evaRate' : evaRate,
         'zombie' : zombie,
         'damageReduction' : damageReduction,
@@ -98,6 +99,8 @@ def ehpSanrui(source,time,rld):
     except:
         actualEVA = 1;
     return skillBoost(eva=actualEVA-1,name="Engine Boost");
+def ehpSanDiego(source,time,rld):
+    return skillBoost(name="Sparkling Battle Star!", aa=25);
 def ehpSeattle(source,time,rld):
     return skillBoost(damageReduction=.15,name="Dual Nock");
 def ehpShinano(source,time,rld):
@@ -145,6 +148,7 @@ skillSwitch = {
     'Ping Hai' : ehpPingHai,
     'Prinz Heinrich' : ehpPrinzHeinrich,
     'Saint Louis' : ehpSanrui,
+    'San Diego': ehpSanDiego,
     'Seattle' : ehpSeattle,
     'Shinano' : ehpShinano,
     'Suzutsuki' : ehpSuzutsuki,
@@ -233,6 +237,7 @@ class ehpCalculator(commands.Cog):
                 embed.add_field(name ="⠀", value =
 """**+13** = Switch equip enhancement level from +10 to +13.
     **tryhard** = Enable +13 gear, oaths, and PvP mode. Can be written as `t`.
+    **siren** = Damage source is set to sirens.
     """, inline = False)
 
 
@@ -259,6 +264,7 @@ class ehpCalculator(commands.Cog):
                 extraHP = 0;
                 extraEva = 0;
                 extraEvaRate = 0;
+                AA = 45;
                 evaMultiplier = 1;
                 noSkill = False;
                 extraDamReduc = 0;
@@ -301,6 +307,8 @@ class ehpCalculator(commands.Cog):
                             extraDamReduc = iInt/100;
                         elif "rld" == stringNumberless:
                             rld = iInt;
+                        elif "aa" == stringNumberless:
+                            AA = iInt;
                         elif "[" in i.lower() and "]" in i.lower():
                             m = i.replace('[','').split('/');
                             try:
@@ -447,6 +455,8 @@ class ehpCalculator(commands.Cog):
                 def calcEHP(nameX,nameY,exHP,exEva,exAA,exDamReduc,pve):
                     realHP = hp+exHP;
                     realEva = eva+exEva;
+                    #Add to 45 AA stat to account for gun
+                    exAA += AA;
                     #aa = aa+exAA;
                     #Claculate skills
                     e = 0;
@@ -456,7 +466,7 @@ class ehpCalculator(commands.Cog):
                     realHP = (realHP+result['hp'])/(1-result['damageReduction'])
                     realEva *= (1+result['eva'])
                     e = result['evaRate'];
-
+                    exAA *= ((result['aa']/100)+1);
                     def isGearName(gearName):
                         return nameX == gearName or nameY == gearName;
 
@@ -464,7 +474,7 @@ class ehpCalculator(commands.Cog):
                     if exDamReduc != 1:
                         realHP = realHP/(1-exDamReduc)
                     #add siren damage reduction if costal report
-                    if isGearName("Recon Report"):
+                    if (isGearName("Intel_Report_-_Arctic_Stronghold") or isGearName("NY_City_Coast_Recon_Report")) and siren:
                         realHP = realHP/(1-.06)
 
                     #get armor type
@@ -581,6 +591,8 @@ class ehpCalculator(commands.Cog):
                         ['Improved_Boiler',[245,0,0],[260,0,0]],
                         ['Fuel_Filter',[350,5,0],[371,6,0]],
                         ['Ocean_Soul_Camouflage',[100,18,0],[110,19,0]],
+                        ['NY_City_Coast_Recon_Report',[120,15,0],[130,16,0]],
+                        ['Intel_Report_-_Arctic_Stronghold',[180,0,0],[190,0,0]],
                         ['Fire_Extinguisher',[287,0,0],[287,0,0]],
                         ['Naval_Camouflage',[48,19,0],[48,19,0]],
                         ['Hydraulic_Steering_Gear',[48,19,0],[48,19,0]],
@@ -605,6 +617,8 @@ class ehpCalculator(commands.Cog):
                     isSpecialTextNeeded = False;
                     result = getSkillBoost()
                     if (extraHP !=0):
+                        isSpecialTextNeeded = True;
+                    if (damageSource == "Aviation"):
                         isSpecialTextNeeded = True;
                     #evasion
                     if (result['eva'] != 0 or evaMultiplier != 1):
@@ -704,7 +718,7 @@ class ehpCalculator(commands.Cog):
                             draw.text((xOffset+(i+1)*spacing+(gearImageSize-tSize[0]+5)/2, yOffset+(j+1)*spacing+gearImageSize/2-tSize[1]/2+ textOffset),ehp,color,font=f)
 
                     #Draw backround rectangle
-                    drawRectangleOutline(draw,((xOffset+gridSize+20,xOffset+gridSize+430),(20,630 if isSpecialTextNeeded else 100)),'rgb(76,86,102)','rgb(0,0,0)',3);
+                    drawRectangleOutline(draw,((xOffset+gridSize+20,xOffset+gridSize+430),(20,630+80)),'rgb(76,86,102)','rgb(0,0,0)',3);
 
                     #Draw skills
                     lines = text_wrap(str(getIncludedSkill()),font,380);
@@ -739,6 +753,13 @@ class ehpCalculator(commands.Cog):
                             drawCenteredText((x+extraCenter,y), str(extraHP), fill=color, font=font,align="left")
                             y+=80
 
+                        if damageSource == "Aviation":
+                            #AA
+                            draw.text((x+10,y), "AA", fill=color, font=font,align="left")
+                            drawCenteredText((x+skillCenter,y), str(result['aa'])+"%", fill=color, font=font,align="left")
+                            drawCenteredText((x+extraCenter,y), str(int(AA)), fill=color, font=font,align="left")
+                            y+=80
+
                         #evasion
                         if (result['eva'] != 0 or evaMultiplier != 1):
                             draw.text((x+10,y), "Evasion", fill=color, font=font,align="left")
@@ -767,17 +788,16 @@ class ehpCalculator(commands.Cog):
                             drawCenteredText((x+extraCenter,y), str(roundToPlaceValue(extraDamReduc*100,2))+"%", fill=color, font=font,align="left")
                             y+=80
 
-                        #Gun Reload
-                        if (noSkill == False and (name in ["Takao", "Atago", "Choukai", "Maya"])):
-                            draw.text((x+10,y), "Main Gun\nReload", fill=color, font=font,align="left")
-                            drawCenteredText((x+skillCenter,y), "N/A", fill=color, font=font,align="left")
-                            drawCenteredText((x+extraCenter,y), str(rld)+"s", fill=color, font=font, align="left")
-                            warning += ' Reload does not account for Absolute Cooldown, Volley Time, or Reload Stat.'
-                            y+=80
-
                     #Draw warning
                     #warning text
                     warning = """This is not not an accurate representation of this ship's eHP in PvE.""" if PvEMode == False else """Use argument "PvP" to switch to PvP mode."""
+                    #Gun Reload
+                    if (noSkill == False and (name in ["Takao", "Atago", "Choukai", "Maya"])):
+                        draw.text((x+10,y), "Main Gun\nReload", fill=color, font=font,align="left")
+                        drawCenteredText((x+skillCenter,y), "N/A", fill=color, font=font,align="left")
+                        drawCenteredText((x+extraCenter,y), str(rld)+"s", fill=color, font=font, align="left")
+                        warning += ' Reload does not account for Absolute Cooldown, Volley Time, or Reload Stat.'
+                        y+=80
                     warning += " "
                     warning += "Use Argument '+13' to switch to +13 equips." if levelThirteenEquipment == False else "Equipment is +13."
                     draw.text((xOffset,yOffset+gridSize+10), warning,(255,255,255),font=font)
