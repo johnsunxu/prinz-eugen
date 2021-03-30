@@ -359,7 +359,7 @@ class ehpCalculator(commands.Cog):
                             levelThirteenEquipment = True;
                         elif 'oath' == stringNumberless:
                             oath = True;
-                        elif 'tryhard' == stringNumberless or 'avrora' == stringNumberless or 't' == stringNumberless:
+                        elif 'tryhard' == stringNumberless or 't' == stringNumberless:
                             oath = True;
                             levelThirteenEquipment = True;
                             #I really shouldn't copy this code :why:
