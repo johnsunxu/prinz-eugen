@@ -225,6 +225,7 @@ class ehpCalculator(commands.Cog):
     **evaRateN** = Add N% EVA rate to the ship
     **drN** = Add N% damage reduction to the ship
     **rldN** = Set gun reload to "N"
+    **aaN** = Set AA stat bonus to N
     **AP** = Change enemy ammo to AP with 110/90/70 modifiers for vanguard ships and 45/130/110 for backline ships
     **HE** = Change enemy ammo type to HE with 135/95/70 modifiers for vanguard ships and 140/110/90 for backline ships
     **avi** = View eHP vs aviation damage using 80/100/120 as modifiers
