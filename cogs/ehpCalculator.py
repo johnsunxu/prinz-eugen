@@ -53,6 +53,8 @@ def ehpAzuma(source,time,rld):
         if time % 20 <= 12 and time >= 20:
             totalEVABoost+=.2*.7
     return skillBoost(eva=totalEVABoost/time,name="Mizuho's Intuition",description="Every 20 seconds: 30% (70%) chance to increase own Evasion by 10% (20%) and Accuracy by 20% (50%) for 12 seconds.")
+def ehpBaltimore(source,time,rld):
+    return skillBoost(name="Adaptive Tactics", aa=7);
 def ehpBremerton(source,time,rld):
     damReduc = 0;
     try:
@@ -133,6 +135,7 @@ skillSwitch = {
     'Amagi' : ehpAmagi,
     'Atago' :ehpTakatoClass,
     'Azuma' : ehpAzuma,
+    'Baltimore' : ehpBaltimore,
     'Bremerton' : ehpBremerton,
     'Choukai' :ehpTakatoClass,
     'Cheshire' : ehpCheshire,
@@ -374,16 +377,13 @@ class ehpCalculator(commands.Cog):
                                 time = 45
                         else:
                             #no arguments so add to name thing
-                            stringNumberless.replace('fit','');
-                            stringNumberless.replace('(fit)','');
-                            stringNumberless.replace('retrofit','');
-                            nameArray+=[stringNumberless];
+                            #Remove retrofit tags cause people keep on writing them
+                            if (i not in ['fit', '(fit)', 'retrofit', '(retrofit)', 'kai', '(kai)']):
+                                nameArray+=[i];
 
 
                 #get ship name
                 shipName = " ".join(nameArray);
-                #sometimes people try writing (fit) cause of Agano so that has to be removed
-                shipName.replace("(fit)","");
 
                 #nicknames
                 shipName = getNickname(shipName.lower())
@@ -406,6 +406,10 @@ class ehpCalculator(commands.Cog):
                 lck = int(shipData['stats'][level]['luck']);
                 aa = int(shipData['stats'][level]['antiair']);
                 armor = shipData['stats'][level]['armor'];
+
+                #If the ship is a carrier remove the AA slot
+                if (hullType in ['Aircraft Carrier']):
+                    AA = 0;
 
                 if oath:
                     hp = (hp/1.06)*1.12;

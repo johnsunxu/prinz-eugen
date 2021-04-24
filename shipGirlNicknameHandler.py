@@ -58,6 +58,7 @@ def getNickname(arg):
         "biscuit" : "Bismarck",
         "spee" : "Admiral Graf Spee",
         "suzu" : "Suzutsuki",
+        'balti' : "Baltimore",
 
         #german ships
         "konigsberg" : "Königsberg",
@@ -85,7 +86,8 @@ def getNickname(arg):
         "taihou muse" : "Taihou μ",
         "tashkent muse" : "Tashkent μ",
         "albacore muse" : "Albacore μ",
-        "baltimore muse" : "Baltimore μ"
+        "baltimore muse" : "Baltimore μ",
+        "balti muse" : "Baltimore μ"
 
 
 

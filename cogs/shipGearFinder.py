@@ -252,7 +252,7 @@ class shipGearFinder(commands.Cog):
                     await ctx.send("Gear recommendations are from https://slaimuda.github.io/ectl/#/home !", file=file)
 
         except:
-            await message.edit(content = "That shipgirl does not exist! Please try again.");
+            await message.edit(content = "That shipgirl does not exist or is not on the EN tier list! Please try again.");
             raise;
 
 
