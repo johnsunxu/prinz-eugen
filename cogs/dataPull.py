@@ -6,6 +6,8 @@ import psycopg2
 import sys
 import os
 import asyncio
+import matplotlib
+import matplotlib.pyplot as plt
 from datetime import datetime
 from datetime import timedelta
 from oauth2client.service_account import ServiceAccountCredentials
@@ -144,6 +146,56 @@ class CheckPlayer(commands.Cog):
         # await ctx.send("Sorry this command is currently under maintenance.")
         # return
 
+        #Function for creating graph of image. Input list of times and player name, returns discord.File
+        def createGraph(data, playerName, num):
+            #number of data points
+            n = len(data)
+            #coordinates
+            x = []
+            y = []
+
+            for entry in data:
+                #convert string into datetime objects
+                x.append(datetime.strptime(entry[:5], "%H:%M"))
+                y.append(5)
+
+            x = matplotlib.dates.date2num(x)
+            plt.plot_date(x, y, color=(0, 0, 0), ms=2, label="Report")
+
+            #create data for resets
+            x_reset = ["00:00", "12:00", "18:00"]
+            y_reset = [5, 5, 5]
+            #convert str to datetime object
+            for i in range(len(x_reset)):
+                x_reset[i] = datetime.strptime(x_reset[i], "%H:%M")
+            x_reset = matplotlib.dates.date2num(x_reset)
+            plt.plot_date(x_reset, y_reset, ms=6, label="Reset")
+
+            #idk what this variable is
+            ax = plt.gca()
+            timeFormat = matplotlib.dates.DateFormatter("%H:%M")
+            ax.xaxis.set_major_formatter(timeFormat)
+
+            #graph extras
+            print("playername (creategraph):", playerName)
+            plt.title(f"Rushing Analysis of {playerName}")
+            plt.yticks([])
+            plt.xticks(x_reset)
+            plt.gcf().autofmt_xdate()
+            plt.legend(["Report", "Reset"])
+            plt.xlabel("Time")
+            plt.ylabel("")
+            plt.savefig(f"./cogs/dataPull/{num}.png")
+
+            #need to show the plot for some reason
+            # print(data)
+            # print("showing plot")
+            plt.show(block=False)
+            plt.close()
+            #create discord file
+            file = discord.File(f"./cogs/dataPull/{num}.png")
+            return file
+
         #Check if user entered correct servers
         try:
             if checkServerInput(server)[0] != True:
@@ -160,7 +212,7 @@ class CheckPlayer(commands.Cog):
         #Receive variables
         entries = []
         for i in range(len(players)):
-            await _execute(ctx,server,serverCursor,serverConnection, f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
+            await _execute(ctx, server, serverCursor, serverConnection, f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
             # serverCursor.execute(f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
             reports = serverCursor.fetchall()
             entries.append(reports)
@@ -171,53 +223,78 @@ class CheckPlayer(commands.Cog):
         await ctx.send(f"Reminder: Times are in server time!\nCurrent server time is `{time}`")
 
         embedList = []
+        graphList = []
 
+        #Create table output
         output = ""
         for i in range(len(entries)):
             #check if no reports found
-            if len(entries[i])==0:
-                output+= players[i]+" not found. \n"
+            if len(entries[i]) == 0:
+                output += players[i]+" not found. \n"
             else:
                 #format string
-                output+="```\n"
+                output += "```\n"
                 #sort by time
-                entries[i].sort(key = lambda x : x[2])
+                entries[i].sort(key=lambda x: x[2])
                 for report in entries[i]:
-                    output+= f"{report[2]} {report[3]}\n"
-                output+="```"
-            embed = discord.Embed(title = "Analysis", color = embedColor)    
-            embed.add_field(name = f"{players[i]}", value = output)
-            output=""
+                    output += f"{report[2]} {report[3]}\n"
+                output += "```"
+            embed = discord.Embed(title="Analysis", color=embedColor)
+            embed.add_field(name=f"{players[i]}", value=output)
+            output = ""
             embedList.append(embed)
 
+        #create graph of data
+        #extract all times from entry
+        timeList = []
+        for player in entries:
+            if len(player) == 0:
+                continue
+            for entry in player:
+                timeList.append(entry[2])
+            #print(entry)
+            # print(player[0][1])
+            # print(timeList)
+            file = createGraph(timeList, player[0][1], entries.index(player))
+            #create embed with graph and add to list
+            embed = discord.Embed(
+                color=embedColor, title=f"{entries.index(player)}")
+            embed.set_image(url=f"attachment://{entries.index(player)}.png")
+            graphList.append((embed, file))
+            timeList = []
+
         #Variable to flip around pages in embed message
-        page = 0 
+        page = 0
 
-        msg = await ctx.send(embed = embedList[page])
-
-        if len(players)>1:
+        msg = await ctx.send(embed=embedList[page])
+        if len(players) > 1:
             await msg.add_reaction("⬅️")
             await msg.add_reaction("➡️")
+        await msg.add_reaction("📈")
 
-            for i in range(0,60):
-                def reaction_check(reaction, user):
-                    return user == ctx.message.author and str(reaction.emoji) in ["⬅️", "➡️"]
-                
-                await asyncio.sleep(0.5)
-                reaction, user = await self.client.wait_for("reaction_add", check = reaction_check)
-                if reaction.emoji == "⬅️" : 
+        for i in range(0, 180):
+            def reaction_check(reaction, user):
+                return user == ctx.message.author and str(reaction.emoji) in ["⬅️", "➡️", "📈"]
+
+            await asyncio.sleep(0.5)
+
+            #Added reaction
+            reaction, user = await self.client.wait_for("reaction_add", check=reaction_check)
+            #Only add pages if there is more than one player requested
+            if len(players) > 1:
+                if reaction.emoji == "⬅️":
                     try:
                         await msg.remove_reaction("⬅️", ctx.author)
                     except:
                         pass
                     #flip page
-                    if page - 1 <0: 
+                    if page - 1 < 0:
                         page = len(players) - 1
-                    else: 
+                    else:
                         page = page-1
 
                     #Edit message
-                    await msg.edit(embed = embedList[page])
+                    await msg.edit(embed=embedList[page])
 
                 elif reaction.emoji == "➡️":
                     try:
@@ -230,9 +307,22 @@ class CheckPlayer(commands.Cog):
                     else:
                         page += 1
                     #Edit message
-                    await msg.edit(embed = embedList[page])
-            
-            await msg.clear_reactions()
+                    await msg.edit(embed=embedList[page])
+
+            if reaction.emoji == "📈":
+                #Edit message
+                # await msg.edit(embed = graphList[page][0], file = graphList[page][1])
+                await ctx.send(embed=graphList[page][0], file=graphList[page][1], delete_after=25)
+                # await ctx.send(embed = graphList[page][0], file = graphList[page][1])
+                # await msg.remove_reaction("📈", msg.author)
+            #Removed reaction
+            # reaction, user = await self.client.wait_for("reaction_remove", check = reaction_check)
+            # if reaction.emoji == "📈":
+            #     #Edit message back to table
+            #     await msg.edit(embed = embedList[page])
+
+        await msg.clear_reactions()
+
 
     @commands.command(aliases=["addplayer"], brief="Add player to spreadsheet in UTC time.")
     async def addPlayer(self, ctx, server, playerName, customTime="0", customDate="0", *extraArgs):
@@ -358,10 +448,3 @@ washington_cur=washington_conn.cursor()
 
 #Set variables
 playerFound = False
-
-#Variables for spreadsheet
-scope = ["https://spreadsheets.google.com/feeds",
-         "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "client_secret.json", scope)
-client = gspread.authorize(creds)

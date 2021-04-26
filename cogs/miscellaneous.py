@@ -35,7 +35,7 @@ class Miscellaneous(commands.Cog):
             #add the ALM specific functions
             embed.add_field(name =":small_red_triangle: ;addPlayer [server] [player] [minutes from present, default 0] [days from present, default 0]", value = "Create a report on a rusher.\nExample `;addPlayer Avrora test123`", inline = False)
 
-            embed.add_field(name = ":small_red_triangle: ;analyze [server] [player1] [player2]...", value = "Displays reports on a player.\nExample: `;analyze Avrora test123 \"test 123\"`", inline = False)
+            embed.add_field(name = ":small_red_triangle: ;analyze [server] [player1] [player2]...", value = "Displays reports on a player.\nExample: `;analyze Avrora test123 \"test 123\"`\n Press the chart emote for graphs", inline = False)
 
         embed.add_field(name = ":small_red_triangle: ;guess help", value = "Shows how to play the shipgirl guessing game.", inline = False)
 
@@ -55,9 +55,9 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
-        embed = discord.Embed(title = "Patch Notes - March 13th 2021")
-        embed.add_field(name ="Version 2.2.1", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = ";pace fixed for the 100th time")
+        embed = discord.Embed(title = "Patch Notes - April 26th 2021")
+        embed.add_field(name ="Version 2.3", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**NEW** `;analyze` has graphs finally.")
         await ctx.send(embed = embed)
 
     @commands.command()
