@@ -676,8 +676,8 @@ class ehpCalculator(commands.Cog):
                             eHPArray[i].append(0)
                     for i in range(len(gearArr)):
                         for j in range(len(gearArr)):
-                            #Bypass
-                            bypassDualGear = ['Improved_Hydraulic_Rudder', 'Little_Beaver_Squadron_Tag', 'VH VH_Armor_Plating', 'Pearl_Tears', 'Cosmic_Kicks', 'Naval_Camouflage'];
+                            #Bypass dual gear
+                            bypassDualGear = ['Improved_Hydraulic_Rudder', 'Little_Beaver_Squadron_Tag', 'VH VH_Armor_Plating', 'Pearl_Tears', 'Cosmic_Kicks', 'Naval_Camouflage', "Celestial Body"];
                             if gearArr[i][0] in bypassDualGear and gearArr[i][0] == gearArr[j][0]:
                                 eHPArray[i][j] = 'N/A'
                             else:
