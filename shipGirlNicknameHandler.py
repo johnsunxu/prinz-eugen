@@ -59,6 +59,9 @@ def getNickname(arg):
         "spee" : "Admiral Graf Spee",
         "suzu" : "Suzutsuki",
         'balti' : "Baltimore",
+        'duca' : "Duca degli Abruzzi",
+        'vv' : "Vittorio Veneto",
+        'veneto' : "Vittorio Veneto",
 
         #german ships
         "konigsberg" : "Königsberg",
