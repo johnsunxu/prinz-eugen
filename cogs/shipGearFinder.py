@@ -59,7 +59,7 @@ class shipGearFinder(commands.Cog):
         #AzurAPI needs the name as written
         shipNameAPI = shipName;
         #Replace certain characters with the code thing slime uses. For some reason urllib didn't work so I had to do this.
-        shipName = shipName.replace(" ","_").replace("ü","%FC").replace("ö","%F6").replace("é","%E9").replace("â","%E2").replace("É","%E9").replace("ß","%DF").replace("μ","%B5")
+        shipName = shipName.replace(" ","_").replace("ü","%FC").replace("ö","%F6").replace("é","%E9").replace("â","%E2").replace("É","%E9").replace("ß","%DF").replace("μ","%B5").replace("Pamiat' Merkuria", "Pamiat Merkuria")
         #neptune needs to be HMS neptune
         if (shipName == 'neptune'):
             shipName = 'hms_neptune';
