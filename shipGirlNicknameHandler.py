@@ -43,6 +43,7 @@ def getNickname(arg):
         "nimi" : "Z23",
         "monty" : "Montpelier",
         "pamiat" : "Pamiat' Merkuria",
+        "pamiat merkuria" : "Pamiat' Merkuria",
         "rossiya" : "Sovetskaya Rossiya",
         "kaga (bb)" : "Kaga(BB)",
         "kaga bb" : "Kaga(BB)",
