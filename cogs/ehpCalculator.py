@@ -33,7 +33,7 @@ def skillBoost(hp=0,aa=0,eva=0,evaRate=0,zombie=0,damageReduction=0,luck=0,name=
     return {
         'hp' : hp,
         'eva' : eva,
-        'aa' : aa,
+        'aa' : aa*100,
         'evaRate' : evaRate,
         'zombie' : zombie,
         'damageReduction' : damageReduction,
@@ -54,7 +54,7 @@ def ehpAzuma(source,time,rld):
             totalEVABoost+=.2*.7
     return skillBoost(eva=totalEVABoost/time,name="Mizuho's Intuition",description="Every 20 seconds: 30% (70%) chance to increase own Evasion by 10% (20%) and Accuracy by 20% (50%) for 12 seconds.")
 def ehpBaltimore(source,time,rld):
-    return skillBoost(name="Adaptive Tactics", aa=7);
+    return skillBoost(name="Adaptive Tactics", aa=.7);
 def ehpBremerton(source,time,rld):
     damReduc = 0;
     try:
@@ -67,6 +67,13 @@ def ehpCheshire(source,time,rld):
 def ehpDrake(source,time,rld):
     hpBoost = 0.0284131968948*math.floor(time/20)
     return skillBoost(eva=.15,zombie=hpBoost,name="Flintlock Burst",notes="Sortied as lead vanguard. Barrage is assumed to have 100% accuracy")
+def ehpDuca(source,time,rld):
+    per = 0;
+    try:
+        per =(min(60/time,1)*1.15 +(1-(min(60/time,1))));
+    except:
+        per = 1.15;
+    return skillBoost(eva=per-1,aa=per-1,zombie=.09,damageReduction=(.2 if source == 'AP' else 0),name="Halo of Flames and Solemn Zealotry (Lead vanguard DR not included)");
 def ehpFriedrich(source,time,rld):
     return skillBoost(damageReduction=.1,name="Rhapsody of Darkness")
 def ehpGrafZeppelin(source,time,rld):
@@ -102,7 +109,7 @@ def ehpSanrui(source,time,rld):
         actualEVA = 1;
     return skillBoost(eva=actualEVA-1,name="Engine Boost");
 def ehpSanDiego(source,time,rld):
-    return skillBoost(name="Sparkling Battle Star!", aa=25);
+    return skillBoost(name="Sparkling Battle Star!", aa=.25);
 def ehpSeattle(source,time,rld):
     return skillBoost(damageReduction=.15,name="Dual Nock");
 def ehpShinano(source,time,rld):
