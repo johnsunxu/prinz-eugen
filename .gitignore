@@ -2,3 +2,4 @@
 testDataPull.py
 dev.env
 graph.png
+*.pyc
