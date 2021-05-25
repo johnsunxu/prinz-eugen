@@ -66,7 +66,7 @@ def getNickname(arg):
         'duca' : "Duca degli Abruzzi",
         'luigi' : "Duca degli Abruzzi",
         'dda' : "Duca degli Abruzzi",
-        'Luigi di Savoia Duca degli Abruzzi' : "Duca degli Abruzzi",
+        'luigi di savoia duca degli abruzzi' : "Duca degli Abruzzi",
         'a literal page worth of aliases' : "Duca degli Abruzzi",
 
         'vv' : "Vittorio Veneto",

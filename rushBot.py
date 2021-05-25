@@ -18,7 +18,7 @@ async def on_message(message):
     # if message.channel.id == channel and message.author.bot == True and message.content != 'Please avoid using bots unless part of a discussion!':
     #     #get person who typed command
     #     lastMessages = await message.channel.history(limit=5).flatten();
-    # 
+    #
     #     #user
     #     for i in lastMessages:
     #         print(i.content)
