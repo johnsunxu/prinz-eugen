@@ -147,6 +147,7 @@ skillSwitch = {
     'Choukai' :ehpTakatoClass,
     'Cheshire' : ehpCheshire,
     'Drake' : ehpDrake,
+    'Duca degli Abruzzi' : ehpDuca,
     'Friedrich der Große' : ehpFriedrich,
     'Jintsuu' : ehpJintsuu,
     'Maya' :ehpTakatoClass,
@@ -768,7 +769,7 @@ class ehpCalculator(commands.Cog):
                         if damageSource == "Aviation":
                             #AA
                             draw.text((x+10,y), "AA", fill=color, font=font,align="left")
-                            drawCenteredText((x+skillCenter,y), str(result['aa'])+"%", fill=color, font=font,align="left")
+                            drawCenteredText((x+skillCenter,y), str(roundToPlaceValue(result['aa'],1))+"%", fill=color, font=font,align="left")
                             drawCenteredText((x+extraCenter,y), str(int(AA)), fill=color, font=font,align="left")
                             y+=80
 
