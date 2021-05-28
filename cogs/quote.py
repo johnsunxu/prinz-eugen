@@ -179,7 +179,7 @@ def setup(client):
 
 #DATABASE CONNECTIONS
 load_dotenv(dotenv_path="./dev.env")
-quote_db = os.getenv("HEROKU_POSTGRESQL_PUCE")
+quote_db = os.getenv("HEROKU_POSTGRESQL_PUCE_URL")
 quote_conn = psycopg2.connect(quote_db, sslmode = "allow")
 quote_cur = quote_conn.cursor()
 
