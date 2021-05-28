@@ -45,6 +45,8 @@ class Miscellaneous(commands.Cog):
 
         embed.add_field(name = ":small_red_triangle: ;gear [ship name]", value = "Shows the suggested gear loadout for a ship. Loadouts are from https://slaimuda.github.io/ectl/#/home.", inline = False)
 
+        embed.add_field(name = ":small_red_triangle: ;quote help", value = "Displays quote help menu.")
+
         embed.add_field(name = ":small_red_triangle: ;flipcoin", value = "Displays the result of a unbiased coin flip.", inline = False)
 
         embed.add_field(name = ":small_red_triangle: ;patchNotes", value = "Displays patch notes.", inline = False)

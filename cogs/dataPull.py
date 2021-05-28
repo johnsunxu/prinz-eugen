@@ -1,7 +1,5 @@
 import discord
-import gspread
 import pytz
-import jellyfish
 import psycopg2
 import sys
 import os
@@ -41,7 +39,7 @@ async def _execute(ctx, server, serverCursor, serverConnection, query, returning
     #In case of bad query, definitely not the best way to solve this error
     except psycopg2.InternalError:
         serverCursor.rollback()
-        _execute(ctx, server, serverCursor, serverConnection, query, returning)
+        await _execute(ctx, server, serverCursor, serverConnection, query, returning)
     #If query fails, reconnect to databases
     except (psycopg2.InterfaceError, psycopg2.OperationalError):
         await ctx.send("Please wait, reconnecting to database.")
@@ -431,8 +429,6 @@ amagi_db = os.getenv('HEROKU_POSTGRESQL_SILVER_URL')
 sandy_db = os.getenv('HEROKU_POSTGRESQL_COPPER_URL')
 lexington_db = os.getenv('HEROKU_POSTGRESQL_MAROON_URL')
 washington_db = os.getenv('HEROKU_POSTGRESQL_GREEN_URL')
-
-print(avrora_db)
 
 avrora_conn = psycopg2.connect(avrora_db,sslmode="allow")
 amagi_conn = psycopg2.connect(amagi_db, sslmode="allow")
