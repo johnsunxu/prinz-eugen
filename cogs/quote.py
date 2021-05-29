@@ -148,7 +148,7 @@ class Quote(commands.Cog):
             url += " "
             #add any strings
             for arg in args: 
-                url+= str(arg)
+                url+= str(arg)+" "
             #add to database here
             await addToDB(ctx, name, url)
 
