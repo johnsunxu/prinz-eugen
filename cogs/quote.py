@@ -145,19 +145,14 @@ class Quote(commands.Cog):
             #should only be one attachment max
             attachment = ctx.message.attachments[0]
             url = attachment.url
-            url += " "
             #add any strings
-            for arg in args: 
-                url+= str(arg)+" "
+            url += " " + " ".join(args)
             #add to database here
             await addToDB(ctx, name, url)
 
         #string
         else: 
-            content = ""
-            for arg in args: 
-                content+= str(arg)
-            
+            content = " ".join(args)
             #check if user didn't quote anything 
             if len(content) == 0: 
                 await ctx.send("Quote something you pepega!")
@@ -169,7 +164,10 @@ class Quote(commands.Cog):
     @commands.command(aliases = [";;"], brief = "Summon a quote.")
     async def call(self, ctx, name):
         data = await _execute(ctx, f"SELECT * FROM quotes WHERE LOWER(name) LIKE LOWER(\'{name}\')", returning = True)
-        choice = random.randint(0, len(data)-1)
+        try: 
+            choice = random.randint(0, len(data)-1)
+        except: 
+            await ctx.send("Quote not found!")
         await ctx.send(f"`#{data[choice][0]}` {data[choice][2]}")
 
 
