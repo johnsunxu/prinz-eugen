@@ -129,11 +129,11 @@ class Quote(commands.Cog):
             #obtain roles of caller
             roles = user.roles
             #valid roles
-            validRolesIds = await _execute(ctx, f"SELECT * FROM roles WHERE serverid=\'{user.guild.id}\';", returning = True)
+            validRolesIds = await _execute(ctx, f"SELECT roleid FROM roles WHERE serverid=\'{user.guild.id}\';", returning = True)
             valid = False
             for role in roles: 
                 for validRoleId in validRolesIds: 
-                    if role.id == int(validRoleId): 
+                    if role.id == int(validRoleId[0]): 
                         valid = True
 
             if not valid: 
