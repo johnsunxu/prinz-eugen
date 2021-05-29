@@ -164,6 +164,7 @@ class Quote(commands.Cog):
                 return
             #add to database
             await addToDB(ctx, name, content)
+            await ctx.send("Quote added")
 
     @commands.command(aliases = [";;"], brief = "Summon a quote.")
     async def call(self, ctx, name):
