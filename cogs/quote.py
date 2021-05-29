@@ -137,7 +137,7 @@ class Quote(commands.Cog):
                         valid = True
 
             if not valid: 
-                ctx.send("Access Denied!")
+                await ctx.send("Access Denied!")
                 return
 
         #Check if user attached an image instead of a url/string
@@ -169,7 +169,6 @@ class Quote(commands.Cog):
     @commands.command(aliases = [";;"], brief = "Summon a quote.")
     async def call(self, ctx, name):
         data = await _execute(ctx, f"SELECT * FROM quotes WHERE LOWER(name) LIKE LOWER(\'{name}\')", returning = True)
-        print(data)
         choice = random.randint(0, len(data)-1)
         await ctx.send(f"`#{data[choice][0]}` {data[choice][2]}")
 
