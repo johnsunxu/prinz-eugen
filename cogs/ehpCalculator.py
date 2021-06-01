@@ -4,7 +4,6 @@ from discord.ext import commands
 from azurlane.azurapi import AzurAPI
 import requests
 import urllib.request
-from shipGirlNicknameHandler import getNickname
 import math
 from PIL import Image, ImageDraw, ImageFont
 import tempfile
@@ -12,8 +11,10 @@ import io
 import requests
 import numpy
 
+#Add Perseus API
+from perseus_data.classes.ship import *
 
-api = AzurAPI()
+# api = AzurAPI()
 
 skillBoostDict = {
     'hp' : 0,
@@ -394,26 +395,26 @@ class ehpCalculator(commands.Cog):
                 shipName = " ".join(nameArray);
 
                 #nicknames
-                shipName = getNickname(shipName.lower())
-                shipData = api.getShip(ship=shipName)
+                ship = Ship(shipName,nicknames=True);
                 #get the needed data
-                name = shipData['names']['en'];
-                sClass = shipData['class'];
-                hullType = shipData['hullType'];
-                level = 'level120'
-                if retrofit:
-                    level = 'level120Retrofit'
-                    try:
-                        shipData['stats'][level]
-                    except:
-                        level = 'level120'
-                        retrofit = False;
+                name = ship.name;
+                hullType = ship.hull_type;
+                print(ship.stats)
 
-                hp = int(shipData['stats'][level]['health'])+extraHP;
-                eva = int(shipData['stats'][level]['evasion'])*evaMultiplier;
-                lck = int(shipData['stats'][level]['luck']);
-                aa = int(shipData['stats'][level]['antiair']);
-                armor = shipData['stats'][level]['armor'];
+                # level = 'level120'
+                # if retrofit:
+                #     level = 'level120Retrofit'
+                #     try:
+                #         shipData['stats'][level]
+                #     except:
+                #         level = 'level120'
+                #         retrofit = False;
+
+                hp = int(ship.stats['hp'])+extraHP;
+                eva = int(ship.stats['eva'])*evaMultiplier;
+                lck = int(ship.stats['luk']);
+                aa = int(ship.stats['aa']);
+                armor = ship.armor_type;
 
                 #If the ship is a carrier remove the AA slot
                 if (hullType in ['Aircraft Carrier']):
