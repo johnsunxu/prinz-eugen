@@ -63,8 +63,9 @@ class Miscellaneous(commands.Cog):
     @commands.command()
     async def credits(self, ctx):
         embed = discord.Embed(title = "Credits")
-        embed.add_field(name ="Developers", value = "SomeDude and Drakomire", inline = False)
-        embed.add_field(name = "Azur API", value = "Special thanks to XhacKX and Kumo")
+        embed.add_field(name ="Developers", value = "SomeDude and Drako")
+        embed.add_field(name = "Perseus", value = "Drako's Azur Lane API")
+        embed.add_field(name = "Azur API", value = "Used for Guess That Shipgirl Images")
         embed.add_field(name = "Azur Lane's EN Community Tier List", value = "Thanks for the gear loadouts.")
         await ctx.send(embed = embed)
 
