@@ -2124,10 +2124,8 @@
         },
         "nationality": "Sakura Empire",
         "tiers": [
-            null,
-            null,
             {
-                "tier": 2,
+                "tier": 0,
                 "rarity": "Rare",
                 "stars": {
                     "stars": "★★★",
@@ -4777,7 +4775,7 @@
         "category": "Destroyer Guns",
         "names": {
             "en": "Twin 120mm Main Gun Mount",
-            "cn": null,
+            "cn": "双联装120mm主炮",
             "jp": null,
             "kr": null
         }
@@ -23526,7 +23524,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -23765,7 +23763,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -24010,7 +24008,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -24136,7 +24134,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "unspecified",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -24256,7 +24254,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -24491,7 +24489,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -24858,7 +24856,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -24974,7 +24972,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -25209,7 +25207,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -25448,7 +25446,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -25564,7 +25562,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -25680,7 +25678,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -25849,7 +25847,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -26018,7 +26016,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -26253,7 +26251,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -26365,7 +26363,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -26600,7 +26598,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
@@ -50289,6 +50287,133 @@
             "cn": "改良声呐",
             "jp": "改良型ソナー",
             "kr": "개량형 소나"
+        }
+    },
+    {
+        "fits": {
+            "destroyer": null,
+            "lightCruiser": null,
+            "heavyCruiser": null,
+            "monitor": "primary",
+            "largeCruiser": null,
+            "battleship": "primary",
+            "battlecruiser": "primary",
+            "aviationBattleship": "primary",
+            "aircraftCarrier": null,
+            "lightCarrier": null,
+            "repairShip": null,
+            "munitionShip": null,
+            "submarine": null,
+            "submarineCarrier": null
+        },
+        "image": "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/images/equipments/Triple_406mm_1650_Mk_7.png",
+        "misc": {
+            "blueprints": "",
+            "madeFrom": [],
+            "notes": "",
+            "usedFor": [],
+            "animation": "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/images/equipments.animation/Triple_406mm_1650_Mk_7.gif",
+            "obtainedFrom": "Mirror Involution event shop"
+        },
+        "nationality": "Eagle Union",
+        "tiers": [
+            null,
+            null,
+            null,
+            {
+                "tier": 3,
+                "rarity": "Ultra Rare",
+                "stars": {
+                    "stars": "★★★★★★",
+                    "value": 6
+                },
+                "stats": {
+                    "firepower": {
+                        "type": "value",
+                        "formatted": "65"
+                    },
+                    "antiair": {
+                        "type": "value",
+                        "formatted": "0"
+                    },
+                    "damage": {
+                        "type": "min_max_multiplier",
+                        "min": "62",
+                        "max": "167",
+                        "multiplier": "3",
+                        "formatted": "62 × 3 → 167 × 3"
+                    },
+                    "oPSDamageBoost": {
+                        "type": "min_max",
+                        "min": "0",
+                        "max": "3%",
+                        "formatted": "0 → 3%"
+                    },
+                    "rateOfFire": {
+                        "type": "min_max_per",
+                        "min": "30.02s",
+                        "max": "24.22s",
+                        "per": "volley",
+                        "formatted": "30.02s → 24.22s   per volley"
+                    },
+                    "spread": {
+                        "type": "value",
+                        "formatted": "19"
+                    },
+                    "angle": {
+                        "type": "value_unit",
+                        "value": "50",
+                        "unit": "°",
+                        "formatted": "50°"
+                    },
+                    "range": {
+                        "type": "value",
+                        "formatted": "200"
+                    },
+                    "volley": {
+                        "type": "multiplier_count_unit",
+                        "multiplier": "1",
+                        "count": "3",
+                        "unit": "shells",
+                        "formatted": "1 × 3 shells"
+                    },
+                    "volleyTime": {
+                        "type": "value_unit",
+                        "value": "0.0",
+                        "unit": "s",
+                        "formatted": "0.0s"
+                    },
+                    "coefficient": {
+                        "type": "min_max",
+                        "min": "105%",
+                        "max": "124%",
+                        "formatted": "105% → 124%"
+                    },
+                    "ammoType": {
+                        "type": "value_unit",
+                        "value": "HE (140",
+                        "unit": "/ 110",
+                        "formatted": "HE (140 / 110 / 90)"
+                    },
+                    "characteristic": {
+                        "type": "value",
+                        "formatted": "Bracketing"
+                    }
+                }
+            }
+        ],
+        "type": {
+            "focus": "Firepower",
+            "name": "BB Gun"
+        },
+        "id": "Triple 406mm (16\"/50 Mk 7)",
+        "wikiUrl": "https://azurlane.koumakan.jp/Triple_406mm_(16%22/50_Mk_7)",
+        "category": "Battleship Guns",
+        "names": {
+            "en": "Triple 406mm MK7 Main Gun",
+            "cn": "三联装406mm主炮MK7",
+            "jp": null,
+            "kr": null
         }
     }
 ]
