@@ -1,4 +1,5 @@
 import math
+from os import stat
 from .__init__ import *
 
 class Stats:
@@ -9,8 +10,7 @@ class Stats:
         :param ship: the Ship class for the ship to calculate the stats of.
         :return: ships stats at the current level
         '''
-        index = ship.getRetrofitShipID() * ship.retrofit + ship.id * (not ship.retrofit)
-        index = str(int(index)*10 + ship._limit_break)
+        index = ship._full_id
 
         attr = ship.ship["data"][index]["stats"][stat]
         attrs_growth = ship.ship["data"][index]["stats_growth"][stat]
@@ -56,8 +56,7 @@ class Stats:
         :param ship: the Ship class for the ship to calculate the oil cost of.
         :return: ships oil cost at the current limit break. Rewrite is required to factor in level.
         '''
-        index = ship.getRetrofitShipID() * ship.retrofit + ship.id * (not ship.retrofit)
-        index = str(int(index)*10 + ship._limit_break)
+        index = ship._full_id
         return ship.ship["data"][index]["oil"]
 
     @staticmethod
@@ -70,12 +69,23 @@ class Stats:
         return math.floor(max_cost*(100+min(ship.level,99))/200)+1
 
     @staticmethod
+    def getHuntingRange(ship):
+        try: return ship.ship["hunting_range"]
+        except: return None
+
+    @staticmethod
+    def getOxy(ship):
+        index = ship._full_id
+        try: return ship.ship["data"][index]["stats"]["oxy"]
+        except: return None
+
+    @staticmethod
     def getStats(ship):
         '''
         :param ship: the Ship class to calculate the stats of.
         :return: the stats for the ship as written in documentation.
         '''
-        return {
+        out = {
           "hp": Stats.calculateStat("hp",ship),
           "fp": Stats.calculateStat("fp",ship),
           "trp": Stats.calculateStat("trp",ship),
@@ -89,3 +99,10 @@ class Stats:
           "asw": Stats.calculateStat("asw",ship),
           "oil" : Stats.getOilCostAtLevel(ship)
         }
+
+        if (SHIP_LOCATION[ship.hull_id] == "Submarine"):
+            out["oxy"] = Stats.getOxy(ship)
+            # out["hunting_range"] = Stats.getHuntingRange(ship)
+
+        return out
+

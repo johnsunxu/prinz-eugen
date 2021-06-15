@@ -67,6 +67,11 @@ class Ship:
             raise ValueError('Ship ID is not valid')
 
     @property
+    def _full_id(self):
+        index = self.getRetrofitShipID() * self.retrofit + self.id * (not self.retrofit)
+        return str(int(index)*10 + self._limit_break)
+
+    @property
     def name(self):
         return self.name_en
 
@@ -96,7 +101,10 @@ class Ship:
         '''
         :return: ship stats as per documentation
         '''
-        return Stats.getStats(self)
+        try:
+            return Stats.getStats(self)
+        except:
+            return "Invalid Limit Break"
 
     @property
     def limit_break(self):
@@ -176,12 +184,8 @@ class Ship:
         """
         return self.ship["armor"]
 
-    @property
-    def skills(self):
-        """
-        :return: array of skills as per documentation
-        """
-        return Skill.getSkills(self)
+    def getSkills(self,level=0):
+        return Skill.getSkills(self,level=level)
 
     @property
     def skins(self):
@@ -205,6 +209,18 @@ class Ship:
             return self.ship["data"][str(int(self.getRetrofitShipID())*10+4)]["stats_growth_extra"]
         except:
             return self.ship["data"][str(int(self.getRetrofitShipID())*10+1)]["stats_growth"]
+
+    @property
+    def hunting_range(self):
+        return self.ship["hunting_range"]
+
+    @property
+    def base_list(self):
+        return self.ship["data"][self._full_id]["base_list"]
+
+    @property
+    def slots(self):
+        return self.ship["slots"]
 
     def __str__(self):
         return str(self.name)
