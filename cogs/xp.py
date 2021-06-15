@@ -1,7 +1,4 @@
 import discord
-import os
-import xlrd
-import pprint
 import math
 
 from azurlane.azurapi import AzurAPI
