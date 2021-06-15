@@ -13,7 +13,7 @@ class Xp(commands.Cog):
         self.client = client
 
     @commands.command()
-    async def xp(self, ctx, shipName, curLevel, stage, mvp = 100, mood = 1.2): 
+    async def xp(self, ctx, shipName, curLevel, stage, mvp = 100): 
         #check if ship exists 
         api = AzurAPI() 
 
@@ -37,10 +37,11 @@ class Xp(commands.Cog):
         
         xpRequired = xp[120] - xp[int(curLevel)] 
 
-        sRank = 1.2
+        sRank = 0.2
 
-        #
-        mvp = mvp/100 * 2
+        mood = 0.2
+
+        mvp = mvp/100 * 1
 
         try:
             stage = stageXP[f"{stage.strip()}"]
@@ -48,7 +49,7 @@ class Xp(commands.Cog):
             await ctx.send("Stage not supported")
             return
 
-        sortiesRequired = math.ceil(xpRequired / (stage * sRank * mood * mvp * flagship))
+        sortiesRequired = math.ceil(xpRequired / (stage * (1+sRank) * (1+mood) * (1+mvp) * flagship))
 
         oil = int(ship["stats"]["level120"]["oilConsumption"]) * sortiesRequired
 
