@@ -2,6 +2,7 @@ import random
 import discord
 import os
 from discord.ext import commands
+import perseus
 
 client = commands.Bot(command_prefix = ";")
 client.remove_command("help")
