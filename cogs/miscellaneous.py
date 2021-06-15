@@ -47,6 +47,8 @@ class Miscellaneous(commands.Cog):
 
         embed.add_field(name = ":small_red_triangle: ;quote help", value = "Displays quote help menu.")
 
+        embed.add_field(name = ":small_red_triangle: ;xp [ship name] [current level] [stage] [mvp %]", value = "Calculates XP and number of sorties to 120 a ship.\n Example: \';xp shinano 102 7-2 100\'")
+
         embed.add_field(name = ":small_red_triangle: ;flipcoin", value = "Displays the result of a unbiased coin flip.", inline = False)
 
         embed.add_field(name = ":small_red_triangle: ;patchNotes", value = "Displays patch notes.", inline = False)
@@ -57,9 +59,9 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
-        embed = discord.Embed(title = "Patch Notes - May 28h 2021")
-        embed.add_field(name ="Version 2.5", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**NEW** Quotes added")
+        embed = discord.Embed(title = "Patch Notes - June 15th 2021")
+        embed.add_field(name ="Version 2.6", value = "** **", inline = False)
+        embed.add_field(name = "** **", value = "**NEW** XP added")
         await ctx.send(embed = embed)
 
     @commands.command()
