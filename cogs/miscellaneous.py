@@ -47,7 +47,7 @@ class Miscellaneous(commands.Cog):
 
         embed.add_field(name = ":small_red_triangle: ;quote help", value = "Displays quote help menu.")
 
-        embed.add_field(name = ":small_red_triangle: ;xp [ship name] [current level] [stage] [mvp %]", value = "Calculates XP and number of sorties to 120 a ship.\n Example: \';xp shinano 102 7-2 100\'")
+        embed.add_field(name = ":small_red_triangle: ;xp [ship name] [current level] [stage] [mvp %]", value = "Calculates XP and number of sorties to 120 a ship.\n Example: \';xp shinano 102 7-2 100\'", inline = False)
 
         embed.add_field(name = ":small_red_triangle: ;flipcoin", value = "Displays the result of a unbiased coin flip.", inline = False)
 
