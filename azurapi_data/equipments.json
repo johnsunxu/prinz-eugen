@@ -26717,7 +26717,7 @@
             "monitor": null,
             "largeCruiser": null,
             "battleship": null,
-            "battlecruiser": null,
+            "battlecruiser": "Odin only",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
