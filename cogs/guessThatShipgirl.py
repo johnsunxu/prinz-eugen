@@ -355,7 +355,7 @@ class GuessThatShipgirl(commands.Cog):
                 arg2 = getNickname(arg2)
 
                 #Here is where special characters are handled. Ex. Muse, special o, e, and a.
-                if (ans.lower().replace('ö','o').replace('é', 'e').replace('â','a').replace('µ','muse') == arg2):
+                if (ans.lower().replace('ö','o').replace('é', 'e').replace('â','a').replace('μ','muse') == arg2.lower().replace('ö','o').replace('é', 'e').replace('â','a').replace('μ','muse')):
                     c = True
 
                 if (ans.lower() == arg2):

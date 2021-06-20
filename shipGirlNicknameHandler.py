@@ -88,7 +88,7 @@ nicknames = {
     "ruse": "Roon μ",
     "gascogne muse" : "Gascogne μ",
     "cleveland muse" : "Cleveland μ",
-    "admiral Hipper muse" : "Admiral Hipper μ",
+    "admiral hipper muse" : "Admiral Hipper μ",
     "akagi muse" : "Akagi μ",
     "sheffield muse" : "Sheffield μ",
     "illustrious muse" : "Illustrious μ",
@@ -105,6 +105,6 @@ nicknames = {
 def getNickname(arg):
     #if answer is a nickname, replace answer with ship it is referencing.
     if arg.lower() in nicknames:
-        arg = nicknames[arg.lower()];
+        arg = nicknames[arg.lower()]
 
-    return arg;
+    return arg

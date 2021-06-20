@@ -6031,19 +6031,19 @@
     },
     {
         "fits": {
-            "destroyer": null,
-            "lightCruiser": null,
-            "heavyCruiser": null,
-            "monitor": null,
-            "largeCruiser": null,
-            "battleship": null,
-            "battlecruiser": null,
+            "destroyer": "primary",
+            "lightCruiser": "Atlanta-class, Dido-class, and Isuzu; Secondary gun",
+            "heavyCruiser": "secondary",
+            "monitor": "secondary",
+            "largeCruiser": "secondary",
+            "battleship": "secondary",
+            "battlecruiser": "secondary",
             "aviationBattleship": null,
             "aircraftCarrier": null,
             "lightCarrier": null,
             "repairShip": null,
-            "munitionShip": null,
-            "submarine": null,
+            "munitionShip": "primary",
+            "submarine": "primary",
             "submarineCarrier": null
         },
         "image": "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/images/equipments/Twin_127mm_KM40.png",
@@ -29429,7 +29429,7 @@
             "notes": "Acceleration of 0.006",
             "usedFor": [],
             "animation": "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/images/equipments.animation/Submarine-mounted_Type_96_Oxygen_Torpedo.gif",
-            "obtainedFrom": "Unknown"
+            "obtainedFrom": "Gear Lab"
         },
         "nationality": "Sakura Empire",
         "tiers": [
@@ -49623,7 +49623,7 @@
             "notes": "",
             "usedFor": [],
             "animation": "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/images/equipments.animation/Flettner_Fl_282_Kolibri.gif",
-            "obtainedFrom": "Scherzo of Iron and Blood event milestone."
+            "obtainedFrom": "Scherzo of Iron and Blood event milestone, Core Exchange"
         },
         "nationality": "Iron Blood",
         "tiers": [
@@ -50317,11 +50317,8 @@
         },
         "nationality": "Eagle Union",
         "tiers": [
-            null,
-            null,
-            null,
             {
-                "tier": 3,
+                "tier": 0,
                 "rarity": "Ultra Rare",
                 "stars": {
                     "stars": "★★★★★★",
