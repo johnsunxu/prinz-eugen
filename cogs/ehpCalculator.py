@@ -14,8 +14,6 @@ import numpy
 #Add Perseus API
 from perseus import Ship
 
-# api = AzurAPI()
-
 skillBoostDict = {
     'hp' : 0,
     'eva' : 1,

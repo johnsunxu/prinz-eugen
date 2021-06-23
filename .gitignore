@@ -5,3 +5,4 @@ graph.png
 dev-env/
 test.py
 test.py
+*.pyc
