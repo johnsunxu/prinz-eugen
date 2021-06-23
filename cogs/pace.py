@@ -18,68 +18,87 @@ class Pace(commands.Cog):
         now = datetime.now()
         seconds = now.timestamp()
 
-        # seconds -= 10 * 60 * 60 * 24;
-        # seconds -= 60 * 60;
+        # seconds -= 10 * 60 * 60 * 24
+        # seconds -= 60 * 60
 
         if not (exercisesLeft.isdigit() and score.isdigit()):
-            await message.channel.send("This command only takes numbers you pepega!");
-            return;
+            await message.channel.send("This command only takes numbers you pepega!")
+            return
 
-        exercisesLeft = min(10,int(exercisesLeft));
-        exercisesStored = exercisesLeft;
-        score = int(score);
+        exercisesLeft = min(10,int(exercisesLeft))
+        exercisesStored = exercisesLeft
+        score = int(score)
 
         if (score > 9999 or  exercisesLeft > 9999):
-            await message.channel.send(f"Stop trying to break the bot <:Shinei:820504358071828492>");
-            return;
+            await message.channel.send(f"Stop trying to break the bot <:Shinei:820504358071828492>")
+            return
 
-        minutes = math.floor(seconds/60);
-        hours = math.floor(minutes/60)-7;
-        days = math.floor(hours/24);
+        minutes = math.floor(seconds/60)
+        hours = math.floor(minutes/60)-7
+        days = math.floor(hours/24)
 
-        hoursElapsed = (hours) %24;
-        # print("Days " + str(days));
+        hoursElapsed = (hours) %24
+        # print("Days " + str(days))
 
-        daysElapsed = (days+3)%14+1;
+        daysElapsed = (days+3)%14+1
 
-        # print("Hours Elapsed " + str(hoursElapsed));
-        # print("Days Elapsed " + str(daysElapsed));
+        # print("Hours Elapsed " + str(hoursElapsed))
+        # print("Days Elapsed " + str(daysElapsed))
 
-        resets = 0;
+        resets = 0
         if (hoursElapsed >= 0):
-            resets += 1;
+            resets += 1
 
         if (hoursElapsed >= 12):
-            resets += 1;
+            resets += 1
 
         if (hoursElapsed >= 18):
-            resets += 1;
+            resets += 1
 
-        # print("Resets " +str(resets));
+        # print("Resets " +str(resets))
 
 
-        exercisesLeft += (14-daysElapsed)*3*5 + (3-resets)*5;
-        # print("Exercises left " + str(exercisesLeft));
+        exercisesLeft += (14-daysElapsed)*3*5 + (3-resets)*5
 
-        for i in range(0,exercisesLeft):
+        #4 different scores are calculated here for more accuracy
+        negOneScore = score
+        plusOneScore = score
+        plusTwoScore = score
+
+        def calculateScoreToAdd(score):
+            gain = 0
             if score < 100:
-                score += 25;
+                gain = 25
             elif score < 200:
-                score += 22;
+                gain = 22
             elif score < 300:
-                score += 20;
+                gain = 20
             elif score < 400:
-                score += 17;
+                gain = 17
             elif score < 550:
-                score += 15;
+                gain = 15
             elif score < 700:
-                score += 15;
+                gain = 15
             elif score < 850:
-                score += 15;
+                gain = 15
             elif score < 1050:
-                score += 12;
+                gain = 12
             else:
-                score += 10;
+                gain = 10
+            
+            return gain
+            
+        for i in range(0,exercisesLeft):
+            score += calculateScoreToAdd(score)
+            negOneScore += calculateScoreToAdd(negOneScore)
+            plusOneScore += calculateScoreToAdd(plusOneScore)
+            plusTwoScore += calculateScoreToAdd(plusTwoScore)
+
+            #Bonus points will be given on the first exercise of a reset
+            if ((exercisesLeft-i) % 5 == 0):
+                negOneScore -= 1
+                plusOneScore += 1
+                plusTwoScore += 2
 
 
         #create the embed
@@ -91,13 +110,13 @@ class Pace(commands.Cog):
         Resets Left: {math.floor((exercisesLeft-exercisesStored)/5)}
         ''', inline = False)
         embed.add_field(name = "Predicted EOS Scores:", value = f'''
-        `-1:` {score - math.floor(exercisesLeft/5)}
+        `-1:` {negOneScore}
         `+0:` {score}
-        `+1:` {score + math.floor(exercisesLeft/5)}
-        `+2:` {score + 2*math.floor(exercisesLeft/5)}
+        `+1:` {plusOneScore}
+        `+2:` {plusTwoScore}
         ''', inline = False)
 
-        await message.channel.send(embed = embed);
+        await message.channel.send(embed = embed)
 
 
 
