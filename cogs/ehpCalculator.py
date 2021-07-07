@@ -1,8 +1,6 @@
-from os import stat
 import discord
 import random
 from discord.ext import commands
-from azurlane.azurapi import AzurAPI
 import requests
 import urllib.request
 import math
@@ -180,7 +178,7 @@ skillSwitch = {
 
 class ShipDoesNotExistError(ValueError):
     def __init__(self, name: str) -> None:
-        self.name = name
+        self.name = name.strip()
         super().__init__()
 
 #multiline text function
@@ -238,6 +236,9 @@ Other Parameters:
 `time`
 `evar` - evasion rate
 `dr` - damage reductions
+`+13` - equipment is +13
+`pvp`
+`tryhard` - enables PvP and +13 equips
 
 Ammo Type Presets:
 `HE`, `AP`, `AVI`, `Torp`, `Crash` (crash damage)
@@ -262,7 +263,7 @@ class ehpCalculator(commands.Cog):
                 embed = discord.Embed(title = "EHP Help Menu")
                 embed.add_field(name =":small_red_triangle: ehp [ship name] [args]", value =
                 """
-`ship name` - The ship that you want to calculate the eHP in PvE or exercises. Use argument PvP if you want to switch to PvP mode.""", inline = False)
+`ship name` - The ship that you want to calculate the eHP of""", inline = False)
                 embed.add_field(name =":small_red_triangle: Parameters", value =help_menu_desc, inline = False)
 
 
@@ -442,6 +443,10 @@ class ehpCalculator(commands.Cog):
                     elif stripped_arg in params["boolean_params"]:
                         kwargs[stripped_arg] = True
                     else: continue
+
+                if kwargs["tryhard"]:
+                    kwargs["pvp"] = True
+                    kwargs["plusthirteen"] = True
 
                 #multiply HP by modifiers
                 if kwargs["pvp"]:
@@ -823,7 +828,7 @@ class ehpCalculator(commands.Cog):
                         #embedVar.set_image(url=imageURL)
                         img.save(image_binary, 'PNG')
                         image_binary.seek(0)
-                        await message.channel.send("`;ehp`'s functionality has been reworked. Please read the help menu to make sure the values are what you expacted.",file=file)
+                        await message.channel.send("`;ehp`'s functionality has been reworked. Please read the help menu to make sure the values are what you expected.",file=file)
 
 
 
