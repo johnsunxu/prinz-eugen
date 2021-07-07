@@ -4,7 +4,6 @@ class Skill:
         description = skill["desc"]
         for index,val in enumerate(skill["desc_add"]):
             max_level = len(skill["desc_add"][index])
-            print("$"+str(index+1))
             r = ""
             if (level != 0):
                 if (len(val[level-1]) == 1):

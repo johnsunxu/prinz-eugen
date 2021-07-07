@@ -45,29 +45,45 @@ SHIP_LOCATION = {
   19: "Vanguard"
 }
 
+class UnknownShipError(Exception):
+  pass
+
 #Files
 script_dir = os.path.dirname(__file__)
 
-f = open(os.path.join(script_dir,"data/skills.json"), "r")
-skills = json.loads(f.read());
+def __init__():
+  f = open(os.path.join(script_dir,"data/skills.json"), "r",encoding='utf-8')
+  global skills
+  skills = json.loads(f.read())
 
-f = open(os.path.join(script_dir,"data/ships.json"), "r")
-ships = json.loads(f.read());
+  f = open(os.path.join(script_dir,"data/ships.json"), "r",encoding='utf-8')
+  global ships
+  ships = json.loads(f.read())
 
-f = open(os.path.join(script_dir,"data/types.json"), "r")
-types = json.loads(f.read());
+  f = open(os.path.join(script_dir,"data/types.json"), "r",encoding='utf-8')
+  global types
+  types = json.loads(f.read())
 
-f = open(os.path.join(script_dir,"data/lookup_table.json"), "r")
-lookup_table = json.loads(f.read());
+  f = open(os.path.join(script_dir,"data/lookup_table.json"), "r",encoding='utf-8')
+  global lookup_table
+  lookup_table = json.loads(f.read())
 
-f = open(os.path.join(script_dir,"data/retrofit_id_lookup_table.json"), "r")
-retrofit_id_lookup_table = json.loads(f.read());
-f.close()
+  f = open(os.path.join(script_dir,"data/retrofit_id_lookup_table.json"), "r",encoding='utf-8')
+  global retrofit_id_lookup_table
+  retrofit_id_lookup_table = json.loads(f.read())
+  f.close()
 
-f = open(os.path.join(script_dir,"data/retrofit.json"), "r")
-retrofit = json.loads(f.read());
-f.close()
+  f = open(os.path.join(script_dir,"data/retrofit.json"), "r",encoding='utf-8')
+  global retrofit
+  retrofit = json.loads(f.read())
+  f.close()
 
-f = open(os.path.join(script_dir,"data/nicknames.json"), "r")
-nicknames = json.loads(f.read());
-f.close()
+  f = open(os.path.join(script_dir,"data/nicknames.json"), "r",encoding='utf-8')
+  global nicknames
+  nicknames = json.loads(f.read())
+  f.close()
+
+  f = open(os.path.join(script_dir,"data/equip_types.json"), "r",encoding='utf-8')
+  global EQUIP_TYPES
+  EQUIP_TYPES = json.loads(f.read())
+  f.close()

@@ -16,7 +16,7 @@ from selenium.webdriver.chrome.options import Options
 import concurrent.futures
 from webdriver_manager.chrome import ChromeDriverManager
 
-import colors
+from base_graphics import BaseGraphics
 
 import sys
 sys.path.append('resources')
@@ -53,12 +53,10 @@ class shipGearFinder(commands.Cog):
         #send editing text
         message = await ctx.send("Finding best in slot gear...")
 
-
         shipName = " ".join(args)
         #Create ship object
         s = api.Ship(shipName,nicknames=True)
         shipName = s.name.lower()
-        print(shipName)
         #Replace certain characters with the code thing slime uses. For some reason urllib didn't work so I had to do this.
         shipName = shipName.replace(" ","_").replace("ü","%FC").replace("ö","%F6").replace("é","%E9").replace("â","%E2").replace("É","%E9").replace("ß","%DF").replace("μ","%B5").replace("pamiat'", "pamiat")
         #neptune needs to be HMS neptune
@@ -110,7 +108,6 @@ class shipGearFinder(commands.Cog):
 
 
             url = f"https://slaimuda.github.io/ectl/#/home?ship={shipName}"
-            print(url)
             driver.get(url)
             element = driver.page_source
             #find close button
@@ -207,7 +204,7 @@ class shipGearFinder(commands.Cog):
             #create the new image to specifications
             imageSize = 70
             imagePaddding = 5
-            img = Image.new('RGBA', (85+(max(longestCatagory,6)+1)*(imageSize+imagePaddding)+15,480),color = colors.getBackgroundColor())
+            img = Image.new('RGBA', (85+(max(longestCatagory,6)+1)*(imageSize+imagePaddding)+15,480),color = BaseGraphics.getBackgroundColor())
 
             #create font
             font = ImageFont.truetype("resources/fonts/Trebuchet_MS.ttf", 16)
@@ -218,7 +215,7 @@ class shipGearFinder(commands.Cog):
                 if (not s.retrofit):
                     thumbnail = requests.get(s.skins[0]["thumbnail"]).content
                 else:
-                    thumbnail = requests.get(s.skins[len(s.skins)-1]["thumbnail"]).content
+                    thumbnail = requests.get(s.skins[-1]["thumbnail"]).content
                 image_bytes = BytesIO(thumbnail)
                 thumbnailImage = Image.open(image_bytes).resize((85,85)).convert("RGBA")
             except UnidentifiedImageError:

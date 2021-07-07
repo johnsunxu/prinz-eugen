@@ -1,7 +1,7 @@
-from .__init__ import *
-
 class Gear:
     def __init__(self,id,level=10):
+        from .__init__ import gear
+
         self.id = str(id)
         self.gear = gear[self.id]
         self.level = level

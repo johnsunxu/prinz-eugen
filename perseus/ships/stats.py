@@ -1,6 +1,5 @@
 import math
-from os import stat
-from .__init__ import *
+from .__init__ import SHIP_LOCATION
 
 class Stats:
     @staticmethod

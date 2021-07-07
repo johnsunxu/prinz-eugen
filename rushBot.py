@@ -2,7 +2,6 @@ import random
 import discord
 import os
 from discord.ext import commands
-import perseus
 
 client = commands.Bot(command_prefix = ";")
 client.remove_command("help")
@@ -50,6 +49,15 @@ async def load(ctx, extension):
 async def unload(ctx, extension):
     client.unload_extension(f"cogs.{extension}")
     await ctx.send("Unload successful!")
+
+@client.command()
+async def reload(ctx, extension):
+    try:
+        client.unload_extension(f"cogs.{extension}")
+    except:
+        pass
+    client.load_extension(f"cogs.{extension}")
+    await ctx.send("Reload successful!")
 
 #Scan for cogs
 for filename in os.listdir("./cogs"):

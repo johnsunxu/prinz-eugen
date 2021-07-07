@@ -13,9 +13,13 @@ dir = os.path.dirname(__file__)
 
 #REMINDER TO ADD WHITELIST/BLACKLIST FOR DOWNLOADS
 
-def init(force: bool=False):
+def init(force: bool=False,url='https://raw.githubusercontent.com/Drakomire/perseus-data/master/dist/'):
     if not isinstance(force, bool):
         raise TypeError("argument force should be of type bool")
+
+    ##Fix trailing slash if user doesn't add one for useability. I feel like that would be a pretty annoying thing to debug.
+    if not url.endswith("/"):
+        url = url + "/"
 
 
     #Create data folders if they don't exist
@@ -34,7 +38,7 @@ def init(force: bool=False):
         downloaded_files[i] = path.join(dir,val).replace("perseus/perseus","perseus")
 
     #Get checksums
-    j = requests.get('https://raw.githubusercontent.com/Drakomire/perseus-data/master/dist/checksums.json').content
+    j = requests.get(url+'checksums.json').content
     checksums = json.loads(j)
 
     for key in checksums:
@@ -46,7 +50,7 @@ def init(force: bool=False):
             if (checksums[key] == hashlib.md5(f.read()).hexdigest()):
                 kept += 1
             else:
-                j = requests.get('https://raw.githubusercontent.com/Drakomire/perseus-data/master/dist/'+key).content
+                j = requests.get(url+key).content
                 f = open(filepath, "w")
                 f.write(j.decode("utf-8"))
                 changed+=1
@@ -54,7 +58,7 @@ def init(force: bool=False):
         else:
             #Download the file
             downloaded += 1
-            j = requests.get('https://raw.githubusercontent.com/Drakomire/perseus-data/master/dist/'+key).content
+            j = requests.get(url+key).content
             f = open(filepath, "w")
             f.write(j.decode("utf-8"))
             f.close()
@@ -70,3 +74,12 @@ def init(force: bool=False):
         print("Perseus:",downloaded+changed,"files downloaded.",deleted,"files deleted.",kept,"files did not require an update.")
     else:
         print("Perseus:",downloaded+changed,"files downloaded.",deleted,"files deleted.")
+
+    initiateFiles()
+
+def initiateFiles():
+    from .ships.__init__ import __init__
+    __init__()
+
+    from .gear.__init__ import __init__
+    __init__()

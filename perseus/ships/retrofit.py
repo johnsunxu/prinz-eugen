@@ -1,7 +1,7 @@
 import os
 import json
 import math
-from .__init__ import *
+from .__init__ import STAT_KEYWORDS
 
 class Retrofit:
     def __init__(self):
@@ -17,7 +17,7 @@ class Retrofit:
         out = {}
         for node in ship.ship["retrofit"]:
             node = node["node"]
-            for r in retrofit[str(node)]["effect"]:
+            for r in ship.data["retrofit"][str(node)]["effect"]:
                 for key in r:
                     if (key in STAT_KEYWORDS):
                         if (STAT_KEYWORDS[key] in out):
