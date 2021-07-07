@@ -228,14 +228,14 @@ Ex. `;ehp Howe he`
 
 Player Ship Stat Boost Parameters:
 `luk`,`hp`,`eva`,`rld`,`aa`
-These params can be stared with a % or p to change a constant stat boost to a percent stat boost.
+These params can be stared with a `%` or `p` to change a constant stat boost to a percent stat boost.
 
 Other Parameters:
 `ehit` - enemy hit
 `eluk` - enemy luck 
 `time`
 `evar` - evasion rate
-`dr` - damage reductions
+`dr` - damage reduction
 `+13` - equipment is +13
 `pvp`
 `tryhard` - enables PvP and +13 equips
