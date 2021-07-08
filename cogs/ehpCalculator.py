@@ -388,7 +388,7 @@ class ehpCalculator(commands.Cog):
                         if "%" in arg:
                             stats[stripped_arg] *= 1+toFloat("0" + arg)
                             percent_boosts[stripped_arg] = toFloat("0" + arg)
-                        if arg[0] in ["p","P"]:
+                        elif arg[0] in ["p","P"]:
                             stats[stripped_arg[1:]] *= 1+toFloat("0" + arg)
                             percent_boosts[stripped_arg[1:]] = toFloat("0" + arg)
                         else:
@@ -836,6 +836,7 @@ class ehpCalculator(commands.Cog):
             await message.channel.send(f"{e.name.title()} is not a ship! Please try again.")
         except Exception as e:
             await message.channel.send(f"Something went wrong! Please try again.")
+            raise e
 
 
 

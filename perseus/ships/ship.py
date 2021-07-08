@@ -85,7 +85,7 @@ class Ship:
 
     @property
     def name(self):
-        return self.name_en
+        return self.name_en or self.ship["name"]["code"]
 
     @property
     def name_en(self):
