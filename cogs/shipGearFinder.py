@@ -58,7 +58,7 @@ class shipGearFinder(commands.Cog):
         s = api.Ship(shipName,nicknames=True)
         shipName = s.name.lower()
         #Replace certain characters with the code thing slime uses. For some reason urllib didn't work so I had to do this.
-        shipName = shipName.replace(" ","_").replace("ü","%FC").replace("ö","%F6").replace("é","%E9").replace("â","%E2").replace("É","%E9").replace("ß","%DF").replace("μ","%B5").replace("pamiat'", "pamiat")
+        shipName = shipName.replace(" ","_").replace("ü","%FC").replace("ö","%F6").replace("ä","%E4").replace("é","%E9").replace("â","%E2").replace("É","%E9").replace("ß","%DF").replace("μ","%B5").replace("pamiat'", "pamiat")
         #neptune needs to be HMS neptune
         if (shipName == 'neptune'):
             shipName = 'hms_neptune'
