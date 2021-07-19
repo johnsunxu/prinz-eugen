@@ -22,7 +22,7 @@ sys.path.append('resources')
 
 #Add Perseus API
 from perseus import Perseus, APIError
-api = Perseus(url=os.environ["API_URL"])
+api = Perseus()
 
 #set chrome options
 opt = Options()
