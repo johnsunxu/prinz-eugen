@@ -1,4 +1,3 @@
-from perseus.ships import retrofit
 from bs4 import BeautifulSoup
 from azurlane.azurapi import AzurAPI
 from PIL import Image, ImageDraw, ImageFont, UnidentifiedImageError
@@ -22,8 +21,8 @@ import sys
 sys.path.append('resources')
 
 #Add Perseus API
-from perseus import Perseus
-api = Perseus()
+from perseus import Perseus, APIError
+api = Perseus(url=os.environ["API_URL"])
 
 #set chrome options
 opt = Options()
@@ -39,7 +38,10 @@ driver = webdriver.Chrome(executable_path = ChromeDriverManager().install(),opti
 #old version of getting chrome driver
 #driver = webdriver.Chrome(executable_path = os.environ.get("CHROMEDRIVER_PATH"),options = opt)
 
-
+class ShipDoesNotExistException(Exception):
+    def __init__(self, desc, name) -> None:
+        self.name = name
+        super().__init__(desc)
 
 #create class
 class shipGearFinder(commands.Cog):
@@ -55,7 +57,10 @@ class shipGearFinder(commands.Cog):
 
         shipName = " ".join(args)
         #Create ship object
-        s = api.Ship(shipName,nicknames=True)
+        try:
+            s = api.Ship(shipName,nicknames=True)
+        except APIError:
+            raise ShipDoesNotExistException("Ship does not exist",shipName)
         shipName = s.name.lower()
         #Replace certain characters with the code thing slime uses. For some reason urllib didn't work so I had to do this.
         shipName = shipName.replace(" ","_").replace("ü","%FC").replace("ö","%F6").replace("ä","%E4").replace("é","%E9").replace("â","%E2").replace("É","%E9").replace("ß","%DF").replace("μ","%B5").replace("pamiat'", "pamiat")
@@ -257,8 +262,8 @@ class shipGearFinder(commands.Cog):
                     await message.delete()
                     await ctx.send("Gear recommendations are from https://slaimuda.github.io/ectl/#/home !", file=file)
 
-        except:
-            await message.edit(content = "That shipgirl does not exist or is not on the EN tier list! Please try again.")
+        except ShipDoesNotExistException as e:
+            await message.edit(content = f"{e.ship.title()} does not exist or is not on the EN tier list! Please try again.")
             raise
 
 

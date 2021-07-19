@@ -14,7 +14,7 @@ from base_graphics import BaseGraphics
 background_color = BaseGraphics.getBackgroundColor()
 
 #Add Perseus API
-from perseus import Perseus
+from perseus import Perseus, APIError
 api = Perseus()
 
 #Open images
@@ -238,6 +238,7 @@ Other Parameters:
 `dr` - damage reduction
 `+13` - equipment is +13
 `pvp`
+`level`
 `tryhard` - enables PvP and +13 equips
 
 Ammo Type Presets:
@@ -286,7 +287,9 @@ class ehpCalculator(commands.Cog):
                     "constants" : [
                         "ehit",
                         "eluck",
-                        "time"
+                        "time",
+                        "level",
+                        "limit_break"
                     ],
 
                     "percent_only_params" : [
@@ -313,10 +316,21 @@ class ehpCalculator(commands.Cog):
                     ]
                 }
 
+                constants = {
+                    "ehit" : 75,
+                    "eluck" : 25,
+                    "time" : 60,
+                    "level" : 120,
+                    "limit_break" : 3
+                }
+
                 COMMAND_ALIAS = {
                     "+13" : "plusthirteen",
                     "noretro" : "no_retro",
-                    "noskill" : "no_skill"
+                    "noskill" : "no_skill",
+                    "torp" : "trp",
+                    "lb" : "limit_break",
+                    "mlb" : "lb3"
 
                 }
 
@@ -331,16 +345,23 @@ class ehpCalculator(commands.Cog):
                 all_options = [val for key in params for val in params[key]]
                 ship_name = ""
 
+                toInt = lambda x: int(''.join((number if number in '1234567890' else "" for number in x)))
+                toFloat = lambda x: float(''.join((number if number in '1234567890.' else "" for number in x)))/100
+
                 for count,arg in enumerate(args):
                     arg = getCommandAlias(arg)
                     stripped_arg = ''.join([letter if ord(letter) in range(65,90) or ord(letter) in range(97,122) or letter == "_" else "" for letter in arg.replace("%","")]).lower()
+                    stripped_arg = getCommandAlias(stripped_arg)
+
                     if stripped_arg not in all_options and stripped_arg[1:] not in all_options:
                         ship_name += arg + " "
+                    elif stripped_arg in params["constants"]:
+                        constants[stripped_arg] = toInt(arg)
 
                 #nicknames
                 try:
-                    ship = api.Ship(ship_name.strip(),nicknames=True,retrofit=True)
-                except:
+                    ship = api.Ship(ship_name.strip(),nicknames=True,retrofit=True, level=constants["level"], limit_break=constants["limit_break"])
+                except APIError:
                     raise ShipDoesNotExistError(name=ship_name)
 
                 #get the needed data
@@ -370,15 +391,6 @@ class ehpCalculator(commands.Cog):
                 percent_boosts = {}
                 constant_boosts = {}
 
-                constants = {
-                    "ehit" : 75,
-                    "eluck" : 25,
-                    "time" : 60
-                }
-
-                toInt = lambda x: int(''.join((number if number in '1234567890' else "" for number in x)))
-                toFloat = lambda x: float(''.join((number if number in '1234567890.' else "" for number in x)))/100
-
                 for arg in args:
                     arg = getCommandAlias(arg)
                     stripped_arg = ''.join([letter if ord(letter) in range(65,90) or ord(letter) in range(97,122) or letter == "_" else "" for letter in arg.replace("%","")]).lower()
@@ -394,8 +406,6 @@ class ehpCalculator(commands.Cog):
                         else:
                             stats[stripped_arg] += toInt(arg)
                             constant_boosts[stripped_arg]= toInt(arg)
-                    elif stripped_arg in params["constants"]:
-                        constants[stripped_arg] = toInt(arg)
                     elif stripped_arg in params["percent_only_params"]:
                         if stripped_arg == "evar":
                             stats["evasion_rate"] = toFloat(arg)
@@ -450,13 +460,13 @@ class ehpCalculator(commands.Cog):
 
                 #multiply HP by modifiers
                 if kwargs["pvp"]:
-                    if ship.hull_type == "Destroyer":
+                    if ship.hull_type in ["Destroyer", "Munition Ship"]:
                         stats["damage_reduction"] = 1 - (1-stats["damage_reduction"]) * (1-.25)
 
                     elif ship.hull_type == "Light Cruiser":
                         stats["damage_reduction"] = 1 - (1-stats["damage_reduction"]) * (1-.2)
 
-                    elif ship.hull_type == "Heavy Cruiser":
+                    elif ship.hull_type in ["Heavy Cruiser", "Large Cruiser"]:
                         stats["damage_reduction"] = 1 - (1-stats["damage_reduction"]) * (1-.15)
 
                 #certain ships need retro for survivability skill
@@ -828,7 +838,7 @@ class ehpCalculator(commands.Cog):
                         #embedVar.set_image(url=imageURL)
                         img.save(image_binary, 'PNG')
                         image_binary.seek(0)
-                        await message.channel.send("`;ehp`'s functionality has been reworked. Please read the help menu to make sure the values are what you expected.",file=file)
+                        await message.channel.send(file=file)
 
 
 

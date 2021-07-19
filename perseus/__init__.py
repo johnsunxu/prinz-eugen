@@ -2,37 +2,33 @@
 Import requirements
 """
 
-from .download import init
+from typing import Generator
 from PIL import Image
 from io import BytesIO
 import requests
+from ._util import Lang, _APIObject
+from ._ships.ship import _Ship
+
+#Erros so user can catch them
+from ._util._erros import APIError, APIConnectionError, APIPathNotFoundError, APIReturnError
 
 #Set up the API class
-class Perseus:
-    def __init__(self):
-        self.initiate()
+class Perseus(_APIObject):
+    def __init__(self, url="http://perseusapi.duckdns.org:5000"):
+        super().__init__(url)
 
-    def initiate(self,**kwargs):
-        init(**kwargs)
-
-        from .ships.ship import Ship
-        from .ships.__init__ import ships
-        from .gear.gear import Gear
-        from .gear.__init__ import gear
-
-        self.Ship = Ship
-        self.ship_json = ships
-        self.Gear = Gear
-        self.gear_json = gear
+    def Ship(self, *args, **kwargs):
+        return _Ship(self.url,*args,**kwargs)
 
     def update(self):
         self.initiate()
 
-    def getAllShips(self,*args,**kwargs):
-        out = []
-        for key in self.ship_json:
-            out += [self.Ship(int(key),**kwargs)]
-        return out
+    def getAllShipNames(self,lang: Lang=Lang.EN):
+        return self._getFromAPI(f"ship/all_names?{lang=}")
+
+    def getAllShips(self,*args,**kwargs) -> Generator:
+        for i in self._getFromAPI(f"ship/all_ids"):
+            yield self.Ship(i,*args,**kwargs)
 
     def getAllGear(self,*args,**kwargs):
         out = []
