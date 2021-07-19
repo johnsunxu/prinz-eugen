@@ -17,7 +17,6 @@ import glob
 
 background_color = BaseGraphics.getBackgroundColor()
 
-import noise
 import numpy as np
 from PIL import Image
 import requests

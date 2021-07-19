@@ -59,9 +59,9 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(aliases=["patchnotes"])
     async def patchNotes(self, ctx):
-        embed = discord.Embed(title = "Patch Notes - June 15th 2021")
+        embed = discord.Embed(title = "Patch Notes - July 19th 2021")
         embed.add_field(name ="Version 2.6", value = "** **", inline = False)
-        embed.add_field(name = "** **", value = "**NEW** XP added")
+        embed.add_field(name = "** **", value = "**NEW** ;art and ;view added")
         await ctx.send(embed = embed)
 
     @commands.command()
@@ -69,7 +69,7 @@ class Miscellaneous(commands.Cog):
         embed = discord.Embed(title = "Credits")
         embed.add_field(name ="Developers", value = "SomeDude and Drako")
         embed.add_field(name = "Perseus", value = "Drako's Azur Lane API")
-        embed.add_field(name = "Azur API", value = "Used for Guess That Shipgirl Images")
+        embed.add_field(name = "Azur API", value = "Used for Guess That Shipgirl Images and art images")
         embed.add_field(name = "Azur Lane's EN Community Tier List", value = "Thanks for the gear loadouts.")
         await ctx.send(embed = embed)
 
