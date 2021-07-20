@@ -57,7 +57,7 @@ EQUIP_TYPE_NAME = {
   9 : "Dive Bomber",
   10 : "Auxiliary",
   11 : "CB Gun",
-  12 : "Reconnaissance",
+  12 : "Seaplanes",
   13 : "Submarine Torpedo",
   14 : "Auxiliary",
   15 : "ASW Bomber",
