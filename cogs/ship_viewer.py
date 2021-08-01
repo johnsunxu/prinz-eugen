@@ -1,7 +1,5 @@
 #Add Perseus API
 from io import BytesIO
-from mmap import MADV_WILLNEED
-
 from requests.api import request
 from discord.ext import commands
 import discord
@@ -48,6 +46,11 @@ def alpha_composite_centered(img,img2,locations):
 
     img.alpha_composite(img2,loc)
 
+class ShipDoesNotExistError(Exception):
+    def __init__(self, text, ship) -> None:
+        self.ship = ship
+        super().__init__(text)
+
 #create class
 class ShipViewer(commands.Cog):
     #init func
@@ -61,7 +64,11 @@ class ShipViewer(commands.Cog):
         # img = overlay_noise(img)
 
         name = ' '.join(args)
-        s = api.Ship(name,nicknames=True)
+        try:
+            s = api.Ship(name,nicknames=True)
+        except APIError:
+            await ctx.channel.send(f"Shipgirl {name.title()} does not exist!")
+            raise ShipDoesNotExistError
 
         # skins = s.skins.copy()
         # if s.retrofit:
@@ -139,14 +146,16 @@ class ShipViewer(commands.Cog):
         font_size = [20,16,16,16]
         cell_height = 30
 
+        eff_to_int = lambda x: int(round(s.efficiency[x]*100))
+
         def makeSlotsNice(n):
             return "/".join([str(i) for i in s.slot_names[n]])
 
         cells = [
             [70,["Slot","1","2","3"]],
             [90,["Mounts"]+[str(i) for i in s.base_list[0:3]]],
-            [110,["Efficiency",str(int(s.efficiency[0]*100))+"%",str(int(s.efficiency[1]*100))+"%",str(int(s.efficiency[2]*100))+"%"]],
-            [90,["CE",str(int(s.efficiency[0]*100)*s.base_list[0])+"%",str(int(s.efficiency[1]*100)*s.base_list[1])+"%",str(int(s.efficiency[2]*100)*s.base_list[2])+"%"]],
+            [110,["Efficiency",f"{eff_to_int(0)}%",f"{eff_to_int(1)}%",f"{eff_to_int(2)}%"]],
+            [90,["CE",f"{eff_to_int(0)*s.base_list[0]}%",f"{eff_to_int(1)*s.base_list[1]}%",f"{eff_to_int(2)*s.base_list[2]}%"]],
             [280,["Equip Type",makeSlotsNice(0),makeSlotsNice(1),makeSlotsNice(2)]],
         ]
 
@@ -171,12 +180,12 @@ class ShipViewer(commands.Cog):
             x+=_w
 
         #-------------------Hunting Range--------------------
-        if s.hunting_range != None:
-            x = 500
-            y = 20
-            for _x,row in enumerate(s.hunting_range):
-                for _y,cell in enumerate(row):
-                    drawCenteredText((x+_x*25,y+_y*25),str(cell),font=BaseGraphics.getFontAtSize(15))
+        # if s.hunting_range != None:
+        #     x = 500
+        #     y = 20
+        #     for _x,row in enumerate(s.hunting_range):
+        #         for _y,cell in enumerate(row):
+        #             drawCenteredText((x+_x*25,y+_y*25),str(cell),font=BaseGraphics.getFontAtSize(15))
 
         # embed = discord.Embed(title=f"{s.name}'s Stats")
         # skill_text = '\n\n'.join([f"`{i['name']}: {i['description']}`" for i in s.getFormattedSkills()])

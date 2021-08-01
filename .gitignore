@@ -6,3 +6,4 @@ dev-env/
 test.py
 test.py
 *.pyc
+.pyc
