@@ -14,7 +14,7 @@ from base_graphics import BaseGraphics
 background_color = BaseGraphics.getBackgroundColor()
 
 #Add Perseus API
-from perseus import Perseus, APIError
+from perseus.src.perseus import Perseus, PerseusAPIError
 api = Perseus()
 
 #Open images
@@ -361,7 +361,7 @@ class ehpCalculator(commands.Cog):
                 #nicknames
                 try:
                     ship = api.Ship(ship_name.strip(),nicknames=True,retrofit=True, level=constants["level"], limit_break=constants["limit_break"])
-                except APIError:
+                except PerseusAPIError:
                     raise ShipDoesNotExistError(name=ship_name)
 
                 #get the needed data

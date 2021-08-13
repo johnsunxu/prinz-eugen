@@ -3,7 +3,7 @@ import discord
 import sys
 sys.path.append("./")
 
-from perseus import Perseus, APIError
+from perseus.src.perseus import Perseus, PerseusAPIError
 api = Perseus()
 
 from base_graphics import BaseGraphics
@@ -51,7 +51,7 @@ class ShipArt(commands.Cog):
         name = ' '.join(args)
         try:
             s = api.Ship(name,nicknames=True)
-        except APIError:
+        except PerseusAPIError:
             await ctx.channel.send(f"Ship girl {name.title()} does not exist!")
             return
 

@@ -21,7 +21,7 @@ import sys
 sys.path.append('resources')
 
 #Add Perseus API
-from perseus import Perseus, APIError
+from perseus.src.perseus import Perseus, PerseusAPIError
 api = Perseus()
 
 #set chrome options
