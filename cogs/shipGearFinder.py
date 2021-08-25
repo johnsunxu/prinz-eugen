@@ -59,7 +59,7 @@ class shipGearFinder(commands.Cog):
         #Create ship object
         try:
             s = api.Ship(shipName,nicknames=True)
-        except APIError:
+        except PerseusAPIError:
             raise ShipDoesNotExistException("Ship does not exist",shipName)
         shipName = s.name.lower()
         #Replace certain characters with the code thing slime uses. For some reason urllib didn't work so I had to do this.
