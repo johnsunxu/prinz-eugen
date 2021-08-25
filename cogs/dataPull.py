@@ -4,6 +4,7 @@ import psycopg2
 import sys
 import os
 import asyncio
+import math
 import matplotlib
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -31,7 +32,7 @@ def reconnect():
 #procedure to execute SQL query while accounting for errors
 async def _execute(ctx, server, serverCursor, serverConnection, query, returning = False):
     try:
-        serverCursor.execute(query)
+        serverCursor.execute(query[0], query[1])
         serverConnection.commit()
         #return the printout from the query
         if returning == True:
@@ -96,18 +97,16 @@ def updateTime():
     print(time)
     print(date)
 
-#
+#function for sending data to db
 async def sendData(ctx, server, serverCursor, serverConnection, rusherName, time, date, reporterName):
-    #find out entry number abd send query
+    #find out entry number and send query
     entryNumber = await _execute(ctx, server, serverCursor, serverConnection, f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;", returning=True)
     entryNumber = len(entryNumber)+1
     # serverCursor.execute(f"SELECT * FROM {server.lower()}_entries ORDER BY entrynumber;")
     #entryNumber = serverCursor.fetchall()[len(serverCursor.fetchall())-1][0]+1
     print("ENTRY NUM IS", entryNumber)
-    print(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
-    await _execute(ctx, server, serverCursor, serverConnection, f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
-    # serverCursor.execute(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber},\'{rusherName}\',\'{time}\',\'{date}\',\'{reporterName}\');")
-    # serverConnection.commit()
+    print(f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber}, %(rusherName)s,\'{time}\',\'{date}\',\'%(reporterName)s);", {"rusherName" : rusherName , "reporterName": reporterName})
+    await _execute(ctx, server, serverCursor, serverConnection, (f"INSERT INTO {server.lower()}_entries(entrynumber, rushername, time, date, reportername) VALUES({entryNumber}, %(rusherName)s,\'{time}\',\'{date}\', %(reporterName)s);", {"rusherName" : rusherName, "reporterName" : reporterName}))
 
 class CheckPlayer(commands.Cog):
     #init func
@@ -139,10 +138,18 @@ class CheckPlayer(commands.Cog):
         str += "```"
         await ctx.send(str)
 
-    @commands.command(aliases=["analyzemulti", "analyzeMulti"])
+    @commands.command(aliases=["analyse"])
     async def analyze(self, ctx, server, *players):
         # await ctx.send("Sorry this command is currently under maintenance.")
         # return
+        #Function for getting what day of the season the entry was made at 
+        def getSeasonDay(day):
+            #day is in dd/mm/yyyy 
+            secondsSinceEpoch = int(datetime.strptime(day, "%d/%m/%Y").timestamp() / 60) 
+            hoursSinceEpoch = int(secondsSinceEpoch / 3600 -7) #-7 for PDT
+            seasonDay = int(hoursSinceEpoch / 24 + 3) % 14 + 1 #+3 because epoch is a thursday
+            
+            return seasonDay
 
         #Function for creating graph of image. Input list of times and player name, returns discord.File
         def createGraph(data, playerName, num):
@@ -210,8 +217,8 @@ class CheckPlayer(commands.Cog):
         #Receive variables
         entries = []
         for i in range(len(players)):
-            await _execute(ctx, server, serverCursor, serverConnection, f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
-            # serverCursor.execute(f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(\'{players[i].lower()}\');")
+            print(players[i].lower())
+            await _execute(ctx, server, serverCursor, serverConnection, (f"SELECT * FROM {server}_entries WHERE LOWER(rushername) LIKE LOWER(%(player)s);", {"player" : players[i].lower()}))
             reports = serverCursor.fetchall()
             entries.append(reports)
 
@@ -235,7 +242,7 @@ class CheckPlayer(commands.Cog):
                 #sort by time
                 entries[i].sort(key=lambda x: x[2])
                 for report in entries[i]:
-                    output += f"{report[2]} {report[3]}\n"
+                    output += f"{report[2]} {report[3]} Day {getSeasonDay(report[3])}\n"
                 output += "```"
             embed = discord.Embed(title="Analysis", color=embedColor)
             embed.add_field(name=f"{players[i]}", value=output)
@@ -402,13 +409,14 @@ class CheckPlayer(commands.Cog):
                 #add one to entries if exists
                 #find out current number of entries
                 entries= test[j][1]
-                await _execute(ctx,server,serverCursor,serverConnection,f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
+                # await _execute(ctx,server,serverCursor,serverConnection,f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
+                await _execute(ctx, server, serverCursor, serverConnection, (f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = %(reporterName)s", {"reporterName" : reporterName}))
                 # serverCursor.execute(f"UPDATE leaderboard SET ENTRIES = {entries+1} WHERE USERNAME = \'{reporterName}\'")
                 break
         if not repeat:
             #print(f"no name found, creating new name:{reporterValues[i]};{test[i][0].strip()}")
             #else create new entry
-            await _execute(ctx, server, serverCursor, serverConnection,f"INSERT INTO leaderboard(username, entries) VALUES(\'{reporterName}\',1)" )
+            await _execute(ctx, server, serverCursor, serverConnection, (f"INSERT INTO leaderboard(username, entries) VALUES(%(reporterName)s, 1)", {"reporterName" : reporterName}) )
             # serverCursor.execute(f"INSERT INTO leaderboard(username, entries) VALUES(\'{reporterName}\',1)")
         serverConnection.commit()
         return
