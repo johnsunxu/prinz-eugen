@@ -7,3 +7,4 @@ test.py
 test.py
 *.pyc
 .pyc
+azurapi_data/ships.json

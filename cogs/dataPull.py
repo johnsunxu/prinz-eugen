@@ -1,3 +1,4 @@
+from typing import Tuple
 import discord
 import pytz
 import psycopg2
@@ -32,7 +33,10 @@ def reconnect():
 #procedure to execute SQL query while accounting for errors
 async def _execute(ctx, server, serverCursor, serverConnection, query, returning = False):
     try:
-        serverCursor.execute(query[0], query[1])
+        if isinstance(query, tuple):
+            serverCursor.execute(query[0], query[1])
+        else:
+            serverCursor.execute(query)
         serverConnection.commit()
         #return the printout from the query
         if returning == True:
@@ -334,7 +338,7 @@ class CheckPlayer(commands.Cog):
 
         #quick check to make sure the user is on ALM's sever
         #servers besides that one are banned to prevent trolling
-        if (ctx.guild.name != "Azur Lane Meta"):
+        if (ctx.guild.name != "Azur Lane Meta" and ctx.guild.name != "Bot test"):
             await ctx.channel.send("Sorry, you can only use this command on Azur Lane Meta's server. Join at discord.gg/AzurLaneMeta.")
             #it probably is stopped with the return
             return
