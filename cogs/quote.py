@@ -16,7 +16,10 @@ def reconnect():
 async def _execute(ctx, query, returning=False):
     global quote_conn, quote_cur
     try:
-        quote_cur.execute(query)
+        if isinstance(query, tuple):
+            quote_cur.execute(query[0], query[1])
+        else: 
+            quote_cur.execute(query)
         quote_conn.commit()
         #return the printout from the query
         if returning == True:
@@ -45,8 +48,8 @@ async def addToDB(ctx, name, content):
     id = await _execute(ctx, f"SELECT id FROM quotes ORDER BY id desc limit 1;", returning = True)
     print(id)
     id = id[0][0]+1
-    await _execute(ctx, f"INSERT INTO quotes(id, name, content) VALUES({id}, \'{name}\', \'{content}\');")
-
+    # await _execute(ctx, f"INSERT INTO quotes(id, name, content) VALUES({id}, \'{name}\', \'{content}\');")
+    await _execute(ctx, (f"INSERT INTO quotes(id, name, content, server) VALUES({id}, %(name)s, %(content)s, %(server)s);", {"name" : name, "content": content, "server" : ctx.guild.name}))
 
 class Quote(commands.Cog):
     #init
@@ -64,6 +67,8 @@ class Quote(commands.Cog):
         embed.add_field(name = "`;authorize [role name]`", value = "Give permissions to add quotes from a role. Use \" \" for roles with spaces.", inline = False)
 
         embed.add_field(name = "`;deauthorize [role name]`", value = "Remove permissions to add quotes from a role. Use \" \" for roles with spaces.", inline = False)
+
+        embed.add_field(name = "`;del [id]`", value = "Delete a quote based on quote id.")
 
         await ctx.send(embed = embed)
 
@@ -161,14 +166,36 @@ class Quote(commands.Cog):
             await addToDB(ctx, name, content)
             await ctx.send("Quote added")
 
+    @commands.command(aliases = ["del"], brief = "Delete a quote.")
+    async def delete(self, ctx, id): 
+        #Check if user has perms
+        #If user is not an admin
+        user = ctx.message.author
+        if not user.guild_permissions.administrator:
+            #check if user has role to add quotes
+            #obtain roles of caller
+            roles = user.roles
+            #valid roles
+            validRolesIds = await _execute(ctx, f"SELECT roleid FROM roles WHERE serverid=\'{user.guild.id}\';", returning=True)
+            valid = False
+            for role in roles:
+                for validRoleId in validRolesIds:
+                    if role.id == int(validRoleId[0]):
+                        valid = True
+
+            if not valid:
+                await ctx.send("Access Denied!")
+                return
+        await _execute(ctx, (f"DELETE FROM quotes WHERE id = %(id)s and server = %(server)s;", {"id" : id, "server" : ctx.guild.name}))
+
     @commands.command(aliases = [";;"], brief = "Summon a quote.")
     async def call(self, ctx, name):
-        data = await _execute(ctx, f"SELECT * FROM quotes WHERE LOWER(name) LIKE LOWER(\'{name}\')", returning = True)
+        data = await _execute(ctx, (f"SELECT * FROM quotes WHERE LOWER(name) LIKE LOWER(%(name)s) AND server = %(server)s", {"name" : name , "server" : ctx.guild.name}), returning = True)
         try: 
             choice = random.randint(0, len(data)-1)
+            await ctx.send(f"`#{data[choice][0]}` {data[choice][2]}")
         except: 
             await ctx.send("Quote not found!")
-        await ctx.send(f"`#{data[choice][0]}` {data[choice][2]}")
 
 
 def setup(client):
