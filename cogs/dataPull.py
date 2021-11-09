@@ -95,7 +95,9 @@ def checkServerInput(server):
 #procedure for updating the time the bot is at in PST/MOUNTAIN
 def updateTime():
     global serverTime, time, date
-    serverTime = datetime.now(pytz.timezone("US/Pacific"))
+    serverTime = datetime.now(datetime.timezone.utc)
+    serverTime = serverTime - timedelta(hours=7)
+
     time = serverTime.strftime("%H:%M:%S")
     date = serverTime.strftime("%d/%m/%Y")
     print(time)
