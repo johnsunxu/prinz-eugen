@@ -10,6 +10,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 from oauth2client.service_account import ServiceAccountCredentials
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -95,7 +96,7 @@ def checkServerInput(server):
 #procedure for updating the time the bot is at in PST/MOUNTAIN
 def updateTime():
     global serverTime, time, date
-    serverTime = datetime.now(datetime.timezone.utc)
+    serverTime = datetime.now(timezone.utc)
     serverTime = serverTime - timedelta(hours=7)
 
     time = serverTime.strftime("%H:%M:%S")
