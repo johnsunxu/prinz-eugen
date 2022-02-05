@@ -15,7 +15,7 @@ from discord.ext import commands, menus
 import discord
 import sys
 sys.path.append("./")
-from perseus.src.perseus import Perseus, PerseusAPIError
+from perseus import Perseus, PerseusAPIError
 api = Perseus()
 from base_graphics import BaseGraphics
 
