@@ -10,3 +10,5 @@ test.py
 azurapi_data/ships.json
 
 venv/
+__pycache__/
+*.pyc
