@@ -27,7 +27,7 @@ from base_graphics import BaseGraphics
 background_color = BaseGraphics.getBackgroundColor()
 
 #Add Perseus API
-from perseus.src.perseus import Perseus, PerseusAPIError
+from perseus import Perseus, PerseusAPIError
 api = Perseus()
 
 #Open images
